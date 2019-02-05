@@ -15,21 +15,7 @@
  * @since		1.0.0
  * @version		$Revision: 27 $
  */
-/*
-require_once('adldap2/src/Adldap.php');
-require_once('adldap2/src/AdldapException.php');
-require_once('adldap2/src/AdldapInterface.php');
-require_once('adldap2/src/Log/EventLogger');
-require_once('adldap2/src/Log/LogsInformation');
-require_once('adldap2/src/Events/DispatchesEvents');
-require_once('adldap2/src/Connections/Provider');
-require_once('adldap2/src/Connections/ProviderInterface');
-require_once('adldap2/src/Connections/ConnectionInterface');
-require_once('adldap2/src/Configuration/DomainConfiguration');
-require_once('adldap2/src/Schemas/Schema.php');
-require_once('adldap2/src/Schemas/SchemaInterface.php');
-require_once('adldap2/src/Schemas/ActiveDirectory.php');
-*/
+
 class AdldapAPI extends Command
 {
 	protected $ad;
@@ -44,39 +30,7 @@ class AdldapAPI extends Command
 	 * @access protected
 	 * @since 1.0.0
 	 */
-	protected function doExecute( $params )
-	{
-		/*$this->ad = new \Adldap\Adldap();
-
-		$config = [
-			// Mandatory Configuration Options
-			'hosts'            => [ 'trimarq.local' ],
-			'base_dn'          => 'OU=Employees,OU=Accounts,DC=trimarq,DC=local',
-			'username'         => 'null',
-			'password'         => 'null',
-
-			// Optional Configuration Options
-			'schema'           => Adldap\Schemas\ActiveDirectory::class,
-			'account_suffix'   => '@trimarq.local',
-			'port'             => 389,
-			'follow_referrals' => false,
-			'use_ssl'          => false,
-			'use_tls'          => false,
-			'version'          => 3,
-			'timeout'          => 5
-		];
-
-		$this->ad->addProvider($config);
-
-		try
-		{
-			$this->provider = $this->ad->connect();
-		}
-		catch (BindException $e)
-		{
-			$this->display->error->raiseError( 'ldap_connect_failed' );
-		}*/
-	}
+	protected function doExecute( $params ) {}
 
 	/**
 	 * The login function
@@ -91,33 +45,6 @@ class AdldapAPI extends Command
 	{
 		$out = false;
 
-		/*try
-		{
-			if ( $this->provider->auth()->attempt($username, $password, true) )
-			{
-				$this->user = $this->provider->search()->where('samAccountName', '=', $username)->get();
-				$out = true;
-			}
-			else
-			{
-				//$this->error->logError( 'invalid_login', FALSE );
-
-				// Get the users first name.
-				$user->getFirstName();
-
-				// Get the users last name.
-				$user->getLastName();
-			}
-		}
-		catch (Adldap\Auth\UsernameRequiredException $e)
-		{
-			//$this->error->logError( 'invalid_login', FALSE );
-		}
-		catch (Adldap\Auth\PasswordRequiredException $e)
-		{
-			//$this->error->logError( 'invalid_login', FALSE );
-		}*/
-		
 		$adServer = "ldap://trimarq.local";
 
 		$ldap = ldap_connect($adServer);
@@ -131,28 +58,21 @@ class AdldapAPI extends Command
 
 		$bind = @ldap_bind($ldap, $ldaprdn, $password);
 
+		if ( $bind )
+		{
+			$filter ="(sAMAccountName={$username})";
+			$result = ldap_search( $ldap, "OU=Employees,OU=Accounts,DC=trimarq,DC=local", $filter );
 
-		if ($bind) {
-			$filter="(sAMAccountName=$username)";
-			$result = ldap_search($ldap,"OU=Employees,OU=Accounts,DC=trimarq,DC=local",$filter);
-			ldap_sort($ldap,$result,"sn");
-			$info = ldap_get_entries($ldap, $result);
-			for ($i=0; $i<$info["count"]; $i++)
+			ldap_sort( $ldap, $result, "sn" );
+			$info = ldap_get_entries( $ldap, $result );
+
+			if( isset( $info['count'] && $info['count'] > 0 )
 			{
-				if($info['count'] > 1)
-					break;
-				echo "<p>You are accessing <strong> ". $info[$i]["sn"][0] .", " . $info[$i]["givenname"][0] ."</strong><br /> (" . $info[$i]["samaccountname"][0] .")</p>\n";
-				echo '<pre>';
-				print_r($info);
-				echo '</pre>';
-				$userDn = $info[$i]["distinguishedname"][0]; 
+				$this->user = $info[0];
+				$out = true;
 			}
-			@ldap_close($ldap);
-		} else {
-			$msg = "Invalid email address / password";
-			echo $msg;
 		}
-exit();
+
 		return $out;
 	}
 
@@ -167,9 +87,9 @@ exit();
 	{
 		$out = "";
 
-		if ( is_object( $this->user ) )
+		if ( is_array( $this->user ) )
 		{
-			$out = $this->user->getFirstName();
+			$out = $this->user['givenname'][0];
 		}
 
 		return $out;
@@ -186,9 +106,9 @@ exit();
 	{
 		$out = "";
 
-		if ( is_object( $this->user ) )
+		if ( is_array( $this->user ) )
 		{
-			$out = $this->user->getLastName();
+			$out = $this->user['sn'][0];
 		}
 
 		return $out;

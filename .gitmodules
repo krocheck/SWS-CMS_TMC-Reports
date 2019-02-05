@@ -1,6 +1,3 @@
-[submodule "core/adldap/adldap2"]
-	path = core/adldap/adldap2
-	url = https://github.com/Adldap2/Adldap2
 [submodule "js/ckeditor"]
 	path = js/ckeditor
 	url = https://github.com/ckeditor/ckeditor-releases.git
