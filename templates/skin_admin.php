@@ -58,47 +58,6 @@ return $HTML;
 }
 
 //===========================================================================
-// Login Form
-//===========================================================================
-public function loginForm( $hiddenInputs )
-{
-$HTML = "";
-//--starthtml--//
-
-$HTML .= <<<EOF
-		<div id='login'>
-			<form action="./" method="post" id="login" name="name">
-				<input type="hidden" name="login" value="true" />
-
-EOF;
-
-foreach( $hiddenInputs as $k => $v )
-{
-
-$HTML .= <<<EOF
-				<input type="hidden" name="{$k}" value="{$v}" />
-
-EOF;
-
-}
-
-$HTML .= <<<EOF
-				<label>{$this->lang->getString('login_email')}</label>
-				<input type="text" id="email" name="email" maxlength="150" width="40" tabindex="0" value="" /><br />
-				<label>{$this->lang->getString('login_password')}</label>
-				<input type="password" id="password" name="password" maxlength="150" width="40" tabindex="0" value="" /><br />
-				<br />
-				<input type="submit" id="submit" name="submit" value="{$this->lang->getString('login_submit')}" />
-			</form>
-		</div>
-
-EOF;
-
-//--endhtml--//
-return $HTML;
-}
-
-//===========================================================================
 // Navigation
 //===========================================================================
 public function navigationWrapper( $urls, $indent = "	", $location = 'outer' )

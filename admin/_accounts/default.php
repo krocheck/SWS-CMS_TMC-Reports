@@ -91,9 +91,6 @@ class AdminAccounts extends Command
 			case 'dodelete':
 				$this->doDelete();
 				break;
-			case 'view':
-				$this->view();
-				break;
 			default:
 				$this->listAccounts();
 				break;
@@ -302,10 +299,6 @@ class AdminAccounts extends Command
 			)
 		);
 
-		$html .= "<a href='".$this->display->buildURL( array( 'module' => 'accounts', 'do' => 'export' ), 'admin')."'>Export CSV</a> &bull; ";
-
-		$html .= "<a href='".$this->display->buildURL( array( 'module' => 'accounts', 'com' => 'nonregistered' ), 'admin')."'>{$this->lang->getString('accounts_view_nonregistered')}</a> &bull; ";
-
 		$html .= "<a href='".$this->display->buildURL( array( 'module' => 'accounts', 'do' => 'add' ), 'admin')."'>{$this->lang->getString('accounts_create_new')}</a> &bull; ";
 
 		$html .= $this->html->formInput( 'search', $this->registry->txtStripslashes( isset( $_POST['search'] ) ? $_POST['search'] : $user['search'] ), 'text', '', '15' ) . " ";
@@ -382,8 +375,6 @@ class AdminAccounts extends Command
 		$perm                = $this->registry->txtStripslashes( trim( $this->input['type'] ) );
 		$languageID          = intval( $this->input['language_id'] );
 		$emailAlerts         = intval( $this->input['email_alerts'] );
-		$passwordNew         = $this->registry->txtStripslashes( trim($this->input['password_new'] ) );
-		$passwordConfirm     = $this->registry->txtStripslashes( trim($this->input['password_confirm'] ) );
 
 		$account             = array();
 
@@ -416,35 +407,12 @@ class AdminAccounts extends Command
 				$this->listAccounts();
 				return;
 			}
-
-			// If they provided a new password, the two password fields must match
-			if ( strlen( $passwordNew ) > 0 && $passwordNew != $passwordConfirm )
-			{
-				$this->error->logError( 'password_no_match', FALSE );
-				$this->showForm( $type );
-				return;
-			}
-
-			if ( $email != $account['email'] && $passwordNew == '' )
-			{
-				$this->error->logError( 'password_change', FALSE );
-				$this->showForm( $type );
-				return;
-			}
 		}
 
 		// Make sure the necessary fields were filled out
 		if ( ! ( strlen( $firstName ) > 0 && strlen( $lastName ) > 0 && strlen( $email ) > 0 ) )
 		{
 			$this->error->logError( 'incomplete_form', FALSE );
-			$this->showForm( $type );
-			return;
-		}
-
-		// For a new account, there must be a password and the two fields must match
-		if ( $type == 'add' && ( ! strlen( $passwordNew ) > 0 || $passwordNew != $passwordConfirm ) )
-		{
-			$this->error->logError( 'password_no_match', FALSE );
 			$this->showForm( $type );
 			return;
 		}
@@ -466,12 +434,6 @@ class AdminAccounts extends Command
 		// If this is a new account ...
 		if ( $type == 'add' )
 		{
-			// Create the password hash
-			$array['pass_hash'] = md5( md5( $array['email'] ) . md5( time() ) );
-
-			// Generate the password
-			$array['password'] = md5( md5( $array['email'] ) . md5( md5( $passwordNew ) . $array['pass_hash'] ) );
-
 			// Make sure this user doesn't already exist ...
 			$this->DB->query("SELECT user_id FROM user WHERE email = '{$email}';");
 
@@ -498,16 +460,6 @@ class AdminAccounts extends Command
 		// This user must already exist ...
 		else
 		{
-			// If there is a new password ...
-			if ( strlen( $passwordNew ) > 0 )
-			{
-				// Create the password hash
-				$array['pass_hash'] = md5( md5( $array['email'] ) . md5( time() ) );
-
-				// Generate the password
-				$array['password'] = md5( md5( $array['email'] ) . md5( md5( $passwordNew ) . $array['pass_hash'] ) );
-			}
-
 			// Set the user id in the save array
 			$array['user_id'] = $userID;
 
@@ -664,37 +616,6 @@ class AdminAccounts extends Command
 					$this->lang->getDropdownArray(), 
 					( isset( $_POST['language_id'] ) ? $_POST['language_id'] : $user['language_id'] )
 				)
-			)
-		);
-
-		//-----------------------------------------
-		// Next set, Password fieldset
-		//-----------------------------------------
-
-		$html .= $this->html->endFieldset();
-
-		$html .= $this->html->startFieldset( $this->lang->getString('accounts_form_pass_title') );
-
-		//-----------------------------------------
-
-		// Add instruction for an edit that the password fields are not required
-		if ( $type == "edit" )
-		{
-			$html .= $this->html->addTdBasic( $this->lang->getString('accounts_form_pass_edit') );
-		}
-
-		$html .= $this->html->addTdRow(
-			array(
-				$this->lang->getString('accounts_form_pass'),
-				$this->html->formInput( 'password_new', "", "password" )
-			)
-		);
-
-		$html .= $this->html->addTdRow(
-			array(
-				$this->lang->getString('accounts_form_pass_confirm'),
-				$this->html->formInput( 'password_confirm', "", "password" )
-				
 			)
 		);
 

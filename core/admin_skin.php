@@ -486,7 +486,7 @@ class AdminSkin extends Command
 		$value = str_replace("<br>",   "\n", $value);
 		$value = str_replace("<br />", "\n", $value);
 
-		return "<textarea name='{$name}'>{$value}</textarea>
+		return "<textarea name='{$name}' id='{$name}'>{$value}</textarea>
 <script type='text/javascript'>\n\tCKEDITOR.replace( '{$name}' );\n</script>";
 
 	}

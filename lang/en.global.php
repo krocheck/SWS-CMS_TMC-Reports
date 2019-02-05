@@ -2,12 +2,12 @@
 
 $lang = array();
 
-$lang['site_title']                    = "Stubby's Stub Club";
-$lang['program_title']                 = "Stubby's Stub Club System";
+$lang['site_title']                    = "Tri-Marq Reports";
+$lang['program_title']                 = "Tri-Marq Reports System";
 $lang['admin']                         = "Control Panel";
 $lang['public']                        = "Public Site";
 $lang['title_sep']                     = " | ";
-$lang['copyright']                     = '&copy; 2010-'.date("Y").' All rights reserved. Stubby\'s Pub &amp; Grub &bull; 2060 North Humboldt Avenue &bull; Milwaukee, WI 53212';
+$lang['copyright']                     = '&copy; '.date("Y").' All rights reserved. Tri-Marq Communications, Inc.';
 
 $lang['accounts']                      = "Account Management";
 $lang['languages']                     = "Language Management";
@@ -16,12 +16,8 @@ $lang['beers']                         = "Beers";
 $lang['full_menu']                     = "Full Menu";
 $lang['category']                      = "Sales Categories";
 $lang['discount']                      = "Discounts";
-$lang['transactions']                  = "Transactions";
-$lang['pending']                      = "Pending Transactions";
-$lang['nonregistered']                 = "Non-Registered Club IDs";
-$lang['rewards']                       = "Rewards";
 $lang['settings']                      = "System Settings";
-$lang['toast_data']                    = "Toast Data";
+$lang['asana_data']                    = "Asana Data";
 $lang['transfers']                     = "Data Logs";
 
 $lang['javascript']                    = "* This site requires Javascript to be enabled";
@@ -35,11 +31,10 @@ $lang['invalid_email']                 = "Please enter a valid email address.";
 
 $lang['home']                          = "Home";
 $lang['logged_in']                     = "Logged in:";
-$lang['login_email']                   = "E-mail Address:";
+$lang['login_email']                   = "Username:";
 $lang['login_password']                = "Password:";
 $lang['login_submit']                  = "Log In";
 $lang['login_title']                   = "Please Log In";
-$lang['register_title']                = "Activate Account";
 $lang['logout']                        = "Log Out";
 $lang['login']                         = "Log In";
 

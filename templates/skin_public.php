@@ -58,55 +58,6 @@ return $HTML;
 }
 
 //===========================================================================
-// Login Form
-//===========================================================================
-public function loginForm( $hiddenInputs )
-{
-$HTML = "";
-//--starthtml--//
-
-$HTML .= <<<EOF
-	<div id='login'>
-		<form action="./" method="post" id="login" name="name">
-			<input type="hidden" name="login" value="true" />
-
-EOF;
-
-foreach( $hiddenInputs as $k => $v )
-{
-
-$HTML .= <<<EOF
-			<input type="hidden" name="{$k}" value="{$v}" />
-
-EOF;
-
-}
-
-$HTML .= <<<EOF
-			<div id='login-head'>STUB CLUB MEMEBER SIGN IN</div><br />
-			<label class='text'>E-mail Address: </label>
-			<input type="text" id="email" name="email" maxlength="150" width="40" tabindex="1" value="" class='text' /><br />
-			<label class='text'>Password: </label>
-			<input type="password" id="password" name="password" maxlength="150" width="40" tabindex="2" value="" class='text' /><br />
-			<br />
-			<input type="image" id="submit" name="submit" tabindex="4" src="{$this->registry->getConfig('base_url')}/images/signin.png" alt="{$this->lang->getString('login_submit')}" />
-			<input type="checkbox" name="remember" value="1" id='remember' class='check' tabindex="3" /> Remember Me<br />
-			<a href='{$this->display->buildURL( array( 'register' => 'true' ) )}'>
-				<div id='register-button' class='red-button'>FIRST TIME HERE?<br />REGISTER YOUR ACCOUNT</div>
-			</a>
-		</form>
-	</div>
-	<a href="{$this->registry->getConfig('base_url')}">
-		<div id='guest-login' class='red-button'>I&#39;M NOT A MEMBER BUT I WANT TO SEE YOUR BEER</div>
-	</a>
-
-EOF;
-
-//--endhtml--//
-return $HTML;
-}
-
-//===========================================================================
 // Navigation
 //===========================================================================
 public function navigationWrapper( $urls, $indent = "				", $location = 'outer' )

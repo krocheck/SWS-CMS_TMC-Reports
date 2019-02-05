@@ -143,7 +143,7 @@ class Login extends Command
 	protected function showLogin()
 	{
 		$this->display->setTitle( $this->lang->getString( 'login_title' ) );
-		$this->display->setContent( $this->display->compiledTemplates('skin_'.SWS_THIS_APPLICATION)->loginForm( $this->registry->filterInputsToKeep() ) );
+		$this->display->setContent( $this->display->compiledTemplates('skin_global')->loginForm( $this->registry->filterInputsToKeep() ) );
 
 		$this->display->doOutput();
 	}

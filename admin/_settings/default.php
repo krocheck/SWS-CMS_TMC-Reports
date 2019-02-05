@@ -135,18 +135,14 @@ class AdminSettings extends Command
 		$settings['cookie_path']            = trim( $this->input['cookie_path'] );
 		$settings['cookie_domain']          = trim( $this->input['cookie_domain'] );
 		$settings['cookie_prefix']          = trim( $this->input['cookie_prefix'] );
-		$settings['untappd_url']            = trim( $this->input['untappd_url'] );
-		$settings['untappd_account']        = trim( $this->input['untappd_account'] );
-		$settings['untappd_read_only']      = trim( $this->input['untappd_read_only'] );
-		$settings['untappd_read_write']     = trim( $this->input['untappd_read_write'] );
-		$settings['toast_url']              = trim( $this->input['toast_url'] );
-		$settings['toast_client_id']        = trim( $this->input['toast_client_id'] );
-		$settings['toast_location']         = trim( $this->input['toast_location'] );
-		$settings['toast_token']            = trim( $this->input['toast_token'] );
-		$settings['toast_auth']             = trim( $this->input['toast_auth'] );
-		$settings['toast_orders']           = trim( $this->input['toast_orders'] );
-		$settings['toast_config']           = trim( $this->input['toast_config'] );
-		$settings['toast_crm']              = trim( $this->input['toast_crm'] );
+		$settings['asana_url']              = trim( $this->input['asana_url'] );
+		$settings['asana_client_id']        = trim( $this->input['asana_client_id'] );
+		$settings['asana_location']         = trim( $this->input['asana_location'] );
+		$settings['asana_token']            = trim( $this->input['asana_token'] );
+		$settings['asana_auth']             = trim( $this->input['asana_auth'] );
+		$settings['asana_orders']           = trim( $this->input['asana_orders'] );
+		$settings['asana_config']           = trim( $this->input['asana_config'] );
+		$settings['asana_crm']              = trim( $this->input['asana_crm'] );
 
 		//--------------------------------------------
 		// Checks...
@@ -358,7 +354,7 @@ class AdminSettings extends Command
 
 		$html .= $this->html->endFieldset();
 
-		$html .= $this->html->startFieldset( $this->lang->getString('settings_fieldset_untappd') );
+		$html .= $this->html->startFieldset( $this->lang->getString('settings_fieldset_asana') );
 
 		//-----------------------------------------
 		// Form elements
@@ -366,97 +362,57 @@ class AdminSettings extends Command
 
 		$html .= $this->html->addTdRow(
 			array(
-				$this->lang->getString('settings_untappd_url'),
-				$this->html->formInput( 'untappd_url', $this->registry->txtStripslashes( $_POST['untappd_url'] ? $_POST['untappd_url'] : $settings['untappd_url'] ) )
+				$this->lang->getString('settings_asana_url'),
+				$this->html->formInput( 'asana_url', $this->registry->txtStripslashes( $_POST['asana_url'] ? $_POST['asana_url'] : $settings['asana_url'] ) )
 			)
 		);
 
 		$html .= $this->html->addTdRow(
 			array(
-				$this->lang->getString('settings_untappd_account'),
-				$this->html->formInput( 'untappd_account', $this->registry->txtStripslashes( $_POST['untappd_account'] ? $_POST['untappd_account'] : $settings['untappd_account'] ) )
+				$this->lang->getString('settings_asana_client_id'),
+				$this->html->formInput( 'asana_client_id', $this->registry->txtStripslashes( $_POST['asana_client_id'] ? $_POST['asana_client_id'] : $settings['asana_client_id'] ) )
 			)
 		);
 
 		$html .= $this->html->addTdRow(
 			array(
-				$this->lang->getString('settings_untappd_read_only'),
-				$this->html->formInput( 'untappd_read_only', $this->registry->txtStripslashes( $_POST['untappd_read_only'] ? $_POST['untappd_read_only'] : $settings['untappd_read_only'] ) )
+				$this->lang->getString('settings_asana_location'),
+				$this->html->formInput( 'asana_location', $this->registry->txtStripslashes( $_POST['asana_location'] ? $_POST['asana_location'] : $settings['asana_location'] ) )
 			)
 		);
 
 		$html .= $this->html->addTdRow(
 			array(
-				$this->lang->getString('settings_untappd_read_write'),
-				$this->html->formInput( 'untappd_read_write', $this->registry->txtStripslashes( $_POST['untappd_read_write'] ? $_POST['untappd_read_write'] : $settings['untappd_read_write'] ) )
-			)
-		);
-
-		//-----------------------------------------
-		// End table and form
-		//-----------------------------------------
-
-		$html .= $this->html->endFieldset();
-
-		$html .= $this->html->startFieldset( $this->lang->getString('settings_fieldset_toast') );
-
-		//-----------------------------------------
-		// Form elements
-		//-----------------------------------------
-
-		$html .= $this->html->addTdRow(
-			array(
-				$this->lang->getString('settings_toast_url'),
-				$this->html->formInput( 'toast_url', $this->registry->txtStripslashes( $_POST['toast_url'] ? $_POST['toast_url'] : $settings['toast_url'] ) )
+				$this->lang->getString('settings_asana_token'),
+				$this->html->formInput( 'asana_token', $this->registry->txtStripslashes( $_POST['asana_token'] ? $_POST['asana_token'] : $settings['asana_token'] ) )
 			)
 		);
 
 		$html .= $this->html->addTdRow(
 			array(
-				$this->lang->getString('settings_toast_client_id'),
-				$this->html->formInput( 'toast_client_id', $this->registry->txtStripslashes( $_POST['toast_client_id'] ? $_POST['toast_client_id'] : $settings['toast_client_id'] ) )
+				$this->lang->getString('settings_asana_auth'),
+				$this->html->formInput( 'asana_auth', $this->registry->txtStripslashes( $_POST['asana_auth'] ? $_POST['asana_auth'] : $settings['asana_auth'] ) )
 			)
 		);
 
 		$html .= $this->html->addTdRow(
 			array(
-				$this->lang->getString('settings_toast_location'),
-				$this->html->formInput( 'toast_location', $this->registry->txtStripslashes( $_POST['toast_location'] ? $_POST['toast_location'] : $settings['toast_location'] ) )
+				$this->lang->getString('settings_asana_orders'),
+				$this->html->formInput( 'asana_orders', $this->registry->txtStripslashes( $_POST['asana_orders'] ? $_POST['asana_orders'] : $settings['asana_orders'] ) )
 			)
 		);
 
 		$html .= $this->html->addTdRow(
 			array(
-				$this->lang->getString('settings_toast_token'),
-				$this->html->formInput( 'toast_token', $this->registry->txtStripslashes( $_POST['toast_token'] ? $_POST['toast_token'] : $settings['toast_token'] ) )
+				$this->lang->getString('settings_asana_config'),
+				$this->html->formInput( 'asana_config', $this->registry->txtStripslashes( $_POST['asana_config'] ? $_POST['asana_config'] : $settings['asana_config'] ) )
 			)
 		);
 
 		$html .= $this->html->addTdRow(
 			array(
-				$this->lang->getString('settings_toast_auth'),
-				$this->html->formInput( 'toast_auth', $this->registry->txtStripslashes( $_POST['toast_auth'] ? $_POST['toast_auth'] : $settings['toast_auth'] ) )
-			)
-		);
-
-		$html .= $this->html->addTdRow(
-			array(
-				$this->lang->getString('settings_toast_orders'),
-				$this->html->formInput( 'toast_orders', $this->registry->txtStripslashes( $_POST['toast_orders'] ? $_POST['toast_orders'] : $settings['toast_orders'] ) )
-			)
-		);
-
-		$html .= $this->html->addTdRow(
-			array(
-				$this->lang->getString('settings_toast_config'),
-				$this->html->formInput( 'toast_config', $this->registry->txtStripslashes( $_POST['toast_config'] ? $_POST['toast_config'] : $settings['toast_config'] ) )
-			)
-		);
-
-		$html .= $this->html->addTdRow(
-			array(
-				$this->lang->getString('settings_toast_crm'),
-				$this->html->formInput( 'toast_crm', $this->registry->txtStripslashes( $_POST['toast_crm'] ? $_POST['toast_crm'] : $settings['toast_crm'] ) )
+				$this->lang->getString('settings_asana_crm'),
+				$this->html->formInput( 'asana_crm', $this->registry->txtStripslashes( $_POST['asana_crm'] ? $_POST['asana_crm'] : $settings['asana_crm'] ) )
 			)
 		);
 

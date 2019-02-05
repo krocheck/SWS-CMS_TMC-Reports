@@ -142,7 +142,7 @@ class User
 	 */
 	public static function create( $params )
 	{
-		$fieldList = array( 'first_name', 'last_name', 'email', 'email_alerts', 'type', 'language_id', 'password', 'pass_hash' );
+		$fieldList = array( 'first_name', 'last_name', 'email', 'email_alerts', 'type', 'language_id' );
 		$keys = "";
 		$values = "";
 		
@@ -184,17 +184,6 @@ class User
 		);
 		
 		return TRUE;
-	}
-	/**
-	 * Returns the club id
-	 *
-	 * @return int the club id
-	 * @access public
-	 * @since 1.0.0
-	 */
-	public function getClubID()
-	{
-		return $this->clubID;
 	}
 
 	public static function getDropdownArray( $where = '', $order = '', $key = 'user_id', $all = FALSE )
@@ -465,8 +454,6 @@ class User
 		$perm                = Registry::$instance->txtStripslashes( trim( Registry::$instance->input['type'] ) );
 		$languageID          = intval( Registry::$instance->input['language_id'] );
 		$emailAlerts         = intval( Registry::$instance->input['email_alerts'] );
-		$passwordNew         = Registry::$instance->txtStripslashes( trim(Registry::$instance->input['password_new'] ) );
-		$passwordConfirm     = Registry::$instance->txtStripslashes( trim(Registry::$instance->input['password_confirm'] ) );
 
 		$account             = array();
 
@@ -500,12 +487,6 @@ class User
 			{
 				return('invalid_id');
 			}
-
-			// If they provided a new password, the two password fields must match
-			if ( strlen( $passwordNew ) > 0 && $passwordNew != $passwordConfirm )
-			{
-				return('password_no_match');
-			}
 		}
 
 		// Make sure the necessary fields were filled out
@@ -518,12 +499,6 @@ class User
 		if ( $type == 'add' && $clubID == 0 )
 		{
 			return('incomplete_form');
-		}
-
-		// For a new account, there must be a password and the two fields must match
-		if ( $type == 'add' && ( ! strlen( $passwordNew ) > 0 || $passwordNew != $passwordConfirm ) )
-		{
-			return('password_no_match');
 		}
 
 		// For a new account, there must be a password and the two fields must match
@@ -571,12 +546,6 @@ class User
 		// If this is a new account ...
 		if ( $type == 'add' )
 		{
-			// Create the password hash
-			$array['pass_hash'] = md5( md5( $array['email'] ) . md5( time() ) );
-
-			// Generate the password
-			$array['password'] = md5( md5( $passwordNew ) . $array['pass_hash'] );
-
 			// Add user type if not set
 			if ( $array['type'] == '' || SWS_THIS_APPLICATION == 'api' )
 			{
@@ -612,16 +581,6 @@ class User
 				unset( $array['type'] );
 			}
 
-			// If there is a new password ...
-			if ( strlen( $passwordNew ) > 0 )
-			{
-				// Create the password hash
-				$array['pass_hash'] = md5( md5( $array['email'] ) . md5( time() ) );
-
-				// Generate the password
-				$array['password'] = md5( md5( $passwordNew ) . $array['pass_hash'] );
-			}
-
 			// Set the user id in the save array
 			$array['user_id'] = $userID;
 
@@ -648,7 +607,7 @@ class User
 	 */
 	public static function update( $params )
 	{
-		$fieldList = array( 'first_name', 'last_name', 'email', 'email_alerts', 'type', 'language_id', 'password', 'pass_hash' );
+		$fieldList = array( 'first_name', 'last_name', 'email', 'email_alerts', 'type', 'language_id' );
 		$values = "";
 		$out = FALSE;
 		

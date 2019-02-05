@@ -1,4 +1,4 @@
-<?php
+he<?php
 
 /**
  * SWS-CMS System
@@ -99,6 +99,14 @@ class Registry
 	 * @since 1.0.0
 	 */
 	public    $input;
+	/**
+	 * The headers from the session
+	 *
+	 * @access public
+	 * @var array
+	 * @since 1.0.0
+	 */
+	public    $headers;
 	/**
 	 * The settings group from the database
 	 *

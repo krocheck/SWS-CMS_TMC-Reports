@@ -1241,15 +1241,18 @@ class PageController extends Command
 	 */
 	public function loadPages()
 	{
-		foreach( $this->pageCache['root'] as $k => $v )
+		if ( isset( $this->pageCache['root'] ) && is_array( $this->pageCache['root'] ) )
 		{
-			$v['controller'] = $this;
-
-			if ( isset( $this->types[ $v['type'] ] ) )
+			foreach( $this->pageCache['root'] as $k => $v )
 			{
-				$this->pages[ $v['page_id'] ] = new $this->types[ $v['type'] ][0]();
-				$this->pages[ $v['page_id'] ]->execute( $this->registry, $v );
-				$this->pages[ $v['page_id'] ]->loadChildren( $this->pageCache, $this->types );
+				$v['controller'] = $this;
+
+				if ( isset( $this->types[ $v['type'] ] ) )
+				{
+					$this->pages[ $v['page_id'] ] = new $this->types[ $v['type'] ][0]();
+					$this->pages[ $v['page_id'] ]->execute( $this->registry, $v );
+					$this->pages[ $v['page_id'] ]->loadChildren( $this->pageCache, $this->types );
+				}
 			}
 		}
 	}
