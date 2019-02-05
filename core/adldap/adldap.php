@@ -63,7 +63,6 @@ class AdldapAPI extends Command
 			$filter ="(sAMAccountName={$username})";
 			$result = ldap_search( $ldap, "OU=Employees,OU=Accounts,DC=trimarq,DC=local", $filter );
 
-			ldap_sort( $ldap, $result, "sn" );
 			$info = ldap_get_entries( $ldap, $result );
 
 			if( isset( $info['count'] ) && $info['count'] > 0 )

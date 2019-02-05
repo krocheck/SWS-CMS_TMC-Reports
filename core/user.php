@@ -341,7 +341,7 @@ class User
 			}
 			else
 			{
-				$row = [ 'first_name' => $db->getFirstName(), 'last_name' => $db->getLastName(), 'user_id' => 0 ];
+				$row = [ 'first_name' => $ad->getFirstName(), 'last_name' => $ad->getLastName(), 'user_id' => 0 ];
 
 				if ( User::create( $row ) )
 				{
