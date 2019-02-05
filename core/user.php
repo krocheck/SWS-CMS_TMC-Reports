@@ -317,26 +317,37 @@ class User
 		$passCheck = '';
 
 		Registry::$instance->getDB()->query(
-			"SELECT u.user_id, u.pass_hash
+			"SELECT u.user_id
 				FROM user u
 				WHERE u.email = '{$email}';"
 		);
 
 		$check = Registry::$instance->getDB()->fetchRow();
+		$ad    = Registry::$instance->getClass('AdldapAPI');
 
-		if ( is_array( $check ) && isset( $check['user_id'] ) && isset( $check['pass_hash'] ) && strlen( $check['pass_hash'] ) == 32 )
+		if ( $ad->doLogin( $email, $password ) )
 		{
-			$passCheck = md5( md5( $email ) . md5( md5( $password ) . $check['pass_hash'] ) );
+			if ( is_array( $check ) && isset( $check['user_id'] ) )
+			{
+				Registry::$instance->getDB()->query(
+					"SELECT u.user_id, u.first_name, u.last_name, u.email, u.language_id, u.type,
+						s.session_id, s.session_start, s.last_activity, s.ip_address
+						FROM user u
+						LEFT JOIN session s ON u.user_id = s.user_id AND s.application = '".SWS_THIS_APPLICATION."'
+						WHERE u.email = '{$email}';"
+				);
 
-			Registry::$instance->getDB()->query(
-				"SELECT u.user_id, u.first_name, u.last_name, u.email, u.language_id, u.type,
-					s.session_id, s.session_start, s.last_activity, s.ip_address
-					FROM user u
-					LEFT JOIN session s ON u.user_id = s.user_id AND s.application = '".SWS_THIS_APPLICATION."'
-					WHERE u.email = '{$email}' AND u.password = '{$passCheck}';"
-			);
+				$row = Registry::$instance->getDB()->fetchRow();
+			}
+			else
+			{
+				$row = [ 'first_name' => $db->getFirstName(), 'last_name' => $db->getLastName(), 'user_id' => 0 ];
 
-			$row = Registry::$instance->getDB()->fetchRow();
+				if ( User::create( $row ) )
+				{
+					$row['user_id'] = Registry::$instance->getDB()->getInsertID();
+				}
+			}
 
 			if ( SWS_THIS_APPLICATION == 'public' )
 			{

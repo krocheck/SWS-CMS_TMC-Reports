@@ -397,6 +397,10 @@ class Registry
 			{
 				$filePath = SWS_JS_PATH . 'calendar/classes/tc_calendar.php';
 			}
+			else if ( $className == 'AdldapAPI' )
+			{
+				$filePath = SWS_CORE_PATH . 'adldap/adldap.php';
+			}
 			else
 			{
 				$this->error->raiseError( 'class_missing', TRUE );

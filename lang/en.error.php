@@ -31,6 +31,7 @@ $errorCodes['languages_lang_exists']             = "That language already exists
 $errorCodes['languages_lang_not_created']        = "The language was not created.  Please alert the administrator!";
 $errorCodes['languages_lang_not_updated']        = "The language changes were not saved.  Please alert the administrator!";
 $errorCodes['languages_lang_updated']            = "The language changes were saved successfully.";
+$errorCodes['ldap_connect_failed']               = "Connection to the login server failed.";
 $errorCodes['logout_success']                    = "You have been logged out.";
 $errorCodes['no_permission']                     = "Oops!  The page you are looking for cannot be found.  <a href='javascript:history.back()'>Click here</a> to go back or <a href='{$this->registry->getConfig('base_url')}'>visit our home page</a>.";
 $errorCodes['not_found']                         = "Oops!  The page you are looking for cannot be found.  <a href='javascript:history.back()'>Click here</a> to go back or <a href='{$this->registry->getConfig('base_url')}'>visit our home page</a>.";

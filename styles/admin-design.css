@@ -283,13 +283,13 @@ div.title h1
 div.topbanner
 {
 	margin: 0;
-	padding: 10px 0 0 0;
+	padding: 0;
 	height:125px;
 }
 
 div.topbanner img
 {
-	padding: 0;
+	padding: 15px 0 0 0;
 }
 
 div.control-panel
