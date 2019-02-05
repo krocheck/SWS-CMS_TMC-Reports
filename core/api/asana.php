@@ -18,10 +18,8 @@
 class AsanaAPI extends Command
 {
 	protected $apiURL = "";
-	protected $clientID = "";
 	protected $endpoints = array();
 	protected $httpCode;
-	protected $location = "";
 	protected $token = "";
 	protected $userAgent = "TrimarqReports-API-1.0";
 
@@ -36,77 +34,26 @@ class AsanaAPI extends Command
 	protected function doExecute( $params )
 	{
 		$this->apiURL = $this->registry->getSetting('asana_url');
-		$this->clientID = $this->registry->getSetting('asana_client_id');
 
 		$this->endpoints = array(
-			'auth'    => $this->registry->getSetting('asana_auth'),
 			'orders'  => $this->registry->getSetting('asana_orders'),
 			'config'  => $this->registry->getSetting('asana_config'),
 			'crm'     => $this->registry->getSetting('asana_crm')
 		);
 
-		$this->location = $this->registry->getSetting('asana_location');
 		$this->token = $this->registry->getSetting('asana_token');
 	}
-
-	/**
-	 * CURL authentication scheme
-	 *
-	 * @return bool result
-	 * @access private
-	 * @since 1.0.0
-	 */
-	private function auth()
-	{
-		$out = false;
-
-		$curl2 = curl_init();
-		$url = $this->apiURL . $this->endpoints['auth'];
-		$parameters = "grant_type=client_credentials&client_id={$this->clientID}&client_secret={$this->config['asana_secret']}";
-
-		curl_setopt($curl2, CURLOPT_POST, true);
-		curl_setopt($curl2, CURLOPT_POSTFIELDS, $parameters);
-
-		curl_setopt($curl2, CURLOPT_URL, $url);
-		curl_setopt($curl2, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($curl2, CURLOPT_SSL_VERIFYPEER, FALSE);
-		curl_setopt($curl2, CURLOPT_SSL_VERIFYHOST, 2);
-		curl_setopt($curl2, CURLOPT_USERAGENT, $this->userAgent);
-		$result = curl_exec($curl2);
-
-		$httpCode = curl_getinfo($curl2, CURLINFO_HTTP_CODE);
-		$this->http_code = $httpCode;
-
-		if ( $httpCode == 200 )
-		{
-			$result = json_decode( $result, TRUE );
-
-			if ( is_array( $result ) & isset( $result['access_token'] ) )
-			{
-				$this->token = $result['access_token'];
-				$this->registry->updateSetting( 'asana_token', $this->token );
-				$out = TRUE;
-			}
-		}
-		else
-		{
-			$this->display->addDebug( array( 'url' => $url, 'params' => $parameters, 'http_code' => $httpCode, 'result' => $result ) );
-		}
-
-		return $out;
- 	}
 
 	/**
 	 * Basic CURL request which connects to the Asana API and returns the result
 	 *
 	 * @param $endpoint string the endpoint being used
 	 * @param $method string the addtional query string
-	 * @param $break bool whether or not to break recurrsion
 	 * @return bool result
 	 * @access protected
 	 * @since 1.0.0
 	*/
-	protected function callGet( $endpoint, $method, $break = FALSE )
+	protected function callGet( $endpoint, $method )
 	{
 		$out = array();
 
@@ -114,7 +61,7 @@ class AsanaAPI extends Command
 		$url = $this->apiURL . $this->endpoints[ $endpoint ] . $method;
 
 		curl_setopt($curl2, CURLOPT_URL, $url);
-		curl_setopt($curl2, CURLOPT_HTTPHEADER, array( "Content-Type: application/json", "Authorization: Bearer {$this->token}", "Asana-Restaurant-External-ID: {$this->location}" ) );
+		curl_setopt($curl2, CURLOPT_HTTPHEADER, array( "Content-Type: application/json", "Authorization: Bearer {$this->token}" ) );
 		curl_setopt($curl2, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($curl2, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($curl2, CURLOPT_SSL_VERIFYHOST, 2);
@@ -133,13 +80,6 @@ class AsanaAPI extends Command
 				$out = $result;
 			}
 		}
-		else if ( $httpCode == 401 && $break == FALSE )
-		{
-			if ( $this->auth() )
-			{
-				$out = $this->callGet( $endpoint, $method, TRUE );
-			}
-		}
 		else
 		{
 			$this->display->addDebug( array( 'url' => $url, 'http_code' => $httpCode, 'result' => $result ) );
@@ -153,12 +93,11 @@ class AsanaAPI extends Command
 	 *
 	 * @param $endpoint string the endpoint being used
 	 * @param $method string the addtional query string
-	 * @param $break bool whether or not to break recurrsion
 	 * @return bool result
 	 * @access protected
 	 * @since 1.0.0
 	*/
-	protected function callPost( $endpoint, $method, $params, $break = FALSE )
+	protected function callPost( $endpoint, $method, $params )
 	{
 		$out = array();
 
@@ -180,7 +119,7 @@ class AsanaAPI extends Command
 		curl_setopt($curl2, CURLOPT_POSTFIELDS, $parameters);
 
 		curl_setopt($curl2, CURLOPT_URL, $url);
-		curl_setopt($curl2, CURLOPT_HTTPHEADER, array( "Authorization: Bearer {$this->token}", "Asana-Restaurant-External-ID: {$this->location}" ) );
+		curl_setopt($curl2, CURLOPT_HTTPHEADER, array( "Authorization: Bearer {$this->token}" ) );
 		curl_setopt($curl2, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($curl2, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($curl2, CURLOPT_SSL_VERIFYHOST, 2);
@@ -197,13 +136,6 @@ class AsanaAPI extends Command
 			if ( is_array( $result ) && count( $result ) > 0 )
 			{
 				$out = $result;
-			}
-		}
-		else if ( $httpCode == 401 && $break == FALSE )
-		{
-			if ( $this->auth() )
-			{
-				$out = $this->callGet( $endpoint, $method, $params, TRUE );
 			}
 		}
 		else

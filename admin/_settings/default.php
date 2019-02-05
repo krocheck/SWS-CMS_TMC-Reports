@@ -62,9 +62,9 @@ class AdminSettings extends Command
 		{
 			switch( $this->input['com'] )
 			{
-				case 'toast':
-					require_once( SWS_ROOT_PATH . 'admin/_settings/toast.php' );
-					$module = new AdminToast();
+				case 'asana':
+					require_once( SWS_ROOT_PATH . 'admin/_settings/asana.php' );
+					$module = new AdminAsana();
 					$module->execute( $this->registry );
 					break;
 				case 'transfers':
