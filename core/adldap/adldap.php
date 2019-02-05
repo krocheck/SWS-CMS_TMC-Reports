@@ -66,7 +66,7 @@ class AdldapAPI extends Command
 			ldap_sort( $ldap, $result, "sn" );
 			$info = ldap_get_entries( $ldap, $result );
 
-			if( isset( $info['count'] && $info['count'] > 0 )
+			if( isset( $info['count'] ) && $info['count'] > 0 )
 			{
 				$this->user = $info[0];
 				$out = true;
