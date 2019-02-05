@@ -187,6 +187,18 @@ class Database
 	}
 
 	/**
+	 * Get the connection
+	 *
+	 * @return array the connection
+	 * @access public
+	 * @since 1.0.0
+	 */
+	public function getConnection()
+	{
+		return $this->connectionID;
+	}
+
+	/**
 	 * Retrieve the auto_increment ID from a query
 	 *
 	 * @return int the id

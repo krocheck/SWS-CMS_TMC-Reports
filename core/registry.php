@@ -737,8 +737,7 @@ class Registry
 
 		$val = preg_replace( "/&#(\d+?)([^\d;])/i", "&#\\1;\\2", $val );
 
-		// Check to see if the PHP version running is higher than or equal to 4.3.0...
-		$val = mysql_real_escape_string( $val );
+		$val = mysqli_real_escape_string( $this->DB->getConnection(), $val );
 
 		return $val;
 	}
