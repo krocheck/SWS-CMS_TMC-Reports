@@ -143,7 +143,7 @@ class AdldapAPI extends Command
 					break;
 				echo "<p>You are accessing <strong> ". $info[$i]["sn"][0] .", " . $info[$i]["givenname"][0] ."</strong><br /> (" . $info[$i]["samaccountname"][0] .")</p>\n";
 				echo '<pre>';
-				var_dump($info);
+				print_r($info);
 				echo '</pre>';
 				$userDn = $info[$i]["distinguishedname"][0]; 
 			}
