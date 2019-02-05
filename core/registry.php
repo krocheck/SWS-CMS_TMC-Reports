@@ -1,4 +1,4 @@
-he<?php
+<?php
 
 /**
  * SWS-CMS System
