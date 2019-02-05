@@ -105,7 +105,6 @@ class User
 		$this->registry = $registry;
 
 		$this->id             = $dbRow['user_id'];
-		$this->clubID         = $dbRow['club_id'];
 		$this->firstName      = $dbRow['first_name'];
 		$this->lastName       = $dbRow['last_name'];
 		$this->email          = $dbRow['email'];
@@ -143,7 +142,7 @@ class User
 	 */
 	public static function create( $params )
 	{
-		$fieldList = array( 'first_name', 'last_name', 'email', 'email_alerts', 'type', 'language_id', 'password', 'pass_hash', 'club_id' );
+		$fieldList = array( 'first_name', 'last_name', 'email', 'email_alerts', 'type', 'language_id', 'password', 'pass_hash' );
 		$keys = "";
 		$values = "";
 		
@@ -223,7 +222,7 @@ class User
 
 		while( $row = Registry::$instance->DB->fetchRow() )
 		{
-			$out[ $row[ $key ] ] = array( $row[ $key ], sprintf( "%5d - %s, %s", $row['club_id'], $row['last_name'], $row['first_name'] ) );
+			$out[ $row[ $key ] ] = array( $row[ $key ], sprintf( "%s, %s", $row['last_name'], $row['first_name'] ) );
 		}
 		
 		return $out;
@@ -341,7 +340,7 @@ class User
 			$passCheck = md5( md5( $email ) . md5( md5( $password ) . $check['pass_hash'] ) );
 
 			Registry::$instance->getDB()->query(
-				"SELECT u.user_id, u.first_name, u.last_name, u.email, u.language_id, u.type, u.club_id,
+				"SELECT u.user_id, u.first_name, u.last_name, u.email, u.language_id, u.type,
 					s.session_id, s.session_start, s.last_activity, s.ip_address
 					FROM user u
 					LEFT JOIN session s ON u.user_id = s.user_id AND s.application = '".SWS_THIS_APPLICATION."'
@@ -391,7 +390,7 @@ class User
 	public static function getUserBySession( $session )
 	{
 		Registry::$instance->getDB()->query(
-			"SELECT u.user_id, u.first_name, u.last_name, u.email, u.language_id, u.type, u.club_id,
+			"SELECT u.user_id, u.first_name, u.last_name, u.email, u.language_id, u.type,
 				s.session_id, s.session_start, s.last_activity, s.remember, s.ip_address
 				FROM session s
 				LEFT JOIN user u ON u.user_id = s.user_id
@@ -464,7 +463,6 @@ class User
 		$email               = strtolower( Registry::$instance->txtStripslashes( trim( Registry::$instance->input['email'] ) ) );
 		$emailConfirm        = strtolower( Registry::$instance->txtStripslashes( trim( Registry::$instance->input['email_confirm'] ) ) );
 		$perm                = Registry::$instance->txtStripslashes( trim( Registry::$instance->input['type'] ) );
-		$clubID              = intval( Registry::$instance->input['club_id'] );
 		$languageID          = intval( Registry::$instance->input['language_id'] );
 		$emailAlerts         = intval( Registry::$instance->input['email_alerts'] );
 		$passwordNew         = Registry::$instance->txtStripslashes( trim(Registry::$instance->input['password_new'] ) );
@@ -579,9 +577,6 @@ class User
 			// Generate the password
 			$array['password'] = md5( md5( $passwordNew ) . $array['pass_hash'] );
 
-			// Add the Club ID
-			$array['club_id'] = $clubID;
-			
 			// Add user type if not set
 			if ( $array['type'] == '' || SWS_THIS_APPLICATION == 'api' )
 			{
@@ -593,19 +588,10 @@ class User
 
 			$user = Registry::$instance->DB->fetchRow();
 
-			// Make sure this user doesn't already exist ...
-			Registry::$instance->DB->query("SELECT club_id FROM user WHERE club_id = '{$clubID}';");
-
-			$club = Registry::$instance->DB->fetchRow();
-
 			// If they do, throw an error
 			if ( is_array( $user ) && isset( $user['user_id'] ) && $user['user_id'] > 0 )
 			{
 				return('accounts_user_exists');
-			}
-			else if ( $clubID > 0 && is_array( $club ) && isset( $club['club_id'] ) && $club['club_id'] > 0 )
-			{
-				return('accounts_club_exists');
 			}
 			// If they don't, then send a create request to the User class
 			else if ( User::create( $array ) )

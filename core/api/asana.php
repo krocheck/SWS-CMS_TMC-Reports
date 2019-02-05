@@ -4,7 +4,7 @@
  * SWS-CMS System
  *  - Simna Web Services Programming Team
  * 
- * Untappd API Library
+ * Asana API Library
  * Last Updated: $Date: 2010-06-28 21:31:06 -0500 (Mon, 28 Jun 2010) $
  *
  * @author		$Author: krocheck $
@@ -15,22 +15,15 @@
  * @since		1.0.0
  * @version		$Revision: 27 $
  */
-class ToastAPI extends Command
+class AsanaAPI extends Command
 {
 	protected $apiURL = "";
 	protected $clientID = "";
-	private $config = array(
-		'sql_host'        => 'localhost',
-		'sql_database'    => 'stubbysdev_toast1',
-		'sql_user'        => 'stubbysdev_toast',
-		'sql_pass'        => '6D%oZ^o?e^sp'
-	);
 	protected $endpoints = array();
 	protected $httpCode;
 	protected $location = "";
-	private $toastDB;
 	protected $token = "";
-	protected $userAgent = "StubClub-API-1.0";
+	protected $userAgent = "TrimarqReports-API-1.0";
 
 	/**
 	 * The main execute function
@@ -42,22 +35,18 @@ class ToastAPI extends Command
 	 */
 	protected function doExecute( $params )
 	{
-		$this->apiURL = $this->registry->getSetting('toast_url');
-		$this->clientID = $this->registry->getSetting('toast_client_id');
-
-		$this->config['toast_secret'] = urlencode("w8Qvq38y47eN&vbp@SZx");
+		$this->apiURL = $this->registry->getSetting('asana_url');
+		$this->clientID = $this->registry->getSetting('asana_client_id');
 
 		$this->endpoints = array(
-			'auth'    => $this->registry->getSetting('toast_auth'),
-			'orders'  => $this->registry->getSetting('toast_orders'),
-			'config'  => $this->registry->getSetting('toast_config'),
-			'crm'     => $this->registry->getSetting('toast_crm')
+			'auth'    => $this->registry->getSetting('asana_auth'),
+			'orders'  => $this->registry->getSetting('asana_orders'),
+			'config'  => $this->registry->getSetting('asana_config'),
+			'crm'     => $this->registry->getSetting('asana_crm')
 		);
 
-		$this->location = $this->registry->getSetting('toast_location');
-		$this->token = $this->registry->getSetting('toast_token');
-
-		$this->toastDB = new Database( $this->registry, $this->config, 'toast' );
+		$this->location = $this->registry->getSetting('asana_location');
+		$this->token = $this->registry->getSetting('asana_token');
 	}
 
 	/**
@@ -73,7 +62,7 @@ class ToastAPI extends Command
 
 		$curl2 = curl_init();
 		$url = $this->apiURL . $this->endpoints['auth'];
-		$parameters = "grant_type=client_credentials&client_id={$this->clientID}&client_secret={$this->config['toast_secret']}";
+		$parameters = "grant_type=client_credentials&client_id={$this->clientID}&client_secret={$this->config['asana_secret']}";
 
 		curl_setopt($curl2, CURLOPT_POST, true);
 		curl_setopt($curl2, CURLOPT_POSTFIELDS, $parameters);
@@ -95,7 +84,7 @@ class ToastAPI extends Command
 			if ( is_array( $result ) & isset( $result['access_token'] ) )
 			{
 				$this->token = $result['access_token'];
-				$this->registry->updateSetting( 'toast_token', $this->token );
+				$this->registry->updateSetting( 'asana_token', $this->token );
 				$out = TRUE;
 			}
 		}
@@ -108,7 +97,7 @@ class ToastAPI extends Command
  	}
 
 	/**
-	 * Basic CURL request which connects to the Toast API and returns the result
+	 * Basic CURL request which connects to the Asana API and returns the result
 	 *
 	 * @param $endpoint string the endpoint being used
 	 * @param $method string the addtional query string
@@ -125,7 +114,7 @@ class ToastAPI extends Command
 		$url = $this->apiURL . $this->endpoints[ $endpoint ] . $method;
 
 		curl_setopt($curl2, CURLOPT_URL, $url);
-		curl_setopt($curl2, CURLOPT_HTTPHEADER, array( "Content-Type: application/json", "Authorization: Bearer {$this->token}", "Toast-Restaurant-External-ID: {$this->location}" ) );
+		curl_setopt($curl2, CURLOPT_HTTPHEADER, array( "Content-Type: application/json", "Authorization: Bearer {$this->token}", "Asana-Restaurant-External-ID: {$this->location}" ) );
 		curl_setopt($curl2, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($curl2, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($curl2, CURLOPT_SSL_VERIFYHOST, 2);
@@ -160,7 +149,7 @@ class ToastAPI extends Command
 	}
 
 	/**
-	 * Basic CURL post which connects to the Toast API and returns the result
+	 * Basic CURL post which connects to the Asana API and returns the result
 	 *
 	 * @param $endpoint string the endpoint being used
 	 * @param $method string the addtional query string
@@ -191,7 +180,7 @@ class ToastAPI extends Command
 		curl_setopt($curl2, CURLOPT_POSTFIELDS, $parameters);
 
 		curl_setopt($curl2, CURLOPT_URL, $url);
-		curl_setopt($curl2, CURLOPT_HTTPHEADER, array( "Authorization: Bearer {$this->token}", "Toast-Restaurant-External-ID: {$this->location}" ) );
+		curl_setopt($curl2, CURLOPT_HTTPHEADER, array( "Authorization: Bearer {$this->token}", "Asana-Restaurant-External-ID: {$this->location}" ) );
 		curl_setopt($curl2, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($curl2, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($curl2, CURLOPT_SSL_VERIFYHOST, 2);
@@ -253,7 +242,7 @@ class ToastAPI extends Command
 	}
 
 	/**
-	 * Call the Toast API to retrieve the specified Menu Group
+	 * Call the Asana API to retrieve the specified Menu Group
 	 *
 	 * @param $guid string the GUID to query
 	 * @return array the salesCategories
@@ -274,7 +263,7 @@ class ToastAPI extends Command
 	}
 
 	/**
-	 * Call the Toast API to retrieve the specified Menu Group
+	 * Call the Asana API to retrieve the specified Menu Group
 	 *
 	 * @param $guid int the number of results to return
 	 * @oaram $page int the page number
@@ -300,7 +289,7 @@ class ToastAPI extends Command
 	}
 
 	/**
-	 * Call the Toast API to retrieve the specified order
+	 * Call the Asana API to retrieve the specified order
 	 *
 	 * @param $guid string the date/time to return changes after is ISO-8601 format
 	 * @return array the order GUIDs
@@ -321,7 +310,7 @@ class ToastAPI extends Command
 	}
 
 	/**
-	 * Call the Toast API to retrieve the specified orders
+	 * Call the Asana API to retrieve the specified orders
 	 *
 	 * @param $date string the date/time to return changes after in YYYYMMDD format
 	 * @return array the order GUIDs
@@ -345,7 +334,7 @@ class ToastAPI extends Command
 	}
 
 	/**
-	 * Call the Toast API to retrieve the specified orders
+	 * Call the Asana API to retrieve the specified orders
 	 *
 	 * @param $start string the date/time to start the range in ISO-8601 format
 	 * @param $end string the date/time to end the range in ISO-8601 format
@@ -408,16 +397,16 @@ class ToastAPI extends Command
 
 		if ( count( $itemIDs) > 0 || count( $guids ) > 0 )
 		{
-			$this->DB->query("SELECT menu_item_id,toast_guid FROM menu_item WHERE menu_item_id IN('".implode("','",$itemIDs)."') OR toast_guid IN('".implode("','",$guids)."');");
+			$this->DB->query("SELECT menu_item_id,asana_guid FROM menu_item WHERE menu_item_id IN('".implode("','",$itemIDs)."') OR asana_guid IN('".implode("','",$guids)."');");
 
 			if ( $this->DB->getTotalRows() )
 			{
 				while( $row = $this->DB->fetchRow() )
 				{
-					if ( isset( $row['toast_guid'] ) && strlen( $row['toast_guid'] ) > 0 )
+					if ( isset( $row['asana_guid'] ) && strlen( $row['asana_guid'] ) > 0 )
 					{
-						$oldRows[ $row['toast_guid'] ] = $newRows[ $row['toast_guid'] ];
-						unset( $newRows[ $row['toast_guid'] ] );
+						$oldRows[ $row['asana_guid'] ] = $newRows[ $row['asana_guid'] ];
+						unset( $newRows[ $row['asana_guid'] ] );
 					}
 					else if ( isset( $row['menu_item_id'] ) && $row['menu_item_id'] > 0 )
 					{
@@ -437,7 +426,7 @@ class ToastAPI extends Command
 
 		if ( count( $newRows ) > 0 )
 		{
-			$query = "INSERT INTO menu_item (toast_guid,title".($updateTimestamp ? ",last_modified" : '').") VALUES ";
+			$query = "INSERT INTO menu_item (asana_guid,title".($updateTimestamp ? ",last_modified" : '').") VALUES ";
 
 			foreach( $newRows as $row )
 			{
@@ -455,11 +444,11 @@ class ToastAPI extends Command
 			{
 				if ( isset( $row['menu_item_id'] ) && $row['menu_item_id'] > 0 )
 				{
-					$this->DB->query("UPDATE menu_item SET title = \"{$row['title']}\", toast_guid = '{$row['guid']}'".($updateTimestamp ? ", last_modified = NOW()" : '')." WHERE menu_item_id = '{$row['menu_item_id']}';");
+					$this->DB->query("UPDATE menu_item SET title = \"{$row['title']}\", asana_guid = '{$row['guid']}'".($updateTimestamp ? ", last_modified = NOW()" : '')." WHERE menu_item_id = '{$row['menu_item_id']}';");
 				}
 				else if ( isset( $row['guid'] ) && strlen( $row['guid'] ) > 0 )
 				{
-					$this->DB->query("UPDATE menu_item SET title = \"{$row['title']}\"".($updateTimestamp ? ", last_modified = NOW()" : '')." WHERE toast_guid = '{$row['guid']}';");
+					$this->DB->query("UPDATE menu_item SET title = \"{$row['title']}\"".($updateTimestamp ? ", last_modified = NOW()" : '')." WHERE asana_guid = '{$row['guid']}';");
 				}
 			}
 		}
@@ -616,11 +605,11 @@ class ToastAPI extends Command
 
 		if ( count( $guids ) > 0 )
 		{
-			$this->toastDB->query("SELECT order_guid FROM `order` WHERE order_guid IN('".implode("','",$guids)."');");
+			$this->DB->query("SELECT order_guid FROM `order` WHERE order_guid IN('".implode("','",$guids)."');");
 
-			if ( $this->toastDB->getTotalRows() )
+			if ( $this->DB->getTotalRows() )
 			{
-				while( $row = $this->toastDB->fetchRow() )
+				while( $row = $this->DB->fetchRow() )
 				{
 					if ( isset( $row['order_guid'] ) && strlen( $row['order_guid'] ) > 0 )
 					{
@@ -642,14 +631,14 @@ class ToastAPI extends Command
 
 			$query = substr($query,0,-1) . ";";
 
-			$this->toastDB->query( $query );
+			$this->DB->query( $query );
 		}
 
 		if ( count( $oldRows ) > 0 )
 		{
 			foreach( $oldRows as $row )
 			{
-				$this->toastDB->query("UPDATE `order` SET void = '{$row['void']}', deleted = '{$row['deleted']}', business_date = '{$row['business_date']}', opened_date = '{$row['opened_date']}', closed_date = '{$row['closed_date']}' WHERE order_guid = '{$row['order_guid']}';");
+				$this->DB->query("UPDATE `order` SET void = '{$row['void']}', deleted = '{$row['deleted']}', business_date = '{$row['business_date']}', opened_date = '{$row['opened_date']}', closed_date = '{$row['closed_date']}' WHERE order_guid = '{$row['order_guid']}';");
 			}
 		}
 
@@ -659,11 +648,11 @@ class ToastAPI extends Command
 
 		if ( count( $guids ) > 0 )
 		{
-			$this->toastDB->query("SELECT check_guid FROM `check` WHERE check_guid IN('".implode("','",$guids)."');");
+			$this->DB->query("SELECT check_guid FROM `check` WHERE check_guid IN('".implode("','",$guids)."');");
 
-			if ( $this->toastDB->getTotalRows() )
+			if ( $this->DB->getTotalRows() )
 			{
-				while( $row = $this->toastDB->fetchRow() )
+				while( $row = $this->DB->fetchRow() )
 				{
 					if ( isset( $row['check_guid'] ) && strlen( $row['check_guid'] ) > 0 )
 					{
@@ -685,14 +674,14 @@ class ToastAPI extends Command
 
 			$query = substr($query,0,-1) . ";";
 
-			$this->toastDB->query( $query );
+			$this->DB->query( $query );
 		}
 
 		if ( count( $oldRows ) > 0 )
 		{
 			foreach( $oldRows as $row )
 			{
-				$this->toastDB->query("UPDATE `check` SET order_guid = '{$row['order_guid']}', void = '{$row['void']}', deleted = '{$row['deleted']}', opened_date = '{$row['opened_date']}', closed_date = '{$row['closed_date']}', tab_name = \"{$row['tab_name']}\", club_id = '{$row['club_id']}', display_number = '{$row['display_number']}', applied_discounts = \"{$row['applied_discounts']}\" WHERE check_guid = '{$row['check_guid']}';");
+				$this->DB->query("UPDATE `check` SET order_guid = '{$row['order_guid']}', void = '{$row['void']}', deleted = '{$row['deleted']}', opened_date = '{$row['opened_date']}', closed_date = '{$row['closed_date']}', tab_name = \"{$row['tab_name']}\", club_id = '{$row['club_id']}', display_number = '{$row['display_number']}', applied_discounts = \"{$row['applied_discounts']}\" WHERE check_guid = '{$row['check_guid']}';");
 			}
 		}
 
@@ -702,11 +691,11 @@ class ToastAPI extends Command
 
 		if ( count( $guids ) > 0 )
 		{
-			$this->toastDB->query("SELECT selection_guid FROM `selection` WHERE selection_guid IN('".implode("','",$guids)."');");
+			$this->DB->query("SELECT selection_guid FROM `selection` WHERE selection_guid IN('".implode("','",$guids)."');");
 
-			if ( $this->toastDB->getTotalRows() )
+			if ( $this->DB->getTotalRows() )
 			{
-				while( $row = $this->toastDB->fetchRow() )
+				while( $row = $this->DB->fetchRow() )
 				{
 					if ( isset( $row['selection_guid'] ) && strlen( $row['selection_guid'] ) > 0 )
 					{
@@ -728,18 +717,18 @@ class ToastAPI extends Command
 
 			$query = substr($query,0,-1) . ";";
 
-			$this->toastDB->query( $query );
+			$this->DB->query( $query );
 		}
 
 		if ( count( $oldRows ) > 0 )
 		{
 			foreach( $oldRows as $row )
 			{
-				$this->toastDB->query("UPDATE `selection` SET check_guid = '{$row['check_guid']}', item_guid = '{$row['item_guid']}', category_guid = '{$row['category_guid']}', void = '{$row['void']}', created_date = '{$row['created_date']}', price = '{$row['price']}', quantity = '{$row['quantity']}', applied_discounts = \"{$row['applied_discounts']}\" WHERE selection_guid = '{$row['selection_guid']}';");
+				$this->DB->query("UPDATE `selection` SET check_guid = '{$row['check_guid']}', item_guid = '{$row['item_guid']}', category_guid = '{$row['category_guid']}', void = '{$row['void']}', created_date = '{$row['created_date']}', price = '{$row['price']}', quantity = '{$row['quantity']}', applied_discounts = \"{$row['applied_discounts']}\" WHERE selection_guid = '{$row['selection_guid']}';");
 			}
 		}
 
-		$this->toastDB->query("SELECT `selection`.`selection_guid`, `selection`.`item_guid`, `selection`.`category_guid`, 
+		$this->DB->query("SELECT `selection`.`selection_guid`, `selection`.`item_guid`, `selection`.`category_guid`, 
 									IF(`selection`.`void` = 1 OR `check`.`void` = 1 OR `check`.`deleted` = 1 OR `order`.`void` = 1 OR `order`.`deleted` = 1,1,0) AS `void`, 
 									`selection`.`created_date` AS `date_time`, `selection`.`quantity`, `check`.`club_id`, `order`.`business_date`
 								FROM `selection`
@@ -750,9 +739,9 @@ class ToastAPI extends Command
 
 		$closedTransactions = array();
 
-		if ( $this->toastDB->getTotalRows() > 0 )
+		if ( $this->DB->getTotalRows() > 0 )
 		{
-			while( $r = $this->toastDB->fetchRow() )
+			while( $r = $this->DB->fetchRow() )
 			{
 				$closedTransactions[ $r['selection_guid'] ] = array(
 					'selection_guid' => $r['selection_guid'],
@@ -782,10 +771,10 @@ class ToastAPI extends Command
 			$query2 = substr($query2, 0, -1) . ");";
 
 			$this->DB->query( $query );
-			$this->toastDB->query( $query2 );
+			$this->DB->query( $query2 );
 		}
 
-		$this->toastDB->query("SELECT `selection`.`selection_guid`, `selection`.`item_guid`, `selection`.`category_guid`, 
+		$this->DB->query("SELECT `selection`.`selection_guid`, `selection`.`item_guid`, `selection`.`category_guid`, 
 									`selection`.`created_date` AS `date_time`, `check`.`club_id`, `selection`.`quantity`, `selection`.`void`
 								FROM `selection`
 									INNER JOIN `check` ON `selection`.`check_guid`=`check`.`check_guid`
@@ -795,9 +784,9 @@ class ToastAPI extends Command
 
 		$pendingTransactions = array();
 
-		if ( $this->toastDB->getTotalRows() > 0 )
+		if ( $this->DB->getTotalRows() > 0 )
 		{
-			while( $r = $this->toastDB->fetchRow() )
+			while( $r = $this->DB->fetchRow() )
 			{
 				$pendingTransactions[ $r['selection_guid'] ] = array(
 					'selection_guid' => $r['selection_guid'],
@@ -855,7 +844,7 @@ class ToastAPI extends Command
 
 		foreach( $categories as $cat )
 		{
-			$catIDs[] = $cat['toast_guid'];
+			$catIDs[] = $cat['asana_guid'];
 		}
 
 		$catIDs = "'" . implode("','", $catIDs ) . "'";
@@ -880,7 +869,7 @@ class ToastAPI extends Command
 				{
 					foreach( $categories as $cat )
 					{
-						if ( $r['category_guid'] == $cat['toast_guid'] && $cat['type'] == 'tap' )
+						if ( $r['category_guid'] == $cat['asana_guid'] && $cat['type'] == 'tap' )
 						{
 							$excluded[] = $r['transaction_id'];
 							$test = FALSE;
@@ -1046,7 +1035,7 @@ class ToastAPI extends Command
 	}
 
 	/**
-	 * Call the Toast API to retrieve all of Menu Items
+	 * Call the Asana API to retrieve all of Menu Items
 	 *
 	 * @return bool success
 	 * @access public
@@ -1080,7 +1069,7 @@ class ToastAPI extends Command
 	}
 
 	/**
-	 * Call the Toast API to retrieve the specified day's Orders
+	 * Call the Asana API to retrieve the specified day's Orders
 	 *
 	 * @param DateTime $date the date to poll
 	 * @return int count of orders
@@ -1112,7 +1101,7 @@ class ToastAPI extends Command
 	}
 
 	/**
-	 * Call the Toast API to retrieve today's Orders
+	 * Call the Asana API to retrieve today's Orders
 	 *
 	 * @return int count of orders
 	 * @access public
@@ -1140,7 +1129,7 @@ class ToastAPI extends Command
 	}
 
 	/**
-	 * Call the Toast API to retrieve yesterday's Orders
+	 * Call the Asana API to retrieve yesterday's Orders
 	 *
 	 * @return int count of orders
 	 * @access public
@@ -1205,14 +1194,14 @@ class ToastAPI extends Command
 
 				if ( count( $catItems ) > 0 )
 				{
-					$this->DB->query( $updateSalesCategory . $cat['category_id'] . " WHERE toast_guid IN('".implode("','",$catItems)."');");
+					$this->DB->query( $updateSalesCategory . $cat['category_id'] . " WHERE asana_guid IN('".implode("','",$catItems)."');");
 				}
 			}
 		}
 
 		if ( count( $activeItems ) > 0 )
 		{
-			$this->DB->query("UPDATE menu_item SET active = 1 WHERE toast_guid IN('".implode("','",$activeItems)."');");
+			$this->DB->query("UPDATE menu_item SET active = 1 WHERE asana_guid IN('".implode("','",$activeItems)."');");
 		}
 
 		if ( $out > 0 )
@@ -1224,7 +1213,7 @@ class ToastAPI extends Command
 	}
 
 	/**
-	 * Call the Toast API to retrieve the Sales Categories
+	 * Call the Asana API to retrieve the Sales Categories
 	 *
 	 * @return bool success
 	 * @access public
@@ -1260,11 +1249,11 @@ class ToastAPI extends Command
 				{
 					$dbRows[ $row['category_id'] ] = $row;
 					
-					if ( isset( $row['category_id'] ) && isset( $newRows[ $row['toast_guid'] ] ) )
+					if ( isset( $row['category_id'] ) && isset( $newRows[ $row['asana_guid'] ] ) )
 					{
-						$oldRows[ $row['toast_guid'] ] = $newRows[ $row['toast_guid'] ];
-						$oldRows[ $row['toast_guid'] ]['category_id'] = $row['category_id'];
-						unset( $newRows[ $row['toast_guid'] ] );
+						$oldRows[ $row['asana_guid'] ] = $newRows[ $row['asana_guid'] ];
+						$oldRows[ $row['asana_guid'] ]['category_id'] = $row['category_id'];
+						unset( $newRows[ $row['asana_guid'] ] );
 					}
 				}
 			}
@@ -1283,8 +1272,8 @@ class ToastAPI extends Command
 
 				$categoryID = $this->DB->fetchRow();
 
-				$queryInsert = "INSERT INTO menu_category (category_id,title,toast_guid,active,type,position) VALUES ";
-				$queryUpdate = "UPDATE menu_category SET toast_guid = ";
+				$queryInsert = "INSERT INTO menu_category (category_id,title,asana_guid,active,type,position) VALUES ";
+				$queryUpdate = "UPDATE menu_category SET asana_guid = ";
 				
 				foreach( $newRows as $row )
 				{
@@ -1292,7 +1281,7 @@ class ToastAPI extends Command
 					
 					foreach( $dbRows as $test )
 					{
-						if ( $test['toast_guid'] == '' && $test['title'] == $row['name'] )
+						if ( $test['asana_guid'] == '' && $test['title'] == $row['name'] )
 						{
 							$this->DB->query( $queryUpdate . "'{$row['guid']}' WHERE category_id={$test['category_id']};" );
 							$check = true;
@@ -1318,13 +1307,13 @@ class ToastAPI extends Command
 				{
 					if ( $dbRows[ $row['category_id'] ]['title'] <> $row['name'] )
 					{
-						$this->DB->query("UPDATE menu_category SET title = '{$row['name']}' WHERE toast_guid = '{$row['guid']}';");
+						$this->DB->query("UPDATE menu_category SET title = '{$row['name']}' WHERE asana_guid = '{$row['guid']}';");
 					}
 				}
 			}
 
 			$this->DB->query("UPDATE menu_category SET active = 0;");
-			$this->DB->query("UPDATE menu_category SET active = 1 WHERE toast_guid IN('". implode("','", $categoryIDs) ."');");
+			$this->DB->query("UPDATE menu_category SET active = 1 WHERE asana_guid IN('". implode("','", $categoryIDs) ."');");
 
 			$this->cache->update('categories');
 		}
@@ -1333,7 +1322,7 @@ class ToastAPI extends Command
 	}
 
 	/**
-	 * Call the Toast API to retrieve the Discounts
+	 * Call the Asana API to retrieve the Discounts
 	 *
 	 * @return bool success
 	 * @access public
@@ -1364,7 +1353,7 @@ class ToastAPI extends Command
 
 				$discountIDs[]  = $discountID;
 				$newRows[ $discountID ] = array(
-					'toast_guid' => $discountID,
+					'asana_guid' => $discountID,
 					'title' => $discountText,
 					'active' => $active,
 					'amount' => $amount,
@@ -1380,23 +1369,23 @@ class ToastAPI extends Command
 			{
 				while( $row = $this->DB->fetchRow() )
 				{
-					$dbRows[ $row['toast_guid'] ] = $row;
+					$dbRows[ $row['asana_guid'] ] = $row;
 
-					if ( isset( $row['toast_guid'] ) && isset( $newRows[ $row['toast_guid'] ] ) )
+					if ( isset( $row['asana_guid'] ) && isset( $newRows[ $row['asana_guid'] ] ) )
 					{
-						$oldRows[ $row['toast_guid'] ] = $newRows[ $row['toast_guid'] ];
-						unset( $newRows[ $row['toast_guid'] ] );
+						$oldRows[ $row['asana_guid'] ] = $newRows[ $row['asana_guid'] ];
+						unset( $newRows[ $row['asana_guid'] ] );
 					}
 				}
 			}
 
 			if ( count( $newRows ) > 0 )
 			{
-				$query = "INSERT INTO discount (toast_guid,title,active,amount,percentage,type,selection_type,exclude) VALUES ";
+				$query = "INSERT INTO discount (asana_guid,title,active,amount,percentage,type,selection_type,exclude) VALUES ";
 
 				foreach( $newRows as $row )
 				{
-					$query .= "('{$row['toast_guid']}',\"{$row['title']}\",'{$row['active']}','{$row['amount']}','{$row['percentage']}','{$row['type']}','{$row['selection_type']}',0),";
+					$query .= "('{$row['asana_guid']}',\"{$row['title']}\",'{$row['active']}','{$row['amount']}','{$row['percentage']}','{$row['type']}','{$row['selection_type']}',0),";
 				}
 
 				$query = substr($query,0,-1) . ";";
@@ -1408,7 +1397,7 @@ class ToastAPI extends Command
 			{
 				foreach( $oldRows as $row )
 				{
-					$this->DB->query("UPDATE discount SET title = \"{$row['title']}\", active = '{$row['active']}', amount = '{$row['amount']}', percentage = '{$row['percentage']}', type = '{$row['type']}', selection_type = '{$row['selection_type']}' WHERE toast_guid = '{$row['toast_guid']}';");
+					$this->DB->query("UPDATE discount SET title = \"{$row['title']}\", active = '{$row['active']}', amount = '{$row['amount']}', percentage = '{$row['percentage']}', type = '{$row['type']}', selection_type = '{$row['selection_type']}' WHERE asana_guid = '{$row['asana_guid']}';");
 				}
 			}
 
@@ -1419,7 +1408,7 @@ class ToastAPI extends Command
 	}
 
 	/**
-	 * Call the Toast API to retrieve the latest Menu Items
+	 * Call the Asana API to retrieve the latest Menu Items
 	 *
 	 * @return bool success
 	 * @access public
@@ -1449,7 +1438,7 @@ class ToastAPI extends Command
 	}
 
 	/**
-	 * Call the Toast API to retrieve the latest Orders
+	 * Call the Asana API to retrieve the latest Orders
 	 *
 	 * @return bool success
 	 * @access public

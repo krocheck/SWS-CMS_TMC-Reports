@@ -65,41 +65,6 @@ class AdminAccounts extends Command
 		// Declaration for the module
 		$module = NULL;
 
-		if ( ! isset( $this->input['com'] ) )
-		{
-			$this->input['com'] = '';
-		}
-
-		// Decide if a module needs to be loaded
-		// This will need to be fancied up if extra
-		// access levels are added
-		if ( isset( $this->input['com'] ) )
-		{
-			switch( $this->input['com'] )
-			{
-				case 'rewards':
-					require_once( SWS_ROOT_PATH . 'admin/_accounts/rewards.php' );
-					$module = new AdminRewards();
-					$module->execute( $this->registry, $this->types );
-					break;
-				case 'transactions':
-					require_once( SWS_ROOT_PATH . 'admin/_accounts/transactions.php' );
-					$module = new AdminTransactions();
-					$module->execute( $this->registry, $this->types );
-					break;
-				case 'nonregistered':
-					require_once( SWS_ROOT_PATH . 'admin/_accounts/nonregistered.php' );
-					$module = new AdminNonregistered();
-					$module->execute( $this->registry, $this->types );
-					break;
-				case 'pending':
-					require_once( SWS_ROOT_PATH . 'admin/_accounts/pending.php' );
-					$module = new AdminPending();
-					$module->execute( $this->registry, $this->types );
-					break;
-			}
-		}
-
 		if ( ! isset( $this->input['do'] ) )
 		{
 			$this->input['do'] = '';
@@ -125,9 +90,6 @@ class AdminAccounts extends Command
 				break;
 			case 'dodelete':
 				$this->doDelete();
-				break;
-			case 'export':
-				$this->exportCSV();
 				break;
 			case 'view':
 				$this->view();
@@ -174,7 +136,7 @@ class AdminAccounts extends Command
 
 		// Get the user from the database
 		$this->DB->query(
-			"SELECT user_id, first_name, last_name, email, language_id, type, club_id
+			"SELECT user_id, first_name, last_name, email, language_id, type
 				FROM user WHERE user_id = '{$userID}';"
 		);
 
@@ -249,7 +211,7 @@ class AdminAccounts extends Command
 
 		// Get the user form the database
 		$this->DB->query(
-			"SELECT user_id, first_name, last_name, email, language_id, type, club_id
+			"SELECT user_id, first_name, last_name, email, language_id, type
 				FROM user WHERE user_id = '{$userID}';"
 		);
 
@@ -278,51 +240,6 @@ class AdminAccounts extends Command
 
 		// Done, go back to the account list
 		$this->listAccounts();
-	}
-
-	/**
-	 * DExports the user data to CSV file
-	 *
-	 * @return void
-	 * @access protected
-	 * @since 1.0.0
-	 */
-	protected function exportCSV()
-	{
-		//-----------------------------------------
-		// INIT
-		//-----------------------------------------
-
-		$user     = array();
-
-		// Get the user form the database
-		$this->DB->query(
-			"SELECT first_name, last_name, email, club_id
-				FROM user WHERE type = 'user';"
-		);
-
-		$user = $this->DB->fetchRow();
-
-		header( 'Content-Type: text/csv' );
-		header( 'Content-Disposition: attachment;filename=StubClubMembers-'.date('m-d-y').'.csv');
-		$file = fopen('php://output', 'w');
-
-		fputcsv( $file, array("First Name", "Last Name", "E-mail Address", "Company") );
-
-		while( $user = $this->DB->fetchRow() )
-		{
-			$user['first_name'] = htmlspecialchars_decode( ucfirst( $user['first_name'] ) );
-			$user['last_name'] = htmlspecialchars_decode( ucfirst( $user['last_name'] ) );
-			$user['club_id'] = $user['club_id'];
-			fputcsv( $file, $user );
-		}
-
-		fclose( $file );
-		
-		//-----------------------------------------
-
-		// Done
-		exit();
 	}
 
 	/**
@@ -355,7 +272,7 @@ class AdminAccounts extends Command
 		}
 		else if ( isset( $this->input['search'] ) )
 		{
-			$this->error->addErrorLog("Searches must contain at least 3 characters");			
+			$this->error->addErrorLog("Searches must contain at least 3 characters");
 		}
 
 		// Page title
@@ -368,17 +285,15 @@ class AdminAccounts extends Command
 		// Table Headers
 		//-----------------------------------------
 
-		$this->html->td_header[] = array( $this->lang->getString('accounts_head_club')       , "6%" );
-		$this->html->td_header[] = array( $this->lang->getString('accounts_head_name')       , "76%" );
-		$this->html->td_header[] = array( $this->lang->getString('view')                     , "6%" );
-		$this->html->td_header[] = array( $this->lang->getString('edit')                     , "6%" );
-		$this->html->td_header[] = array( $this->lang->getString('delete')                   , "6%" );
+		$this->html->td_header[] = array( $this->lang->getString('accounts_head_name')       , "80%" );
+		$this->html->td_header[] = array( $this->lang->getString('edit')                     , "10%" );
+		$this->html->td_header[] = array( $this->lang->getString('delete')                   , "10%" );
 
 		//-----------------------------------------
 
 		// Create account link
 		$html = "<div style='float:right;'>";
-		
+
 		$html .= $this->html->startForm(
 			array(
 				's'       => $this->user->getSessionID(),
@@ -386,17 +301,17 @@ class AdminAccounts extends Command
 				'module'  => 'accounts'
 			)
 		);
-		
+
 		$html .= "<a href='".$this->display->buildURL( array( 'module' => 'accounts', 'do' => 'export' ), 'admin')."'>Export CSV</a> &bull; ";
 
 		$html .= "<a href='".$this->display->buildURL( array( 'module' => 'accounts', 'com' => 'nonregistered' ), 'admin')."'>{$this->lang->getString('accounts_view_nonregistered')}</a> &bull; ";
-		
+
 		$html .= "<a href='".$this->display->buildURL( array( 'module' => 'accounts', 'do' => 'add' ), 'admin')."'>{$this->lang->getString('accounts_create_new')}</a> &bull; ";
 
 		$html .= $this->html->formInput( 'search', $this->registry->txtStripslashes( isset( $_POST['search'] ) ? $_POST['search'] : $user['search'] ), 'text', '', '15' ) . " ";
-		
+
 		$html .= $this->html->endForm( 'Search', '', '', 1 );
-		
+
 		$html .="</form></div>";
 
 		// Begin table
@@ -427,9 +342,7 @@ class AdminAccounts extends Command
 		{
 			$html .= $this->html->addTdRow(
 				array(
-					"<div style='text-align:right;'>" . ( $r['club_id'] > 0 ? "<a href='".$this->display->buildURL( array( 'module' => 'accounts', 'do' => 'view',   'id' => $r['club_id'] ), 'admin')."'><strong>{$r['club_id']}</strong></a>" : "{$r['club_id']}" ) . "</div>",
 					"{$r['first_name']} {$r['last_name']} ({$this->lang->getString('accounts_form_'.$r['type'])})",
-					( $r['club_id'] > 0 ? "<center><a href='".$this->display->buildURL( array( 'module' => 'accounts', 'do' => 'view',   'id' => $r['club_id'] ), 'admin')."'>{$this->lang->getString('view')}</a></center>" : "" ),
 					"<center><a href='".$this->display->buildURL( array( 'module' => 'accounts', 'do' => 'edit',   'id' => $r['user_id'] ), 'admin')."'>{$this->lang->getString('edit')}</a></center>",
 					"<center><a href='".$this->display->buildURL( array( 'module' => 'accounts', 'do' => 'delete', 'id' => $r['user_id'] ), 'admin')."'>{$this->lang->getString('delete')}</a></center>"
 				)
@@ -467,7 +380,6 @@ class AdminAccounts extends Command
 		$lastName            = $this->registry->txtStripslashes( trim( $this->input['last_name'] ) );
 		$email               = strtolower( $this->registry->txtStripslashes( trim( $this->input['email'] ) ) );
 		$perm                = $this->registry->txtStripslashes( trim( $this->input['type'] ) );
-		$clubID              = intval( $this->input['club_id'] );
 		$languageID          = intval( $this->input['language_id'] );
 		$emailAlerts         = intval( $this->input['email_alerts'] );
 		$passwordNew         = $this->registry->txtStripslashes( trim($this->input['password_new'] ) );
@@ -560,18 +472,10 @@ class AdminAccounts extends Command
 			// Generate the password
 			$array['password'] = md5( md5( $array['email'] ) . md5( md5( $passwordNew ) . $array['pass_hash'] ) );
 
-			// Add the Club ID
-			$array['club_id'] = $clubID;
-
 			// Make sure this user doesn't already exist ...
 			$this->DB->query("SELECT user_id FROM user WHERE email = '{$email}';");
 
 			$user = $this->DB->fetchRow();
-
-			// Make sure this user doesn't already exist ...
-			$this->DB->query("SELECT club_id FROM user WHERE club_id = '{$clubID}';");
-
-			$club = $this->DB->fetchRow();
 
 			// If they do, throw an error
 			if ( is_array( $user ) && isset( $user['user_id'] ) && $user['user_id'] > 0 )
@@ -579,11 +483,6 @@ class AdminAccounts extends Command
 				$this->error->logError( 'accounts_user_exists', FALSE );
 				$this->listAccounts();
 			}
-			else if ( $clubID > 0 && is_array( $club ) && isset( $club['club_id'] ) && $club['club_id'] > 0 )
-			{
-				$this->error->logError( 'accounts_club_exists', FALSE );
-				$this->listAccounts();			}
-			// If they don't, then send a create request to the User class
 			else if ( User::create( $array ) )
 			{
 				$this->error->logError( 'accounts_user_created', FALSE );
@@ -643,11 +542,6 @@ class AdminAccounts extends Command
 
 		$userID  = intval($this->input['id']);
 		$user    = array();
-
-		if ( ! isset( $_POST['club_id'] ) && isset( $this->input['club_id'] ) )
-		{
-			$_POST['club_id'] = $this->input['club_id'];
-		}
 
 		//-----------------------------------------
 		// Checks ...
@@ -736,13 +630,6 @@ class AdminAccounts extends Command
 
 		$html .= $this->html->addTdRow(
 			array(
-				$this->lang->getString('accounts_form_club_id'),
-				$this->html->formInput( 'club_id', $this->registry->txtStripslashes( isset( $_POST['club_id'] ) ? $_POST['club_id'] : $user['club_id'] ) )
-			)
-		);
-
-		$html .= $this->html->addTdRow(
-			array(
 				$this->lang->getString('accounts_form_first_name'),
 				$this->html->formInput( 'first_name', $this->registry->txtStripslashes( isset( $_POST['first_name'] ) ? $_POST['first_name'] : $user['first_name'] ) )
 			)
@@ -823,90 +710,6 @@ class AdminAccounts extends Command
 
 		// Send the html to the display handler
 		$this->display->addContent( $html );
-	}
-
-	public function view()
-	{
-		$clubID = ( isset( $this->input['id'] ) && intval( $this->input['id'] ) > 0 ? intval( $this->input['id'] ) : 0 );
-		$user    = array();
-
-		$this->DB->query("SELECT * FROM user WHERE club_id = '{$clubID}';");
-
-		$user = $this->DB->fetchRow();
-
-		if ( ! $user['user_id'] )
-		{
-			$user['first_name'] = 'Not Available';
-		}
-
-		//-----------------------------------------
-		// Table Headers
-		//-----------------------------------------
-
-		$this->html->td_header[] = array( $this->lang->getString('accounts_head_club')       , "6%" );
-		$this->html->td_header[] = array( $this->lang->getString('accounts_head_name')       , "70%" );
-		$this->html->td_header[] = array( $this->lang->getString('status')                   , "24%" );
-
-		//-----------------------------------------
-
-		// Page title
-		$this->display->setTitle( "Account: {$user['first_name']} {$user['last_name']}" );
-
-		// Create account link
-		$html = "<div style='float:right;'>&nbsp;</div>";
-
-		// Begin table
-		$html .= $this->html->startTable( "Account: {$user['first_name']} {$user['last_name']}", 'admin');
-
-		$rewards = $this->cache->getCache("rewards");
-
-		// Query accounts for this page
-		$this->DB->query(
-			"SELECT r.*, COUNT(DISTINCT t.menu_id) AS total, u.first_name, u.last_name
-				FROM reward r
-				LEFT JOIN transaction t ON (t.reward_id = r.reward_id)
-				LEFT JOIN user u ON (r.club_id = u.club_id)
-				WHERE r.club_id = '{$clubID}'
-				GROUP BY r.reward_id, r.club_id, r.status
-				ORDER BY r.reward_id;" //u.last_name, u.first_name LIMIT {$start},{$this->settings['items_per_page']}
-		);
-
-		// Loop through the results and add a row for each
-		while( $r = $this->DB->fetchRow() )
-		{
-			if ( $r['status'] == 0 )
-			{
-				$text = "In Progress ({$rewards[ $r['club_id'] ]}/53)";
-			}
-			else if ( $r['status'] == 1 )
-			{
-				$text = "Available";
-			}
-			else
-			{
-				$text = "Redeemed";
-			}
-
-			$html .= $this->html->addTdRow(
-				array(
-					"<div style='text-align:right;'>{$r['club_id']}</div>",
-					"{$r['first_name']} {$r['last_name']}",
-					"<a href='". $this->display->buildURL( array( 'module' => 'accounts', 'com' => 'rewards', 'do' => 'redeem', 'id' => $r['reward_id'] ), 'admin')."'>{$text}</a>"
-				)
-			);
-			
-			$firstName = $r['first_name'];
-			$lastName = $r['last_name'];
-		}
-
-		// End table
-		$html .= $this->html->endTable();
-
-		//--------------------------------------
-
-		// Send the html to the display handler
-		$this->display->addContent( $html );
-
 	}
 }
 

@@ -83,14 +83,12 @@ class PublicApp extends Application
 
 		if ( is_object( $user ) )
 		{
-			$links[]  = array( 'url' => $this->display->buildURL( array_merge( $this->registry->filterInputsToKeep(), array('account' => "true") ) ), 'text' => 'PROFILE' );
 			$links[]  = array( 'url' => $this->display->buildURL( array_merge( $this->registry->filterInputsToKeep(), array('logout' => "true") ) ), 'text' => 'LOG OUT' );
 		}
 		else
 		{
 			if ( ! isset( $this->input['login'] ) && ! isset( $this->input['logout'] ) )
 			{
-				$links[]  = array( 'url' => $this->display->buildURL( array_merge( $this->registry->filterInputsToKeep(), array('register' => "true") ) ), 'text' => 'REGISTER' );
 				$links[]  = array( 'url' => $this->display->buildURL( array_merge( $this->registry->filterInputsToKeep(), array('login' => "false") ) ), 'text' => 'LOG IN' );
 			}
 		}
@@ -121,19 +119,7 @@ class PublicApp extends Application
 	 */
 	public function launch()
 	{
-		if ( isset( $this->input['user_panel'] ) && is_object( $this->registry->getUser() ) )
-		{
-			require_once( SWS_ROOT_PATH . SWS_THIS_APPLICATION . '/_account/default.php' );
-			$temp = new PublicAccount();
-			$temp->execute( $this->registry, $this->controller );
-		}
-		else if ( isset( $this->input['register'] ) )
-		{
-			require_once( SWS_ROOT_PATH . SWS_THIS_APPLICATION . '/_register/default.php' );
-			$temp = new PublicRegister();
-			$temp->execute( $this->registry, $this->controller );
-		}
-		else if ( isset( $this->input['page_id'] ) )
+		if ( isset( $this->input['page_id'] ) )
 		{
 			$temp = $this->controller->getPage( intval( $this->input['page_id'] ) );
 		}

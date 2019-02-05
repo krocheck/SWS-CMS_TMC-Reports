@@ -46,10 +46,6 @@ class Home extends Page
 			$this->display->addJavascript( $js );
 		}
 
-		$this->display->addJavascript("<script language='javascript' src='{$this->registry->getConfig('base_url')}js/jquery.js'></script>");
-		$this->display->addJavascript("<script language='javascript' src='{$this->registry->getConfig('base_url')}js/jquery-mobile.js'></script>");
-		$this->display->addJavascript("<script language='javascript' src='{$this->registry->getConfig('base_url')}js/beers.js'></script>");
-
 		$text        = $this->registry->parseHTML( $meta['content']['meta_value'] );
 
 		$consumedCount = 0;
@@ -98,7 +94,7 @@ class Home extends Page
 					FROM menu_item m
 					INNER JOIN transaction t ON (t.menu_id = m.menu_item_id)
 					INNER JOIN menu_category c ON (m.category_id = c.category_id)
-					WHERE c.type <> 'na' AND t.void = 0 AND t.web_void = 0 AND t.club_id = '{$clubID}'
+					WHERE c.type <> 'na' AND t.void = 0 AND t.web_void = 0
 					ORDER BY m.title"
 			);
 
@@ -120,7 +116,7 @@ class Home extends Page
 					FROM menu_item m
 					INNER JOIN pending_transaction t ON (t.menu_id = m.menu_item_id)
 					INNER JOIN menu_category c ON (m.category_id = c.category_id)
-					WHERE c.type <> 'na' AND t.void = 0 AND t.club_id = '{$clubID}'
+					WHERE c.type <> 'na' AND t.void = 0
 					ORDER BY m.title"
 			);
 
@@ -134,7 +130,7 @@ class Home extends Page
 			}
 
 			$this->DB->query(
-				"SELECT * FROM reward WHERE club_id = '{$clubID}' AND status < 2;"
+				"SELECT * FROM reward WHERE status < 2;"
 			);
 
 			if ( $this->DB->getTotalRows() > 0 )

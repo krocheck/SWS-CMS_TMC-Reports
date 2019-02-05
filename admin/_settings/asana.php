@@ -16,7 +16,7 @@
  * @version		$Revision: 9 $
  */
 
-class AdminToast extends Command
+class AdminAsana extends Command
 {
 	/**
 	 * The admin app skin generator
@@ -38,10 +38,10 @@ class AdminToast extends Command
 	protected function doExecute( $params )
 	{
 		// Add a breadcrumb for this module
-		$this->display->addBreadcrumb( $this->display->buildURL( array( 'module' => "settings", 'com' => "toast" ), 'admin' ), $this->lang->getString('toast_data') );
+		$this->display->addBreadcrumb( $this->display->buildURL( array( 'module' => "settings", 'com' => "asana" ), 'admin' ), $this->lang->getString('asana_data') );
 
 		// Load the language
-		$this->lang->loadStrings('toast');
+		$this->lang->loadStrings('asana');
 
 		// Get and load the table/form factory
 		$this->html = $this->registry->getClass('AdminSkin');
@@ -106,7 +106,7 @@ class AdminToast extends Command
 	}
 
 	/**
-	 * Run the related Toast API call.
+	 * Run the related Asana API call.
 	 *
 	 * @return void
 	 * @access protected
@@ -114,7 +114,7 @@ class AdminToast extends Command
 	 */
 	protected function categoriesUpdate()
 	{
-		$count = $this->registry->getAPI('toast')->updateCategories();
+		$count = $this->registry->getAPI('asana')->updateCategories();
 
 		if ( $count == 0 )
 		{
@@ -129,7 +129,7 @@ class AdminToast extends Command
 	}
 
 	/**
-	 * Run the related Toast API call.
+	 * Run the related Asana API call.
 	 *
 	 * @return void
 	 * @access protected
@@ -137,7 +137,7 @@ class AdminToast extends Command
 	 */
 	protected function discountsUpdate()
 	{
-		$count = $this->registry->getAPI('toast')->updateDiscounts();
+		$count = $this->registry->getAPI('asana')->updateDiscounts();
 
 		if ( $count == 0 )
 		{
@@ -152,7 +152,7 @@ class AdminToast extends Command
 	}
 
 	/**
-	 * Run the related Toast API call.
+	 * Run the related Asana API call.
 	 *
 	 * @return void
 	 * @access protected
@@ -160,7 +160,7 @@ class AdminToast extends Command
 	 */
 	protected function menuActive()
 	{
-		$count = $this->registry->getAPI('toast')->updateActiveMenuItems();
+		$count = $this->registry->getAPI('asana')->updateActiveMenuItems();
 
 		if ( $count == 0 )
 		{
@@ -175,7 +175,7 @@ class AdminToast extends Command
 	}
 
 	/**
-	 * Run the related Toast API call.
+	 * Run the related Asana API call.
 	 *
 	 * @return void
 	 * @access protected
@@ -183,7 +183,7 @@ class AdminToast extends Command
 	 */
 	protected function menuRefresh()
 	{
-		$count = $this->registry->getAPI('toast')->refreshAllMenuItems();
+		$count = $this->registry->getAPI('asana')->refreshAllMenuItems();
 
 		if ( $count == 0 )
 		{
@@ -198,7 +198,7 @@ class AdminToast extends Command
 	}
 
 	/**
-	 * Run the related Toast API call.
+	 * Run the related Asana API call.
 	 *
 	 * @return void
 	 * @access protected
@@ -206,7 +206,7 @@ class AdminToast extends Command
 	 */
 	protected function menuUpdate()
 	{
-		$count = $this->registry->getAPI('toast')->updateMenuItems();
+		$count = $this->registry->getAPI('asana')->updateMenuItems();
 
 		if ( $count == 0 )
 		{
@@ -221,7 +221,7 @@ class AdminToast extends Command
 	}
 
 	/**
-	 * Run the related Toast API call.
+	 * Run the related Asana API call.
 	 *
 	 * @return void
 	 * @access protected
@@ -251,7 +251,7 @@ class AdminToast extends Command
 			$dateNow = new DateTime( ( isset( $this->input['dateNow'] ) ? $this->input['dateNow'] : $this->input['dateFrom'] ) );
 			$count = ( isset( $this->input['count'] ) ? intval( $this->input['count'] ) : 0 );
 
-			$thisCount = $this->registry->getAPI('toast')->refreshOrdersByDate( $dateNow );
+			$thisCount = $this->registry->getAPI('asana')->refreshOrdersByDate( $dateNow );
 			$count += $thisCount;
 
 			if ( $thisCount == 0 )
@@ -265,18 +265,18 @@ class AdminToast extends Command
 
 			if ( $this->input['dateTo'] == $dateNow->format('Y-m-d') )
 			{
-				$this->display->addJavascript("<meta http-equiv=\"refresh\" content=\"2;url=".$this->display->buildURL( array( 'module' => 'settings', 'com' => 'toast', 'do' => 'orders_range', 'dateFrom' => $dateFrom->format('Y-m-d'), 'dateTo' => $dateTo->format('Y-m-d'), 'complete' => '1', 'count' => $count ), 'admin')."\">");
+				$this->display->addJavascript("<meta http-equiv=\"refresh\" content=\"2;url=".$this->display->buildURL( array( 'module' => 'settings', 'com' => 'asana', 'do' => 'orders_range', 'dateFrom' => $dateFrom->format('Y-m-d'), 'dateTo' => $dateTo->format('Y-m-d'), 'complete' => '1', 'count' => $count ), 'admin')."\">");
 			}
 			else
 			{
 				$dateNow->add( new DateInterval('P1D') );
-				$this->display->addJavascript("<meta http-equiv=\"refresh\" content=\"2;url=".$this->display->buildURL( array( 'module' => 'settings', 'com' => 'toast', 'do' => 'orders_range', 'dateFrom' => $dateFrom->format('Y-m-d'), 'dateTo' => $dateTo->format('Y-m-d'), 'dateNow' => $dateNow->format('Y-m-d'), 'count' => $count ), 'admin')."\">");
+				$this->display->addJavascript("<meta http-equiv=\"refresh\" content=\"2;url=".$this->display->buildURL( array( 'module' => 'settings', 'com' => 'asana', 'do' => 'orders_range', 'dateFrom' => $dateFrom->format('Y-m-d'), 'dateTo' => $dateTo->format('Y-m-d'), 'dateNow' => $dateNow->format('Y-m-d'), 'count' => $count ), 'admin')."\">");
 			}
 		}
 	}
 
 	/**
-	 * Run the related Toast API call.
+	 * Run the related Asana API call.
 	 *
 	 * @return void
 	 * @access protected
@@ -284,7 +284,7 @@ class AdminToast extends Command
 	 */
 	protected function ordersToday()
 	{
-		$count = $this->registry->getAPI('toast')->refreshOrdersToday();
+		$count = $this->registry->getAPI('asana')->refreshOrdersToday();
 
 		if ( $count == 0 )
 		{
@@ -299,7 +299,7 @@ class AdminToast extends Command
 	}
 
 	/**
-	 * Run the related Toast API call.
+	 * Run the related Asana API call.
 	 *
 	 * @return void
 	 * @access protected
@@ -307,7 +307,7 @@ class AdminToast extends Command
 	 */
 	protected function ordersUpdate()
 	{
-		$count = $this->registry->getAPI('toast')->updateOrders();
+		$count = $this->registry->getAPI('asana')->updateOrders();
 
 		if ( $count == 0 )
 		{
@@ -322,7 +322,7 @@ class AdminToast extends Command
 	}
 
 	/**
-	 * Run the related Toast API call.
+	 * Run the related Asana API call.
 	 *
 	 * @return void
 	 * @access protected
@@ -330,7 +330,7 @@ class AdminToast extends Command
 	 */
 	protected function ordersYesterday()
 	{
-		$count = $this->registry->getAPI('toast')->refreshOrdersYesterday();
+		$count = $this->registry->getAPI('asana')->refreshOrdersYesterday();
 
 		if ( $count == 0 )
 		{
@@ -374,8 +374,8 @@ class AdminToast extends Command
 		// Figure out UID
 		//--------------------------------------------
 
-		$title    = $this->lang->getString('toast_main_title');
-		$button   = $this->lang->getString('toast_main_run');
+		$title    = $this->lang->getString('asana_main_title');
+		$button   = $this->lang->getString('asana_main_run');
 
 		//-----------------------------------------
 		// Start the form
@@ -388,7 +388,7 @@ class AdminToast extends Command
 				's'      => $this->user->getSessionID(),
 				'app'    => 'admin',
 				'module' => 'settings',
-				'com'    => 'toast',
+				'com'    => 'asana',
 				'do'     => 'orders_range'
 			)
 		);
@@ -398,42 +398,42 @@ class AdminToast extends Command
 
 		$html .= $this->html->startTable( $title, 'admin-form' );
 
-		$html .= $this->html->startFieldset( $this->lang->getString('toast_fieldset_one') );
+		$html .= $this->html->startFieldset( $this->lang->getString('asana_fieldset_one') );
 
 		//-----------------------------------------
 		// Form elements
 		//-----------------------------------------
 
 		$html .= $this->html->addTdBasic(
-			"<strong><a href='".$this->display->buildURL( array( 'module' => 'settings', 'com' => 'toast', 'do' => 'menu_update' ), 'admin')."'>{$this->lang->getString('toast_link_menu_update')}</a></strong>"
+			"<strong><a href='".$this->display->buildURL( array( 'module' => 'settings', 'com' => 'asana', 'do' => 'menu_update' ), 'admin')."'>{$this->lang->getString('asana_link_menu_update')}</a></strong>"
 		);
 
 		$html .= $this->html->addTdBasic(
-			"<strong><a href='".$this->display->buildURL( array( 'module' => 'settings', 'com' => 'toast', 'do' => 'menu_active' ), 'admin')."'>{$this->lang->getString('toast_link_menu_active')}</a></strong>"
+			"<strong><a href='".$this->display->buildURL( array( 'module' => 'settings', 'com' => 'asana', 'do' => 'menu_active' ), 'admin')."'>{$this->lang->getString('asana_link_menu_active')}</a></strong>"
 		);
 
 		$html .= $this->html->addTdBasic(
-			"<strong><a href='".$this->display->buildURL( array( 'module' => 'settings', 'com' => 'toast', 'do' => 'menu_refresh' ), 'admin')."'>{$this->lang->getString('toast_link_menu_refresh')}</a></strong> <i>(Only use in extreme situations)"
+			"<strong><a href='".$this->display->buildURL( array( 'module' => 'settings', 'com' => 'asana', 'do' => 'menu_refresh' ), 'admin')."'>{$this->lang->getString('asana_link_menu_refresh')}</a></strong> <i>(Only use in extreme situations)"
 		);
 
 		$html .= $this->html->addTdBasic(
-			"<strong><a href='".$this->display->buildURL( array( 'module' => 'settings', 'com' => 'toast', 'do' => 'orders_update' ), 'admin')."'>{$this->lang->getString('toast_link_orders_update')}</a></strong>"
+			"<strong><a href='".$this->display->buildURL( array( 'module' => 'settings', 'com' => 'asana', 'do' => 'orders_update' ), 'admin')."'>{$this->lang->getString('asana_link_orders_update')}</a></strong>"
 		);
 
 		$html .= $this->html->addTdBasic(
-			"<strong><a href='".$this->display->buildURL( array( 'module' => 'settings', 'com' => 'toast', 'do' => 'orders_today' ), 'admin')."'>{$this->lang->getString('toast_link_orders_today')}</a></strong>"
+			"<strong><a href='".$this->display->buildURL( array( 'module' => 'settings', 'com' => 'asana', 'do' => 'orders_today' ), 'admin')."'>{$this->lang->getString('asana_link_orders_today')}</a></strong>"
 		);
 
 		$html .= $this->html->addTdBasic(
-			"<strong><a href='".$this->display->buildURL( array( 'module' => 'settings', 'com' => 'toast', 'do' => 'orders_yesterday' ), 'admin')."'>{$this->lang->getString('toast_link_orders_yesterday')}</a></strong>"
+			"<strong><a href='".$this->display->buildURL( array( 'module' => 'settings', 'com' => 'asana', 'do' => 'orders_yesterday' ), 'admin')."'>{$this->lang->getString('asana_link_orders_yesterday')}</a></strong>"
 		);
 
 		$html .= $this->html->addTdBasic(
-			"<strong><a href='".$this->display->buildURL( array( 'module' => 'settings', 'com' => 'toast', 'do' => 'categories' ), 'admin')."'>{$this->lang->getString('toast_link_categories')}</a></strong>"
+			"<strong><a href='".$this->display->buildURL( array( 'module' => 'settings', 'com' => 'asana', 'do' => 'categories' ), 'admin')."'>{$this->lang->getString('asana_link_categories')}</a></strong>"
 		);
 
 		$html .= $this->html->addTdBasic(
-			"<strong><a href='".$this->display->buildURL( array( 'module' => 'settings', 'com' => 'toast', 'do' => 'discounts' ), 'admin')."'>{$this->lang->getString('toast_link_discounts')}</a></strong>"
+			"<strong><a href='".$this->display->buildURL( array( 'module' => 'settings', 'com' => 'asana', 'do' => 'discounts' ), 'admin')."'>{$this->lang->getString('asana_link_discounts')}</a></strong>"
 		);
 
 		//-----------------------------------------
@@ -442,7 +442,7 @@ class AdminToast extends Command
 
 		$html .= $this->html->endFieldset();
 
-		$html .= $this->html->startFieldset( $this->lang->getString('toast_fieldset_range') );
+		$html .= $this->html->startFieldset( $this->lang->getString('asana_fieldset_range') );
 
 		//-----------------------------------------
 		// Form elements
@@ -450,14 +450,14 @@ class AdminToast extends Command
 
 		$html .= $this->html->addTdRow(
 			array(
-				$this->lang->getString('toast_field_date_from'),
+				$this->lang->getString('asana_field_date_from'),
 				$this->html->formDate( 'dateFrom', $dateFrom, '', 'dateTo' )
 			)
 		);
 
 		$html .= $this->html->addTdRow(
 			array(
-				$this->lang->getString('toast_field_date_to'),
+				$this->lang->getString('asana_field_date_to'),
 				$this->html->formDate( 'dateTo', $dateTo, 'dateFrom', '' )
 			)
 		);
