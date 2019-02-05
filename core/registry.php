@@ -802,9 +802,10 @@ class Registry
 
 		$this->display->addDebug( "Parse Incoming Variables Start" );
 
-		@set_magic_quotes_runtime(0);
+		//@set_magic_quotes_runtime(0);
 
-		$this->getMagicQuotes = @get_magic_quotes_gpc();
+		//$this->getMagicQuotes = @get_magic_quotes_gpc();
+		$this->getMagicQuotes = FALSE;
 
 		//-----------------------------------------
 		// Clean globals, first.
