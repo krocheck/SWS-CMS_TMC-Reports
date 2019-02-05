@@ -195,7 +195,7 @@ $HTML .= <<<EOF
 	<div class="topbanner">
 		{$userlinks}
 		<div class="title"><h1>{$this->lang->getString('program_title')}</h1></div>
-		<a href='{$this->registry->getConfig('base_url')}admin/'><img src="{$this->registry->getConfig('base_url')}images/admin-logo.jpg" alt="SSUSC Logo" /></a>
+		<a href='{$this->registry->getConfig('base_url')}admin/'><img src="{$this->registry->getConfig('base_url')}images/admin-logo.png" alt="Tri-Marq Logo" /></a>
 	</div>
 	<div id="navigation"> 
 {$loggedin}

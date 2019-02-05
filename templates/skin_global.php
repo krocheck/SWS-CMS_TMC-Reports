@@ -44,7 +44,7 @@ $HTML .= <<<EOF
 <body>
 <div class="admin-main">
 	<div class="topbanner">
-		<a href="{$this->registry->getConfig('base_url')}"><img src="{$this->registry->getConfig('base_url')}images/admin-logo.jpg" alt="SSUSC Logo" /></a>
+		<a href="{$this->registry->getConfig('base_url')}"><img src="{$this->registry->getConfig('base_url')}images/admin-logo.png" alt="Tri-Marq Logo" /></a>
 	</div>
 <h1>{$this->registry->getLang()->getString('site_title')}</h1>
 <h3>{$content}</h3>
