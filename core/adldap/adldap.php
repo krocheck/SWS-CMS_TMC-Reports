@@ -15,9 +15,21 @@
  * @since		1.0.0
  * @version		$Revision: 27 $
  */
-
+/*
 require_once('adldap2/src/Adldap.php');
-
+require_once('adldap2/src/AdldapException.php');
+require_once('adldap2/src/AdldapInterface.php');
+require_once('adldap2/src/Log/EventLogger');
+require_once('adldap2/src/Log/LogsInformation');
+require_once('adldap2/src/Events/DispatchesEvents');
+require_once('adldap2/src/Connections/Provider');
+require_once('adldap2/src/Connections/ProviderInterface');
+require_once('adldap2/src/Connections/ConnectionInterface');
+require_once('adldap2/src/Configuration/DomainConfiguration');
+require_once('adldap2/src/Schemas/Schema.php');
+require_once('adldap2/src/Schemas/SchemaInterface.php');
+require_once('adldap2/src/Schemas/ActiveDirectory.php');
+*/
 class AdldapAPI extends Command
 {
 	protected $ad;
@@ -34,7 +46,7 @@ class AdldapAPI extends Command
 	 */
 	protected function doExecute( $params )
 	{
-		$this->ad = new \Adldap\Adldap();
+		/*$this->ad = new \Adldap\Adldap();
 
 		$config = [
 			// Mandatory Configuration Options
@@ -63,7 +75,7 @@ class AdldapAPI extends Command
 		catch (BindException $e)
 		{
 			$this->display->error->raiseError( 'ldap_connect_failed' );
-		}
+		}*/
 	}
 
 	/**
@@ -79,7 +91,7 @@ class AdldapAPI extends Command
 	{
 		$out = false;
 
-		try
+		/*try
 		{
 			if ( $this->provider->auth()->attempt($username, $password, true) )
 			{
@@ -104,8 +116,43 @@ class AdldapAPI extends Command
 		catch (Adldap\Auth\PasswordRequiredException $e)
 		{
 			//$this->error->logError( 'invalid_login', FALSE );
-		}
+		}*/
+		
+		$adServer = "ldap://trimarq.local";
 
+		$ldap = ldap_connect($adServer);
+		$username = $username;
+		$password = $password;
+
+		$ldaprdn = 'TRIMARQ' . "\\" . $username;
+
+		ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
+		ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
+
+		$bind = @ldap_bind($ldap, $ldaprdn, $password);
+
+
+		if ($bind) {
+			$filter="(sAMAccountName=$username)";
+			$result = ldap_search($ldap,"OU=Employees,OU=Accounts,DC=trimarq,DC=local",$filter);
+			ldap_sort($ldap,$result,"sn");
+			$info = ldap_get_entries($ldap, $result);
+			for ($i=0; $i<$info["count"]; $i++)
+			{
+				if($info['count'] > 1)
+					break;
+				echo "<p>You are accessing <strong> ". $info[$i]["sn"][0] .", " . $info[$i]["givenname"][0] ."</strong><br /> (" . $info[$i]["samaccountname"][0] .")</p>\n";
+				echo '<pre>';
+				var_dump($info);
+				echo '</pre>';
+				$userDn = $info[$i]["distinguishedname"][0]; 
+			}
+			@ldap_close($ldap);
+		} else {
+			$msg = "Invalid email address / password";
+			echo $msg;
+		}
+exit();
 		return $out;
 	}
 
