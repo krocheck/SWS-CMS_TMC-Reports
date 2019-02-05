@@ -181,7 +181,7 @@ class Database
 			$queryID = $this->queryID;
 		}
 		
-		$recordRow = mysqli_fetch_array($queryID, MYSQL_ASSOC);
+		$recordRow = mysqli_fetch_array($queryID, MYSQLI_ASSOC);
 		
 		return $recordRow;
 	}

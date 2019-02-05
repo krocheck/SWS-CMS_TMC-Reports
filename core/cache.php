@@ -245,7 +245,7 @@ abstract class CacheType extends Command
 	 */
 	public function save( $dbCheck = TRUE )
 	{
-		if ( $this->id == 0 && dbCheck )
+		if ( $this->id == 0 && $dbCheck )
 		{
 			$this->DB->query("SELECT * FROM caches WHERE name = '{$this->name}';");
 
