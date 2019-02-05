@@ -16,7 +16,7 @@
  * @version		$Revision: 28 $
  */
 
-class Error
+class Errors
 {
 	/**
 	 * The application registry library

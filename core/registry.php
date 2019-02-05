@@ -141,7 +141,7 @@ class Registry
 
 		$this->display->loadTemplates( 'skin_global' );
 
-		$this->error    = new Error( $this );
+		$this->error    = new Errors( $this );
 		$this->DB       = new Database( $this, $this->config );
 		$this->cache    = new Cache( $this );
 		$this->settings = $this->loadSettings();
