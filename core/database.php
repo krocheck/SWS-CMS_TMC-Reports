@@ -102,7 +102,7 @@ class Database
 		{
 			$this->query("BEGIN");
 			
-			if ( ! mysql_error( $this->connectionID ) )
+			if ( ! mysqli_error( $this->connectionID ) )
 			{
 				$this->transaction = TRUE;
 				$this->errors      = array();
@@ -140,7 +140,7 @@ class Database
 	{
 		if ( is_object( $this->connectionID ) )
 		{
-			mysql_close( $this->connectionID );
+			mysqli_close( $this->connectionID );
 		}
 	}
 
@@ -181,7 +181,7 @@ class Database
 			$queryID = $this->queryID;
 		}
 		
-		$recordRow = mysql_fetch_array($queryID, MYSQL_ASSOC);
+		$recordRow = mysqli_fetch_array($queryID, MYSQL_ASSOC);
 		
 		return $recordRow;
 	}
@@ -195,7 +195,7 @@ class Database
 	 */
 	public function getInsertID()
 	{
-		$recordRow = mysql_insert_id($this->connectionID);
+		$recordRow = mysqli_insert_id($this->connectionID);
 		
 		return $recordRow;
 	}
@@ -227,7 +227,7 @@ class Database
 			$queryID = $this->queryID;
 		}
 		
-		return mysql_num_rows( $queryID );
+		return mysqli_num_rows( $queryID );
 	}
 
 	/**
@@ -249,11 +249,11 @@ class Database
 			$this->registry->getDB()->addDebug($theQuery);
 		//}
 		
-		$this->queryID = mysql_query($theQuery, $this->connectionID);
+		$this->queryID = mysqli_query( $this->connectionID, $theQuery );
 		
 		if ( $this->transaction )
 		{
-			$test = mysql_error();
+			$test = mysqli_error();
 			
 			if ( $test != '' )
 			{
@@ -263,8 +263,8 @@ class Database
 		
 		//if ( DEBUG )
 		//{
-			$error = mysql_error( $this->connectionID );
-			$errno = mysql_errno( $this->connectionID );
+			$error = mysqli_error( $this->connectionID );
+			$errno = mysqli_errno( $this->connectionID );
 			
 			if ( strlen( $error ) > 0 )
 			{
@@ -311,7 +311,7 @@ class Database
 	 */
 	protected function setupDB( $host, $user, $pass, $db )
 	{
-		$this->connectionID = @mysql_connect(
+		$this->connectionID = mysqli_connect(
 			$host,  //host
 			$user,  //user
 			$pass   //pass
@@ -321,7 +321,7 @@ class Database
 		{
 			$this->registry->getError()->raiseError( 'db_connect_fail', FALSE );
 		}
-		else if ( ! mysql_select_db( $db, $this->connectionID) )
+		else if ( ! mysqli_select_db( $this->connectionID, $db ) )
 		{
 			$this->registry->getError()->raiseError( 'db_database_fail', FALSE );
 		}
