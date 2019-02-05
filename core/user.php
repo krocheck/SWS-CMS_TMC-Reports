@@ -341,7 +341,14 @@ class User
 			}
 			else
 			{
-				$row = [ 'first_name' => $ad->getFirstName(), 'last_name' => $ad->getLastName(), 'user_id' => 0 ];
+				$row = [
+					'first_name'  => $ad->getFirstName(),
+					'last_name'   => $ad->getLastName(),
+					'user_id'     => 0,
+					'email'       => $username,
+					'type'        => 'user',
+					'language_id' => 1
+				];
 
 				if ( User::create( $row ) )
 				{
