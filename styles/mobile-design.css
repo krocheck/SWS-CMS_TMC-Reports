@@ -1,0 +1,712 @@
+@charset "utf-8";
+
+#debug
+{
+	margin: 20px auto;
+	padding: 0;
+	width: 958px;
+	height: 300px;
+	font-size: 10px;
+	font-family: Verdana, Times, serif;
+	color: #fff;
+}
+
+#debug div
+{
+	margin: 0;
+	padding: 0;
+	width: 938px;
+	height: 280px;
+	overflow: scroll;
+}
+
+@font-face
+{
+	font-family: 'fishMonger';
+	src: url('fishmonger_cr_plain-webfont.eot');
+	src: url('fishmonger_cr_plain-webfont.eot?#iefix') format('embedded-opentype'),
+		 url('fishmonger_cr_plain-webfont.woff') format('woff'),
+		 url('fishmonger_cr_plain-webfont.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+a,
+a:hover,
+a:visited
+{
+	color:#fff;
+	text-decoration:none;
+}
+
+body
+{
+	background:URL('../images/seamless_wood.jpg') repeat top left;
+	background-size:auto;
+	color: #312217;
+	font-family: Verdana, Georgia, Times, serif;
+	font-size: 11px;
+	margin: 0;
+	padding: 0;
+	vertical-align:top;
+}
+
+div.white-box a,
+div.white-box a:hover,
+div.white-box a:visited
+{
+	color: #312217;
+}
+
+div#content
+{
+	width:300px;
+	margin: 66px 0 10px;
+	padding: 0px 0px 0px;
+}
+
+div#content div.logged-in
+{
+	margin-top:83px;
+}
+
+div#control-panel
+{
+	width:300px;
+	margin: 16px 0 4px;
+	height:35px;
+	text-align:right;
+}
+
+div#footer
+{
+	margin: 10px 30px;
+	padding: 10px 5px;
+	width:240px;
+	font-size: 9px;
+	font-family:Arial, Helvetica, sans-serif;
+	color: #FFF;
+	text-align:center;
+}
+
+div#header
+{
+	background: URL('../images/header-mobile.png') center top no-repeat;
+	height:57px;
+	top:60px;
+	position:absolute;
+	width:300px;
+	text-align:center;
+}
+
+div#guest-login
+{
+	margin: 20px 10px;
+	width:280px;
+	/*height:46px;*/
+	padding:7px 0px 10px;
+	text-align:center;
+	color:#fff;
+	font-family:fishMonger, Verdana, Georgia, Times, serif;
+	font-size: 12px;
+}
+
+div#register-button
+{
+	width:140px;
+	/*height:50px;*/
+	margin: 10px 0px 20px 5px;
+	padding:7px 0px 10px;
+	text-align:center;
+	display: inline-block;
+	font-family:fishMonger, Verdana, Georgia, Times, serif;
+	font-size: 11px;
+}
+
+div#account input#submit,
+div#register input#submit
+{
+	margin: 10px auto;
+	padding:10px;
+	text-align:center;
+	color:#fff;
+	font-family:fishMonger, Verdana, Georgia, Times, serif;
+	font-size:12px;
+}
+
+div#login input#submit
+{
+	float:right;
+	margin: 0px 10px;
+}
+
+div#account,
+div#login,
+div#register
+{
+	width:270px;
+	background-color: transparent;
+	background-image: URL('../images/graybg2.png');
+	padding:5px;
+	margin:80px 10px 0px;
+	border-radius: 15px;
+	border: 3px solid white;
+	text-align:center;
+	color:#3c2313;
+}
+
+div#account,
+div#register
+{
+	font-size:12px;
+}
+
+div#login input.check
+{
+	border-radius: 2px;
+	border: none;
+}
+
+div#account input.text,
+div#login input.text,
+div#register input.text
+{
+	border-radius: 5px;
+	border: none;
+	width: 220px;
+	height: 24px;
+	margin: 0px 0px 10px;
+	padding:3px 8px;
+}
+
+div#account label.text,
+div#login label.text,
+div#register label.text
+{
+	width:220px;
+	color:#3c2313;
+	font-size:10px;
+	font-weight:bold;
+	display:inline-block;
+	text-align:left;
+	padding:2px 0;
+}
+
+div#account-head,
+div#login-head,
+div#register-head
+{
+	background-color:transparent;
+	display:inline-block;
+	font-family:fishMonger, Verdana, Georgia, Times, serif;
+	font-size:16px;
+	height:22px;
+	margin:5px 0 10px;
+	width:260px;
+	text-align:center;
+	font-weight:normal;
+	letter-spacing:2px;
+}
+
+div#on-tap
+{
+	min-height:400px;
+}
+
+div#on-tap-head
+{
+	background-color:transparent;
+	display:inline-block;
+	font-family:fishMonger, Verdana, Georgia, Times, serif;
+	color: #9a2622;
+	font-size:18px;
+	height:24px;
+	margin:10px 0px 5px;
+	width:270px;
+	text-align:center;
+	font-weight:normal;
+	letter-spacing:2px;
+}
+
+div#on-tap-beers
+{
+	background-color: transparent;
+	background-image: URL('../images/grouping-mobile.png');
+	background-repeat:no-repeat;
+	background-position:center 8px;
+	width: 252px;
+	min-height:80px;
+	margin: 5px 0px 15px;
+	padding:0px 8px;
+	display:inline-block;
+}
+
+div.on-tap-group
+{
+	background-color:transparent;
+	display:inline-block;
+	margin:-4px 0 0 30px;
+	padding:4px 0 0 0;
+	width:200px;
+	color: #43413f;
+	text-align:center;
+	font-family:fishMonger, Verdana, Georgia, Times, serif;
+	font-size:16px;
+	font-weight: normal;
+	letter-spacing:2px;
+}
+
+div.on-tap-page
+{
+	min-height:300px;
+}
+
+div#cellar
+{
+	min-height:380px;
+}
+
+div#cellar-head
+{
+	background-color:transparent;
+	display:inline-block;
+	font-family:fishMonger, Verdana, Georgia, Times, serif;
+	color: #9a2622;
+	font-size:18px;
+	height:24px;
+	margin:10px 0px 5px;
+	width:270px;
+	text-align:center;
+	font-weight:normal;
+	letter-spacing:2px;
+}
+
+div.cellar-page
+{
+	width: 252px;
+	margin: 5px 0px 15px;
+	padding:0px 8px;
+	display:inline-block;
+	min-height:250px;
+}
+
+div#consumed,
+div#pending,
+div#redeem
+{
+	min-height:30px;
+	padding-top:0px;
+	padding-bottom:0px;
+}
+
+div#how-it-works-text,
+div#consumed-text div.beer,
+div#pending-text div.beer
+{
+	color:#fff;
+}
+
+div.consumed-page,
+div.pending-page
+{
+	min-height:300px;
+}
+
+div#consumed-head,
+div#pending-head,
+div#how-it-works-head,
+div#redeem-head
+{
+	background-color:transparent;
+	display:inline-block;
+	font-family:fishMonger, Verdana, Georgia, Times, serif;
+	color: #fff;
+	font-size:13px;
+	height:20px;
+	margin:5px 0 5px;
+	padding:0px 2px 0px 2px;
+	width:268px;
+	text-align:center;
+	font-weight:normal;
+	letter-spacing:1px;
+}
+
+div#how-it-works-head
+{
+	padding:3px 0 0 0;
+	height:17px;
+}
+
+div#consumed-head span.bold,
+div#pending-head span.bold,
+div#redeem-head span.bold
+{
+	font-weight:bold;
+	font-family:Arial, Verdana, Georgia, Times, serif;
+	font-size: 16px;
+}
+
+div#consumed-head div.check,
+div#pending-head div.check,
+div#redeem div.check
+{
+	float:left;
+	background:url("../images/icons.png") top left no-repeat;
+	width:16px;
+	height:16px;
+	margin:0 0 0 6px;
+}
+
+div#consumed-head div.check,
+div#pending-head div.check
+{
+	background-position:-36px -293px;
+}
+
+div#redeem-head div.check
+{
+	background-position:-10px -293px;
+}
+
+div#how-it-works-beer
+{
+	background: URL("../images/icons.png") top left no-repeat;
+	width:29px;
+	height:51px;
+	background-position:-10px -100px;
+	margin: -20px 15px 0px 0px;
+	padding:0px;
+	float:right;
+}
+
+div#on-tap div.check
+{
+	background-color: transparent;
+	background-repeat:no-repeat;
+	background-position:5px 5px;
+	background-image: URL('../images/red-check-mobile.png');
+}
+
+div#on-tap div.check-green
+{
+	background-color: transparent;
+	background-repeat:no-repeat;
+	background-position:5px 5px;
+	background-image: URL('../images/green-check-mobile.png');
+}
+
+div.consumed-page,
+div.pending-page
+{
+	width: 404px;
+	margin: 5px 0px 15px;
+	padding:0px 15px;
+	display:inline-block;
+}
+
+div#on-tap-control,
+div#cellar-control,
+div#consumed-control,
+div#pending-control
+{
+	padding: 0px 8px;
+	width: 232px;
+	text-align:center;
+	margin:5px 10px 5px;
+}
+
+div#on-tap-control div,
+div#cellar-control div,
+div#consumed-control div,
+div#pending-control div
+{
+	background-repeat:no-repeat;
+	background-position: center center;
+	background-color:transparent;
+	width:24px;
+	height:24px;
+	display:inline-block;
+}
+
+div#on-tap-control div:hover,
+div#cellar-control div:hover,
+div#consumed-control div:hover,
+div#consumed-head:hover,
+div#pending-control div:hover,
+div#pending-head:hover,
+div#how-it-works-head:hover
+{
+	cursor:pointer;
+}
+
+div#on-tap-control div.previous,
+div#cellar-control div.previous,
+div#consumed-control div.previous,
+div#pending-control div.previous
+{
+	background-image: URL('../images/gray-left.png');
+	float: left;
+}
+
+div#on-tap-control div.next,
+div#cellar-control div.next,
+div#consumed-control div.next,
+div#pending-control div.next
+{
+	background-image: URL('../images/gray-right.png');
+	float: right;
+}
+
+div#on-tap-control div.button,
+div#cellar-control div.button
+{
+	background-image: URL('../images/gray-button.png');
+}
+
+div#consumed-control div.button,
+div#pending-control div.button
+{
+	background-image: URL('../images/dark-button.png');
+}
+
+div#on-tap-control div.selected,
+div#cellar-control div.selected
+{
+	background-image: URL('../images/red-button.png')!important;
+}
+
+div#consumed-control div.selected,
+div#pending-control div.selected
+{
+	background-image: URL('../images/gray-button.png')!important;
+}
+
+div.beer
+{
+	width:232px;
+	margin: 5px 10px;
+	padding: 3px 0px;
+	text-align:center;
+	border-bottom: 2px #6a594c solid;
+}
+
+div.beer p.name
+{
+	font-size: 13px;
+	font-weight:bold;
+	font-style:italic;
+	margin: 3px 0px;
+	padding:0px;
+}
+
+div.beer p.info,
+div.beer p.name span.smaller
+{
+	font-size: 10px;
+	margin: 3px 0px;
+	padding:0px;
+}
+
+div.beer p.name span.smaller
+{
+	font-size: 9px;
+}
+
+div.hidden,
+div.ui-loader
+{
+	display: none;
+}
+
+div.red-button,
+input.red-button
+{
+	background:#9a2622;
+	border-top: #b15754 solid 2px;
+	border-left: #b15754 solid 2px;
+	border-right: #84201d solid 2px;
+	border-bottom: #84201d solid 2px;
+	border-radius: 10px;
+	color:#fff;
+	cursor:pointer;
+}
+
+div.user-button
+{
+	background-color:transparent;
+	background-image: URL('../images/redbg.png');
+	border: #fff solid 2px;
+	border-radius: 6px;
+	padding:2px 8px 4px;
+	display:inline;
+	margin: 0 2px;
+	width:70px;
+	text-align:center;
+}
+
+div#facebook-link
+{
+	background-image: URL('../images/facebook-link-mobile.png');
+	background-repeat:no-repeat;
+	background-position:center center;
+	padding:0px 6px;
+	height:71px;
+}
+
+div#menu-link
+{
+	background-image: URL('../images/menu-link-mobile.png');
+	background-repeat:no-repeat;
+	background-position:center center;
+	padding:0px 6px;
+	height:71px;
+}
+
+div.box
+{
+	background-color:transparent;
+	border: #fff solid 3px;
+	border-radius: 10px;
+	padding:2px 6px 4px;
+	display:inline-block;
+	margin: 20px 10px 0px;
+	width:268px;
+	text-align:left;
+}
+
+div.white-box
+{
+	background-color:transparent;
+	background-image: URL('../images/graybg2.png');
+}
+
+div.dark-box
+{
+	background-color:transparent;
+	background-image: URL('../images/darkbg.png');
+}
+
+div.red-box
+{
+	background-color:transparent;
+	background-image: URL('../images/redbg.png');
+}
+
+div.green-box
+{
+	background-color:transparent;
+	background-image: URL('../images/greenbg.png');
+}
+
+div.red-hr
+{
+	width:252px;
+	height:2px;
+	background-color: transparent;
+	background-image: URL('../images/red-hr-mobile.png');
+	background-repeat:no-repeat;
+	background-position:center center;
+	display:inline-block;
+	margin:5px 8px;
+	padding:0px;
+}
+
+div#user-panel
+{
+	margin-top:0px;
+	border-top-left-radius:0px;
+	border-top-right-radius:0px;
+	border-top:none;
+	padding: 6px 2px 2px 14px;
+	width:264px;
+	font-size:12px;
+	height:54px;
+	color:#ffffff;
+}
+
+div#how-it-works
+{
+	min-height:30px;
+	padding-top:0px;
+	padding-bottom:0px;
+}
+
+div#how-it-works-text h1
+{
+	color:#fff;
+	font-size:12px;
+	font-weight:bold;
+	font-style:italic;
+	margin:10px 12px;
+}
+
+div#how-it-works-text p
+{
+	margin:6px 8px 24px;
+}
+
+div#user-stats
+{
+	display:block;
+	font-size:13px;
+	height:20px;
+	font-family:fishMonger, Verdana, Georgia, Times, serif;
+	color: #fff;
+	margin:10px 0;
+	padding:0 0 0 0;
+	font-weight:normal;
+	letter-spacing:1px;
+}
+
+div#user-stats span.bold
+{
+	font-weight:bold;
+	font-family:Arial, Verdana, Georgia, Times, serif;
+	font-size: 16px;
+}
+
+h1
+{
+	font-size: 24px;
+	color: #646973;
+	margin: 10px 0 15px 0;
+	padding: 0;
+	font-weight:normal;
+}
+
+h2
+{
+	font-size: 12px;
+	color: #646973;
+	margin: 0 0 16px 0;
+	padding: 0;
+	font-weight: bold;
+}
+
+h3
+{
+	font-size: 12px;
+	color: #646973;
+	margin: 0 0 14px 0;
+	padding: 0;
+	font-weight: bold;
+}
+
+hr
+{
+	background-color: #646973;
+	color: #646973;
+	height: 1px;
+	border: 0;
+}
+
+img
+{
+	border: 0;
+}
+
+p
+{
+	margin: 0 10px 13px 10px;
+	padding: 0;
+}

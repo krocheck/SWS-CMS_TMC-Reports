@@ -1,0 +1,62 @@
+<?php
+
+$lang = array();
+
+$lang['pages_add_breadcrumb']          = "Editing Page";
+$lang['pages_add_submit']              = "Add Translation";
+$lang['pages_add_title']               = "Adding Translation for Page:";
+$lang['pages_add_trans']               = "Add Translation";
+$lang['pages_create_new']              = "Create New Page";
+$lang['pages_delete_form_text']        = "<strong>Are you sure you want to delete the page/translation:";
+$lang['pages_delete_form_text2']       = "All content within the page, subpages, and objects will also be deleted!<br><br>There are no further prompts!</strong>";
+$lang['pages_delete_submit']           = "Yes, Delete Page";
+$lang['pages_delete_title']            = "Deleting Page:";
+$lang['pages_edit_breadcrumb']         = "Editing Translation";
+$lang['pages_edit_submit']             = "Save Changes";
+$lang['pages_edit_title']              = "Editing Translation for Page:";
+$lang['pages_form_background_image']   = "<strong>Background Image:</strong>";
+$lang['pages_form_coaches_left']       = "<strong>Left Coach Content:</strong>";
+$lang['pages_form_coaches_num']        = "<strong>Number of Assistant Coaches:</strong>";
+$lang['pages_form_coaches_right']      = "<strong>Right Coach Content:</strong>";
+$lang['pages_form_coaches_three']      = "Three";
+$lang['pages_form_coaches_two']        = "One/Two";
+$lang['pages_form_content']            = "<strong>Content:</strong><br>Main content to be shown on the page.";
+$lang['pages_form_content_bottom']     = "<strong>Bottom Content Area:</strong>";
+$lang['pages_form_content_right']      = "<strong>Right Content Area:</strong>";
+$lang['pages_form_emails']             = "<strong>Email Contacts:</strong><br />Each e-mail address entered here must have the following:<br />- Unique ID number (any positive integer will work)<br />- E-mail address<br />- Display Name<br /><br />These parameters are separated by the | symbol (Shift + \).<br />E.g.: 1|test@google.com|Test E-mail";
+$lang['pages_form_enabled']            = "<strong>Enabled?</strong><br>If yes, the page will available to the user for viewing.<br>If no, the page will still be able to be content managed in the control panel (use for a page you are adding new to the system that isn't ready to be seen).";
+$lang['pages_form_field_content']      = "Content";
+$lang['pages_form_field_info']         = "Information";
+$lang['pages_form_field_nav']          = "Navigation Settings";
+$lang['pages_form_field_sitemap']      = "Sitemap Information";
+$lang['pages_form_flv_file']           = "<strong>FLV File:</strong>";
+$lang['pages_form_h264_file']          = "<strong>H.264 Quicktime File:</strong>";
+$lang['pages_form_js']                 = "<strong>JavaScript:</strong><br>Add JavaScript code here, either load a .js file inline or create one.";
+$lang['pages_form_image_file']         = "<strong>Image File for Flash:</strong><br />640x360";
+$lang['pages_form_image_small_file']   = "<strong>Image File for HTML:</strong><br />363x227";
+$lang['pages_form_lang_comp']          = "<strong>Comparison Language</strong><br>Select a language to display to assist with translating.";
+$lang['pages_form_lang_sel']           = "<strong>Select Language</strong>";
+$lang['pages_form_left']               = "<strong>Left Column Content:</strong>";
+$lang['pages_form_name']               = "<strong>Name:</strong>";
+$lang['pages_form_navigation']         = "<strong>Show in Navigation?</strong><br>If yes, the page choice will be made available to the users.<br>If no, the page will not be included in the navigation menu but can be linked to manually.";
+$lang['pages_form_navigation_button']  = "<strong>Button Image:</strong><br>The image to show as the navigation option for the page.";
+$lang['pages_form_navigation_height']  = "<strong>Image Height:</strong><br>The height of the navigation images.";
+$lang['pages_form_navigation_rollover'] = "<strong>Rollover Image:</strong><br>The image to show as the navigation option for the page when active or being moused over.";
+$lang['pages_form_navigation_text']    = "<strong>Navigation Text:</strong><br>Text that will show up in the navigation menu.";
+$lang['pages_form_navigation_width']   = "<strong>Image Width:</strong><br>The width of the navigation images.";
+$lang['pages_form_redirect_page']      = "<strong>Destination Page:</strong><br>The page that the visitor will be redirected to.";
+$lang['pages_form_right']              = "<strong>Right Column Content:</strong>";
+$lang['pages_form_text_position']      = "<strong>Content Location:</strong>";
+$lang['pages_form_show_title']         = "<strong>Show Title?</strong>";
+$lang['pages_form_type']               = "<strong>Page Type</strong>";
+$lang['pages_form_sitemap_changefreq'] = "<strong>Change Frequency:</strong><br />How frequently the page is likely to change. This value provides general information to search engines and may not correlate exactly to how often they crawl the page";
+$lang['pages_form_sitemap_priority']   = "<strong>Priority:</strong><br />The priority of this URL relative to other URLs on your site. Valid values range from 0.0 to 1.0. This value does not affect how your pages are compared to pages on other sites—it only lets the search engines know which pages you deem most important for the crawlers.";
+$lang['pages_form_stories_per_page']   = "<strong>Number of Stories per Page:</strong><br />This will be the number of stories shown on a single page before previous and next links are shown.";
+$lang['pages_form_uri']                = "<strong>URI:</strong><br>The address used in the full URL of the page.<br>e.g.: {$this->registry->getConfig('base_url')}<strong>page-name</strong>";
+$lang['pages_head_name']               = "Name";
+$lang['pages_list_bread']              = "Page List";
+$lang['pages_list_table']              = "Pages";
+$lang['pages_list_title']              = "Content Management: Page List";
+$lang['pages_step_2']                  = "Continue to Step 2";
+
+?>

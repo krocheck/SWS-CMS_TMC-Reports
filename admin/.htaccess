@@ -1,0 +1,12 @@
+Options -Indexes  
+Options +FollowSymLinks  
+ErrorDocument 404 /index.php  
+
+<IfModule mod_rewrite.c>
+	RewriteEngine on    
+	RewriteBase /admin
+	RewriteCond %{REQUEST_FILENAME} !-f   
+	RewriteCond %{REQUEST_FILENAME} !-d   
+	RewriteCond %{REQUEST_URI} !=/favicon.ico   
+	RewriteRule ^(.*)$ index.php [L,QSA] 
+</IfModule>
