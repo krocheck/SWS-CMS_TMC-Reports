@@ -367,16 +367,19 @@ class AdminSkin extends Command
 
 		$html = "\n<select name='{$name}'{$js}{$css}>";
 
-		foreach( $list as $v )
+		if ( is_array( $list ) && count( $list ) > 0 )
 		{
-			$selected = "";
-
-			if ( ( $default_val != '' ) and ( $v[0] == $default_val ) )
+			foreach( $list as $v )
 			{
-				$selected = ' selected="selected"';
-			}
+				$selected = "";
 
-			$html .= "\n\t<option value='{$v[0]}'{$selected}>{$v[1]}</option>";
+				if ( ( $default_val != '' ) and ( $v[0] == $default_val ) )
+				{
+					$selected = ' selected="selected"';
+				}
+
+				$html .= "\n\t<option value='{$v[0]}'{$selected}>{$v[1]}</option>";
+			}
 		}
 
 		$html .= "\n</select>";

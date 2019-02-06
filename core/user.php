@@ -345,7 +345,7 @@ class User
 					'first_name'  => $ad->getFirstName(),
 					'last_name'   => $ad->getLastName(),
 					'user_id'     => 0,
-					'email'       => $username,
+					'email'       => $email,
 					'type'        => 'user',
 					'language_id' => 1
 				];

@@ -253,30 +253,12 @@ class AdminAccounts extends Command
 		//-----------------------------------------
 
 		$count      = array();
-		$pageWhere  = '';
-		$queryWhere = '';
-		$categories = $this->cache->getCache('categories');
-		$catIDs     = implode(',', array_keys( $categories ) );
-
-		$search = '';
-		$linkParams = array( 'module' => 'accounts');
-
-		if ( isset( $this->input['search'] ) && strlen( $this->input['search'] ) > 2 )
-		{
-			$search = "WHERE (first_name LIKE '%{$this->input['search']}%' OR last_name LIKE '%{$this->input['search']}%')";
-			$pageWhere = "WHERE (first_name LIKE '%{$this->input['search']}%' OR last_name LIKE '%{$this->input['search']}%')";
-			$linkParams['search'] = $this->input['search'];
-		}
-		else if ( isset( $this->input['search'] ) )
-		{
-			$this->error->addErrorLog("Searches must contain at least 3 characters");
-		}
 
 		// Page title
 		$this->display->setTitle( $this->lang->getString('accounts_list_title') );
 
 		// Build the page navigation if there are enough accounts to need multiple pages
-		$pagelinks = $this->display->getPagelinks( 'user', $linkParams, 'admin', $pageWhere );
+		$pagelinks = $this->display->getPagelinks( 'user', array( 'module' => 'accounts'), 'admin', '' );
 
 		//-----------------------------------------
 		// Table Headers
@@ -291,21 +273,9 @@ class AdminAccounts extends Command
 		// Create account link
 		$html = "<div style='float:right;'>";
 
-		$html .= $this->html->startForm(
-			array(
-				's'       => $this->user->getSessionID(),
-				'app'     => 'admin',
-				'module'  => 'accounts'
-			)
-		);
+		$html .= "<a href='".$this->display->buildURL( array( 'module' => 'accounts', 'do' => 'add' ), 'admin')."'>{$this->lang->getString('accounts_create_new')}</a>";
 
-		$html .= "<a href='".$this->display->buildURL( array( 'module' => 'accounts', 'do' => 'add' ), 'admin')."'>{$this->lang->getString('accounts_create_new')}</a> &bull; ";
-
-		$html .= $this->html->formInput( 'search', $this->registry->txtStripslashes( isset( $_POST['search'] ) ? $_POST['search'] : $user['search'] ), 'text', '', '15' ) . " ";
-
-		$html .= $this->html->endForm( 'Search', '', '', 1 );
-
-		$html .="</form></div>";
+		$html .="</div>";
 
 		// Begin table
 		$html .= $this->html->startTable( $this->lang->getString('accounts_list_table'), 'admin', ( strlen( $pagelinks ) > 0 ?"\n<div class='pagelinks'>{$pagelinks}</div>" : "" ) );
