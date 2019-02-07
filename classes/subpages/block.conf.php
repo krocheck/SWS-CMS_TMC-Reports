@@ -20,7 +20,7 @@
  * $TYPE_KEY is the string that defines the page type
  * as well as the name of the module php file
  */ 
-$TYPE_KEY     = 'home';
+$TYPE_KEY     = 'block';
 
 /**
  * $TYPE_CLASSES is an array that contains both processing
@@ -30,6 +30,12 @@ $TYPE_KEY     = 'home';
  *     1 => 'ADMIN CLASSNAME'
  * )
  */
-$TYPE_CLASSES = array( 'Home', 'HomeType' );
+$TYPE_CLASSES = array( 'Block', 'BlockType' );
+
+/**
+ * $TYPE_PAGES is an array that containsthe page types
+ * this module is used in.
+ */
+$TYPE_PAGES = array( 'agenda' );
 
 ?>
