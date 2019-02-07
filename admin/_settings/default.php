@@ -130,7 +130,6 @@ class AdminSettings extends Command
 		$settings['public_login']           = intval( $this->input['public_login'] );
 		$settings['seo_url']                = intval( $this->input['seo_url'] );
 		$settings['home_page']              = intval( $this->input['home_page'] );
-		$settings['manager_password']       = trim( $this->input['manager_password'] );
 		$settings['cookie_enable']          = intval( $this->input['cookie_enable'] );
 		$settings['cookie_path']            = trim( $this->input['cookie_path'] );
 		$settings['cookie_domain']          = trim( $this->input['cookie_domain'] );
@@ -299,13 +298,6 @@ class AdminSettings extends Command
 			array(
 				$this->lang->getString('settings_padding'),
 				$this->html->formInput( 'padding', $this->registry->txtStripslashes( $_POST['padding'] ? $_POST['padding'] : $settings['padding'] ) )
-			)
-		);
-
-		$html .= $this->html->addTdRow(
-			array(
-				$this->lang->getString('settings_manager_password'),
-				$this->html->formInput( 'manager_password', $this->registry->txtStripslashes( $_POST['manager_password'] ? $_POST['manager_password'] : $settings['manager_password'] ) )
 			)
 		);
 
