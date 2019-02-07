@@ -1157,10 +1157,13 @@ class PageController extends Command
 	{
 		$out = NULL;
 		
-		foreach( $this->pages as $v )
+		if ( is_array( $this->pages ) && count( $this->pages ) > 0 )
 		{
-			$out = $v;
-			break;
+			foreach( $this->pages as $v )
+			{
+				$out = $v;
+				break;
+			}
 		}
 		
 		return $out;
@@ -1311,7 +1314,7 @@ class PageController extends Command
 			$depthGuide = $this->lang->getString('depth_guide');;
 		}
 		
-		if ( ! count( $this->pageCache ) > 0 )
+		if ( is_array( $this->pageCache ) && ! count( $this->pageCache ) > 0 )
 		{
 			$this->getCache();
 		}

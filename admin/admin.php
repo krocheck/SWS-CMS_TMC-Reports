@@ -107,7 +107,7 @@ class AdminApp extends Application
 				else if ( $val == 'settings' )
 				{
 					$extra = array(
-						array( 'url' => $this->display->buildURL( array( 'module' => "settings", 'com' => "toast" ), 'admin' ), 'string' => $this->lang->getString( "toast_data" ) ),
+						array( 'url' => $this->display->buildURL( array( 'module' => "settings", 'com' => "asana" ), 'admin' ), 'string' => $this->lang->getString( "asana_data" ) ),
 						array( 'url' => $this->display->buildURL( array( 'module' => "settings", 'com' => "transfers" ), 'admin' ), 'string' => $this->lang->getString( "transfers" ) )
 					);
 
