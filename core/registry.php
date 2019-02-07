@@ -1039,7 +1039,7 @@ class Registry
 					if ( strpos( $bit, $this->getConfig('seo_param_sep') ) !== false )
 					{
 						$key   = substr( $bit, 0, strpos( $bit, $this->getConfig('seo_param_sep') ) );
-						$value = substr( $bit, (  strpos( $bit, $this->getConfig('seo_param_sep') ) + strlen( $this->getConfig('seo_param_sep') ) - 1 ) );
+						$value = substr( $bit, (  strpos( $bit, $this->getConfig('seo_param_sep') ) + strlen( $this->getConfig('seo_param_sep') - 1 ) ) );
 
 						$key   = $this->parseCleanKey( $key );
 						$value = $this->parseCleanValue( $value );

@@ -45,13 +45,13 @@ class AdldapAPI extends Command
 	{
 		$out = false;
 
-		$adServer = "ldap://trimarq.local";
+		$adServer = $this->registry->getSetting('ldap_server');
 
 		$ldap = ldap_connect($adServer);
 		$username = $username;
 		$password = $password;
 
-		$ldaprdn = 'TRIMARQ' . "\\" . $username;
+		$ldaprdn = $this->registry->getSetting('ldap_domain') . "\\" . $username;
 
 		ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
 		ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
@@ -61,7 +61,7 @@ class AdldapAPI extends Command
 		if ( $bind )
 		{
 			$filter ="(sAMAccountName={$username})";
-			$result = ldap_search( $ldap, "OU=Employees,OU=Accounts,DC=trimarq,DC=local", $filter );
+			$result = ldap_search( $ldap, $this->registry->getSetting('ldap_base_dn'), $filter );
 
 			$info = ldap_get_entries( $ldap, $result );
 
