@@ -277,10 +277,7 @@ class Display
 
 		if ( is_object( $user ) )
 		{
-			if ( $user->getSession()->getRemember() == 0 )
-			{
-				$sessionID = $user->getSessionID();
-			}
+			$sessionID = $user->getSessionID();
 		}
 
 		$appAdd    = $app ? "{$app}/" : "";

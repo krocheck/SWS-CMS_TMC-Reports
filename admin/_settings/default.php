@@ -135,14 +135,15 @@ class AdminSettings extends Command
 		$settings['cookie_path']            = trim( $this->input['cookie_path'] );
 		$settings['cookie_domain']          = trim( $this->input['cookie_domain'] );
 		$settings['cookie_prefix']          = trim( $this->input['cookie_prefix'] );
+		$settings['ldap_server']            = trim( $this->input['ldap_server'] );
+		$settings['ldap_domain']            = trim( $this->input['ldap_domain'] );
+		$settings['ldap_base_dn']           = trim( $this->input['ldap_base_dn'] );
 		$settings['asana_url']              = trim( $this->input['asana_url'] );
-		$settings['asana_client_id']        = trim( $this->input['asana_client_id'] );
-		$settings['asana_location']         = trim( $this->input['asana_location'] );
 		$settings['asana_token']            = trim( $this->input['asana_token'] );
-		$settings['asana_auth']             = trim( $this->input['asana_auth'] );
-		$settings['asana_orders']           = trim( $this->input['asana_orders'] );
-		$settings['asana_config']           = trim( $this->input['asana_config'] );
-		$settings['asana_crm']              = trim( $this->input['asana_crm'] );
+		$settings['asana_tasks']            = trim( $this->input['asana_tasks'] );
+		$settings['asana_projects']         = trim( $this->input['asana_projects'] );
+		$settings['asana_teams']            = trim( $this->input['asana_teams'] );
+		$settings['asana_users']            = trim( $this->input['asana_users'] );
 
 		//--------------------------------------------
 		// Checks...
@@ -354,6 +355,40 @@ class AdminSettings extends Command
 
 		$html .= $this->html->endFieldset();
 
+		$html .= $this->html->startFieldset( $this->lang->getString('settings_fieldset_ldap') );
+
+		//-----------------------------------------
+		// Form elements
+		//-----------------------------------------
+
+
+		$html .= $this->html->addTdRow(
+			array(
+				$this->lang->getString('settings_ldap_server'),
+				$this->html->formInput( 'ldap_server', $this->registry->txtStripslashes( $_POST['ldap_server'] ? $_POST['ldap_server'] : $settings['ldap_server'] ) )
+			)
+		);
+
+		$html .= $this->html->addTdRow(
+			array(
+				$this->lang->getString('settings_ldap_domain'),
+				$this->html->formInput( 'ldap_domain', $this->registry->txtStripslashes( $_POST['ldap_domain'] ? $_POST['ldap_domain'] : $settings['ldap_domain'] ) )
+			)
+		);
+
+		$html .= $this->html->addTdRow(
+			array(
+				$this->lang->getString('settings_ldap_base_dn'),
+				$this->html->formInput( 'ldap_base_dn', $this->registry->txtStripslashes( $_POST['ldap_base_dn'] ? $_POST['ldap_base_dn'] : $settings['ldap_base_dn'] ) )
+			)
+		);
+
+		//-----------------------------------------
+		// End table and form
+		//-----------------------------------------
+
+		$html .= $this->html->endFieldset();
+
 		$html .= $this->html->startFieldset( $this->lang->getString('settings_fieldset_asana') );
 
 		//-----------------------------------------
@@ -369,20 +404,6 @@ class AdminSettings extends Command
 
 		$html .= $this->html->addTdRow(
 			array(
-				$this->lang->getString('settings_asana_client_id'),
-				$this->html->formInput( 'asana_client_id', $this->registry->txtStripslashes( $_POST['asana_client_id'] ? $_POST['asana_client_id'] : $settings['asana_client_id'] ) )
-			)
-		);
-
-		$html .= $this->html->addTdRow(
-			array(
-				$this->lang->getString('settings_asana_location'),
-				$this->html->formInput( 'asana_location', $this->registry->txtStripslashes( $_POST['asana_location'] ? $_POST['asana_location'] : $settings['asana_location'] ) )
-			)
-		);
-
-		$html .= $this->html->addTdRow(
-			array(
 				$this->lang->getString('settings_asana_token'),
 				$this->html->formInput( 'asana_token', $this->registry->txtStripslashes( $_POST['asana_token'] ? $_POST['asana_token'] : $settings['asana_token'] ) )
 			)
@@ -390,29 +411,29 @@ class AdminSettings extends Command
 
 		$html .= $this->html->addTdRow(
 			array(
-				$this->lang->getString('settings_asana_auth'),
-				$this->html->formInput( 'asana_auth', $this->registry->txtStripslashes( $_POST['asana_auth'] ? $_POST['asana_auth'] : $settings['asana_auth'] ) )
+				$this->lang->getString('settings_asana_tasks'),
+				$this->html->formInput( 'asana_tasks', $this->registry->txtStripslashes( $_POST['asana_tasks'] ? $_POST['asana_tasks'] : $settings['asana_tasks'] ) )
 			)
 		);
 
 		$html .= $this->html->addTdRow(
 			array(
-				$this->lang->getString('settings_asana_orders'),
-				$this->html->formInput( 'asana_orders', $this->registry->txtStripslashes( $_POST['asana_orders'] ? $_POST['asana_orders'] : $settings['asana_orders'] ) )
+				$this->lang->getString('settings_asana_projects'),
+				$this->html->formInput( 'asana_projects', $this->registry->txtStripslashes( $_POST['asana_projects'] ? $_POST['asana_projects'] : $settings['asana_projects'] ) )
 			)
 		);
 
 		$html .= $this->html->addTdRow(
 			array(
-				$this->lang->getString('settings_asana_config'),
-				$this->html->formInput( 'asana_config', $this->registry->txtStripslashes( $_POST['asana_config'] ? $_POST['asana_config'] : $settings['asana_config'] ) )
+				$this->lang->getString('settings_asana_teams'),
+				$this->html->formInput( 'asana_teams', $this->registry->txtStripslashes( $_POST['asana_teams'] ? $_POST['asana_teams'] : $settings['asana_teams'] ) )
 			)
 		);
 
 		$html .= $this->html->addTdRow(
 			array(
-				$this->lang->getString('settings_asana_crm'),
-				$this->html->formInput( 'asana_crm', $this->registry->txtStripslashes( $_POST['asana_crm'] ? $_POST['asana_crm'] : $settings['asana_crm'] ) )
+				$this->lang->getString('settings_asana_users'),
+				$this->html->formInput( 'asana_users', $this->registry->txtStripslashes( $_POST['asana_users'] ? $_POST['asana_users'] : $settings['asana_users'] ) )
 			)
 		);
 
