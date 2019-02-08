@@ -19,7 +19,7 @@ $lang['transfers']                     = "Data Logs";
 $lang['javascript']                    = "* This site requires Javascript to be enabled";
 
 $lang['all_accounts']                  = "ALL ACCOUNTS";
-$lang['agrenda']                       = "Agenda Template";
+$lang['agenda']                        = "Agenda Template";
 $lang['block']                         = "Rich Text Block";
 $lang['redirect']                      = "Redirect";
 $lang['text']                          = "Text Area";
