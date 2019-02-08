@@ -108,36 +108,6 @@ class AdminPages extends Command
 
 		$this->display->addBreadcrumb( $this->display->buildURL( array( 'module' => "pages" ), 'admin' ), $this->lang->getString('pages') );
 
-		// Decide if a module needs to be loaded
-		// This will need to be fancied up if extra
-		// access levels are added
-		if ( isset( $this->input['com'] ) )
-		{
-			switch( $this->input['com'] )
-			{
-				case 'beers':
-					require_once( SWS_ROOT_PATH . 'admin/_pages/beers.php' );
-					$module = new AdminBeers();
-					$module->execute( $this->registry );
-					break;
-				case 'category':
-					require_once( SWS_ROOT_PATH . 'admin/_pages/category.php' );
-					$module = new AdminCategory();
-					$module->execute( $this->registry );
-					break;
-				case 'discount':
-					require_once( SWS_ROOT_PATH . 'admin/_pages/discount.php' );
-					$module = new AdminDiscount();
-					$module->execute( $this->registry );
-					break;
-				case 'menu':
-					require_once( SWS_ROOT_PATH . 'admin/_pages/menu.php' );
-					$module = new AdminMenu();
-					$module->execute( $this->registry );
-					break;
-			}
-		}
-
 		$this->controller->buildBreadcrumb( $this->parentID, array( 'module' => 'pages' ), 'admin' );
 
 		if ( ! isset( $this->input['do'] ) )

@@ -12,10 +12,6 @@ $lang['copyright']                     = '&copy; '.date("Y").' All rights reserv
 $lang['accounts']                      = "Account Management";
 $lang['languages']                     = "Language Management";
 $lang['pages']                         = "Content Management";
-$lang['beers']                         = "Beers";
-$lang['full_menu']                     = "Full Menu";
-$lang['category']                      = "Sales Categories";
-$lang['discount']                      = "Discounts";
 $lang['settings']                      = "System Settings";
 $lang['asana_data']                    = "Asana Data";
 $lang['transfers']                     = "Data Logs";
@@ -23,6 +19,8 @@ $lang['transfers']                     = "Data Logs";
 $lang['javascript']                    = "* This site requires Javascript to be enabled";
 
 $lang['all_accounts']                  = "ALL ACCOUNTS";
+$lang['agrenda']                       = "Agenda Template";
+$lang['block']                         = "Rich Text Block";
 $lang['redirect']                      = "Redirect";
 $lang['text']                          = "Text Area";
 

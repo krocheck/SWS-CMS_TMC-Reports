@@ -86,23 +86,11 @@ class AdminApp extends Application
 			{
 				if ( $val == "pages" )
 				{
-					$extra = array(
-						array( 'url' => $this->display->buildURL( array( 'module' => "pages", 'com' => "beers" ), 'admin' ), 'string' => $this->lang->getString( "beers" ) ),
-						array( 'url' => $this->display->buildURL( array( 'module' => "pages", 'com' => "menu" ), 'admin' ), 'string' => $this->lang->getString( "full_menu" ) ),
-						array( 'url' => $this->display->buildURL( array( 'module' => "pages", 'com' => "category" ), 'admin' ), 'string' => $this->lang->getString( "category" ) ),
-						array( 'url' => $this->display->buildURL( array( 'module' => "pages", 'com' => "discount" ), 'admin' ), 'string' => $this->lang->getString( "discount" ) )
-					);
-
-					$this->display->addNavigation( array( 'url' => $this->display->buildURL( array( 'module' => $val ), 'admin' ), 'string' => $this->lang->getString( $val ), 'extra' => $extra ) );
+					$this->display->addNavigation( array( 'url' => $this->display->buildURL( array( 'module' => $val ), 'admin' ), 'string' => $this->lang->getString( $val ) ) );
 				}
 				else if ( $val == "accounts" )
 				{
-					$extra = array(
-						array( 'url' => $this->display->buildURL( array( 'module' => "accounts", 'com' => "transactions" ), 'admin' ), 'string' => $this->lang->getString( "transactions" ) ),
-						array( 'url' => $this->display->buildURL( array( 'module' => "accounts", 'com' => "rewards" ), 'admin' ), 'string' => $this->lang->getString( "rewards" ) )
-					);
-
-					$this->display->addNavigation( array( 'url' => $this->display->buildURL( array( 'module' => $val ), 'admin' ), 'string' => $this->lang->getString( $val ), 'extra' => $extra ) );
+					$this->display->addNavigation( array( 'url' => $this->display->buildURL( array( 'module' => $val ), 'admin' ), 'string' => $this->lang->getString( $val ) ) );
 				}
 				else if ( $val == 'settings' )
 				{
