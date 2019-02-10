@@ -63,11 +63,18 @@ class Shows extends Subpage
 			$this->tasks[$r['task_gid']] = $r;
 			$this->tasks[$r['task_gid']]['custom_fields'] = unserialize($r['custom_fields']);
 			$this->tasks[$r['task_gid']]['tags'] = unserialize($r['tags']);
-			
-			$out .= $this->display->compiledTemplates('skin_agenda')->show( $r );
+
+			if ( $r['resource_subtype'] == 'section' )
+			{
+				$out .= $this->display->compiledTemplates('skin_agenda')->section( $this->tasks[$r['task_gid']] );
+			}
+			else
+			{
+				$out .= $this->display->compiledTemplates('skin_agenda')->show( $this->tasks[$r['task_gid']] );
+			}
 		}
 
-		return $out;;
+		return $out;
 	}
 
 	public function getName()

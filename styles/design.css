@@ -84,6 +84,11 @@ div.ui-loader
 	display: none;
 }
 
+div.show
+{
+	margin: 0 0 0 20px !important;
+}
+
 h1
 {
 	font-size:18px;
@@ -105,6 +110,15 @@ h3
 	font-size:16px;
 	font-weight:700;
 	margin:0 0 14px 20px;
+	padding:0;
+}
+
+h4
+{
+	font-size:14px;
+	font-weight:normal;
+	font-style: italic;
+	margin:0 0 14px 0;
 	padding:0;
 }
 
@@ -168,6 +182,7 @@ ul
 	font-size: 11px;
 	height: 16px;
 	line-height: 16px;
+	margin: 2px 3px !important;
 	padding: 0 8px;
 }
 

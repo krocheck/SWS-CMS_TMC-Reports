@@ -42,7 +42,23 @@ EOF;
 //--endhtml--//
 return $ELMHTML;
 }
+	
+//===========================================================================
+// Show
+//===========================================================================
+public function section( $r ) {
 
+$name = substr($r['name'],0,strlen($r['name'])-1);
+
+$ELMHTML = "";
+//--starthtml--//
+$ELMHTML .= <<<EOF
+	<h4>{$name}</h4>
+
+EOF;
+//--endhtml--//
+return $ELMHTML;
+}
 //===========================================================================
 // Show
 //===========================================================================
@@ -96,11 +112,12 @@ $ELMHTML .= <<<EOF
 		<strong>{$r['name']}</strong> | {$location} | {$date}<br />
 		{$r['custom_fields'][512408346444750]} | Producer: {$r['custom_fields'][512462680735933]} | AE: {$r['custom_fields'][512408346444708]} {$tagSep} 
 EOF;
-foreach( $row['tags'] as $v ) {
+if (count($r['tags']) > 0) {
+foreach( $r['tags'] as $v ) {
 $ELMHTML .= <<<EOF
 <div class="pill {$tags[$v]['color']}">{$tags[$v]['name']}</div>
 EOF;
-}
+} }
 $ELMHTML .= <<<EOF
 <br />
 {$r['description']}
