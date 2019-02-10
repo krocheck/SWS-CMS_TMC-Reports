@@ -38,14 +38,7 @@ body
 	vertical-align:top;
 }
 
-div#content
-{
-	width:960px;
-	margin: 151px auto 10px;
-	padding: 0px 0px 0px;
-}
-
-div#content div
+div.content div
 {
 	margin:0 0 0 30px;
 }
@@ -85,7 +78,7 @@ h2
 {
 	font-size:18px;
 	font-weight:700;
-	margin:0 0 16px 20px;
+	margin:10px 0 10px 20px;
 	padding:0;
 }
 
@@ -103,11 +96,17 @@ hr
 	border:0;
 	color:#000000;
 	height:2px;
+	margin: 14px 0 0 0;
 }
 
 img
 {
 	border:0;
+}
+
+ol
+{
+	padding: 0 0 0 30px;
 }
 
 ol li
@@ -136,5 +135,6 @@ table
 
 ul
 {
-	padding: 4px 0 4px 20px;
+	margin: 0;
+	padding: 4px 0 4px 30px;
 }

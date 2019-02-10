@@ -42,6 +42,39 @@ class Shows extends Subpage
 
 	public function getContent()
 	{
+		$this->project = array();
+		$this->DB->query("SELECT * FROM project WHERE project_gid = '{$this->metadata['project']['value']}';");
+
+		while( $r = $this->DB->fetchRow() )
+		{
+			$this->project = $r;
+		}
+
+		$this->project['current_status'] = unserialize($this->project['current_status']);
+		$this->project['members'] = unserialize($this->project['currentmembers_status']);
+		$this->project['followers'] = unserialize($this->project['followers']);
+		$this->project['custom_fields'] = unserialize($this->project['custom_fields']);
+		$this->project['custom_field_settings'] = unserialize($this->project['custom_field_settings']);
+		$this->project['sections'] = unserialize($this->project['sections']);
+		$this->project['tasks'] = unserialize($this->project['tasks']);
+
+		$this->display->addDebug($this->project);
+		/*
+		'project_gid'           => $projectID,
+		'owner_gid'             => $row['owner']['gid'],
+		'workspace_gid'         => $workspace,
+		'team_gid'              => $row['team']['gid'],
+		'name'                  => $row['name'],
+		'due_date'              => $row['due_date'],
+		'start_on'              => $row['start_on'],
+		'created_at'            => $this->parseDate( $row['created_at'] ),
+		'modified_at'           => $this->parseDate( $row['modified_at'] ),
+		'archived'              => ( $row['archived'] ? 1 : 0 ),
+		'public'                => ( $row['public'] ? 1 : 0 ),
+		'color'                 => $row['color'],
+		'html_notes'            => mysqli_real_escape_string( $this->DB->getConnection(), $row['html_notes'] )
+		*/
+
 		return "Test";
 	}
 
