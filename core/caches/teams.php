@@ -37,7 +37,7 @@ class TeamsCache extends CacheType
 	 */
 	public function save( $dbCheck = TRUE )
 	{
-		$this->DB->query("SELECT * FROM teams");
+		$this->DB->query("SELECT * FROM team");
 		
 		$save = array();
 		

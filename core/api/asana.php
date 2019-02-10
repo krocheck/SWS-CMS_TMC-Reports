@@ -395,7 +395,7 @@ class AsanaAPI extends Command
 			}
 			else
 			{
-				$data = $this->callGet('teams',"?limit=50&workspace={$workspace}");
+				$data = $this->callGet('teams',"/{$workspace}/teams?limit=50");
 			}
 
 			if ( isset($data['data']) && is_array($data['data']) && count($data['data']) > 0 )
