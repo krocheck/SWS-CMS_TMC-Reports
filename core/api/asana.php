@@ -104,11 +104,11 @@ class AsanaAPI extends Command
 		{
 			if ( count($this->endpoints[ $endpoint ]['expand']) > 0 )
 			{
-				$fields = (strlen($method) > 0 && ( strpos('?', $method) > 0 || substr($method,0,1) == '?' ) ? '&' : '?') . 'opt_expand=' . implode(',',$this->endpoints[ $endpoint ]['expand']);
+				$fields = (strlen($method) > 0 && ( strpos($method, '?') > 0 || substr($method,0,1) == '?' ) ? '&' : '?') . 'opt_expand=' . implode(',',$this->endpoints[ $endpoint ]['expand']);
 			}
 			else
 			{
-				$fields = (strlen($method) > 0 && ( strpos('?', $method) > 0 || substr($method,0,1) == '?' ) ? '&' : '?') . 'opt_fields=' . implode(',',$this->endpoints[ $endpoint ]['fields']);
+				$fields = (strlen($method) > 0 && ( strpos($method, '?') > 0 || substr($method,0,1) == '?' ) ? '&' : '?') . 'opt_fields=' . implode(',',$this->endpoints[ $endpoint ]['fields']);
 			}
 
 			$url = $this->apiURL . $this->endpoints[ $endpoint ]['uri'] . $method . $fields;
@@ -143,88 +143,26 @@ class AsanaAPI extends Command
 	}
 
 	/**
-	 * Basic CURL post which connects to the Asana API and returns the result
+	 * Get an array of the projects to create a dropdown or multi-select
 	 *
-	 * @param $endpoint string the endpoint being used
-	 * @param $method string the addtional query string
-	 * @return bool result
-	 * @access protected
+	 * @return array the workspaces
+	 * @access public
 	 * @since 1.0.0
-	*/
-	protected function callPost( $endpoint, $method, $params )
+	 */
+	public function getProjectsDropdown()
 	{
 		$out = array();
+		$cache = $this->cache->getCache('projects');
 
-		$curl2 = curl_init();
-		$url = $this->apiURL . $this->endpoints[ $endpoint ]['uri'] . $method;
-		$parameters = array();
-		
-		if ( is_array( $params ) )
+		if ( count( $cache ) > 0 )
 		{
-			foreach( $params as $key => $value )
+			foreach( $cache as $item )
 			{
-				$parameters[ $key ] = urlencode( $value );
+				$out[ $item['project_gid'] ] = array( $item['project_gid'], $item['name'] );
 			}
-		}
-
-		$parameters = implode("&", $parameters);;
-
-		curl_setopt($curl2, CURLOPT_POST, true);
-		curl_setopt($curl2, CURLOPT_POSTFIELDS, $parameters);
-
-		curl_setopt($curl2, CURLOPT_URL, $url);
-		curl_setopt($curl2, CURLOPT_HTTPHEADER, array( "Authorization: Bearer {$this->token}" ) );
-		curl_setopt($curl2, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($curl2, CURLOPT_SSL_VERIFYPEER, FALSE);
-		curl_setopt($curl2, CURLOPT_SSL_VERIFYHOST, 2);
-		curl_setopt($curl2, CURLOPT_USERAGENT, $this->userAgent);
-		$result = curl_exec($curl2);
-
-		$httpCode = curl_getinfo($curl2, CURLINFO_HTTP_CODE);
-		$this->httpCode = $httpCode;
-
-		if ( $httpCode == 200 )
-		{
-			$result = json_decode( $result, TRUE );
-
-			if ( is_array( $result ) && count( $result ) > 0 )
-			{
-				$out = $result;
-			}
-		}
-		else
-		{
-			$this->display->addDebug( array( 'url' => $url, 'params' => $parameters, 'http_code' => $httpCode, 'result' => $result ) );
 		}
 
 		return $out;
-	}
-
-	/**
-	 * Generate v4 UUID
-	 * 
-	 * Version 4 UUIDs are pseudo-random.
-	 * @return string a pseudo-random GID
-	 * @access protected
-	 * @since 1.0.0
-	 */
-	public static function generateGID() 
-	{
-		return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-		// 32 bits for "time_low"
-		mt_rand(0, 0xffff), mt_rand(0, 0xffff),
-		// 16 bits for "time_mid"
-		mt_rand(0, 0xffff),
-		// 16 bits for "time_hi_and_version",
-		// four most significant bits holds version number 4
-		mt_rand(0, 0x0fff) | 0x4000,
-		// 16 bits, 8 bits for "clk_seq_hi_res",
-		// 8 bits for "clk_seq_low",
-		// two most significant bits holds zero and one for variant DCE1.1
-		mt_rand(0, 0x3fff) | 0x8000,
-		// 48 bits for "node"
-		mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
-		);
 	}
 
 	/**
@@ -263,6 +201,132 @@ class AsanaAPI extends Command
 		$date = substr($date,0,10) . ' ' . substr($date,11,8);
 
 		return date_create( $date )->format("Y-m-d H:i:s");
+	}
+
+	/**
+	 * Call the Asana API to retrieve the Projects
+	 *
+	 * @return int count of retrieved items
+	 * @access public
+	 * @since 1.0.0
+	*/
+	public function updateProjects()
+	{
+		$projectIDs = array();
+		$newRows = array();
+		$oldRows = array();
+		$dbRows = array();
+		$count = 0;
+		$workspace = $this->registry->getSetting('asana_default');
+
+		$data = array();
+
+		do
+		{
+			if ( isset($data['next_page']) && is_array($data['next_page']) )
+			{
+				$data = $this->callGet('next_page', $data['next_page']['path']);
+			}
+			else
+			{
+				$data = $this->callGet('projects',"?limit=50&workspace={$workspace}");
+			}
+
+			if ( isset($data['data']) && is_array($data['data']) && count($data['data']) > 0 )
+			{
+				foreach( $data['data'] as $row )
+				{
+					$count++;
+					$projectID = $row['gid'];
+					$followers = array();
+					$members = array();
+
+					if ( is_array($row['followers']) && count($row['followers']) > 0 )
+					{
+						foreach( $row['followers'] as $follower )
+						{
+							$followers[] = $follower['gid'];
+						}
+					}
+
+					if ( is_array($row['members']) && count($row['members']) > 0 )
+					{
+						foreach( $row['members'] as $member )
+						{
+							$members[] = $member['gid'];
+						}
+					}
+
+					$projectIDs[]  = $projectID;
+					$newRows[ $projectID ] = array(
+						'project_gid'           => $projectID,
+						'owner_gid'             => $row['owner']['gid'],
+						'workspace_gid'         => $workspace,
+						'team_gid'              => $row['team']['gid'],
+						'name'                  => $row['name'],
+						'current_status'        => mysqli_real_escape_string( $this->DB->getConnection(), serialize($row['current_status']) ),
+						'due_date'              => $row['due_date'],
+						'start_on'              => $row['start_on'],
+						'created_at'            => $this->parseDate( $row['created_at'] ),
+						'modified_at'           => $this->parseDate( $row['modified_at'] ),
+						'archived'              => ( $row['archived'] ? 1 : 0 ),
+						'public'                => ( $row['public'] ? 1 : 0 ),
+						'members'               => mysqli_real_escape_string( $this->DB->getConnection(), serialize($members) ),
+						'followers'             => mysqli_real_escape_string( $this->DB->getConnection(), serialize($followers) ),
+						'custom_fields'         => mysqli_real_escape_string( $this->DB->getConnection(), serialize($row['custom_fields']) ),
+						'custom_field_settings' => mysqli_real_escape_string( $this->DB->getConnection(), serialize($row['custom_field_settings']) ),
+						'color'                 => $row['color'],
+						'html_notes'            => mysqli_real_escape_string( $this->DB->getConnection(), $row['html_notes'] ),
+
+					);
+				}
+			}
+		} while( isset($data['next_page']) && is_array($data['next_page']) );
+
+		if ( $count > 0 )
+		{
+			$this->DB->query("SELECT * FROM project;");
+
+			if ( $this->DB->getTotalRows() )
+			{
+				while( $row = $this->DB->fetchRow() )
+				{
+					$dbRows[ $row['project_gid'] ] = $row;
+
+					if ( isset( $row['project_gid'] ) && isset( $newRows[ $row['project_gid'] ] ) )
+					{
+						$oldRows[ $row['project_gid'] ] = $newRows[ $row['project_gid'] ];
+						unset( $newRows[ $row['project_gid'] ] );
+					}
+				}
+			}
+
+			if ( count( $newRows ) > 0 )
+			{
+				$query = "INSERT INTO project (project_gid,owner_gid,workspace_gid,team_gid,name,current_status,due_date,start_on,created_at,modified_at,archived,public,members,followers,custom_fields,custom_field_settings,color,html_notes) VALUES ";
+
+				foreach( $newRows as $row )
+				{
+					$query .= "('{$row['project_gid']}','{$row['owner_gid']}','{$row['workspace_gid']}','{$row['team_gid']}',\"{$row['name']}\",\"{$row['current_status']}\",'{$row['due_date']}','{$row['start_on']}','{$row['created_at']}','{$row['modified_at']}','{$row['archived']}','{$row['public']}',\"{$row['members']}\",\"{$row['followers']}\",\"{$row['custom_fields']}\",\"{$row['custom_field_settings']}\",'{$row['color']}',\"{$row['html_notes']}\"),";
+				}
+
+				$query = substr($query,0,-1) . ";";
+
+				$this->DB->query( $query );
+			}
+
+			if ( count( $oldRows ) > 0 )
+			{
+				foreach( $oldRows as $row )
+				{
+					$this->DB->query("UPDATE project SET project_gid = '{$row['project_gid']}', owner_gid = '{$row['owner_gid']}', workspace_gid = '{$row['workspace_gid']}', team_gid = '{$row['team_gid']}', name = \"{$row['name']}\", current_status = \"{$row['current_status']}\", due_date = '{$row['due_date']}', start_on = '{$row['start_on']}', created_at = '{$row['created_at']}', modified_at = '{$row['modified_at']}', archived = '{$row['archived']}', public = '{$row['public']}', members = \"{$row['members']}\", followers = \"{$row['followers']}\", custom_fields = \"{$row['custom_fields']}\", custom_field_settings = \"{$row['custom_field_settings']}\", color = '{$row['color']}', html_notes = \"{$row['html_notes']}\", last_update = NOW() WHERE project_gid = '{$row['project_gid']}';");
+				}
+			}
+		}
+
+		$this->cache->update('projects');
+
+		return $count;
 	}
 
 	/**
