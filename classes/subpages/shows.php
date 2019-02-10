@@ -51,7 +51,7 @@ class Shows extends Subpage
 		}
 
 		$this->project['current_status'] = unserialize($this->project['current_status']);
-		$this->project['members'] = unserialize($this->project['currentmembers_status']);
+		$this->project['members'] = unserialize($this->project['members']);
 		$this->project['followers'] = unserialize($this->project['followers']);
 		$this->project['custom_fields'] = unserialize($this->project['custom_fields']);
 		$this->project['custom_field_settings'] = unserialize($this->project['custom_field_settings']);

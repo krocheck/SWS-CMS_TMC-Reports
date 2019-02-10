@@ -1,5 +1,18 @@
 @charset "utf-8";
 
+@media print
+{
+	#debug
+	{
+		visibility: hidden !important;
+	}
+
+	div.group
+	{
+		page-break-inside: avoid;
+	}
+}
+
 #debug
 {
 	color:#000000;
