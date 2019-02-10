@@ -314,11 +314,11 @@ class AsanaAPI extends Command
 
 			if ( count( $newRows ) > 0 )
 			{
-				$query = "INSERT INTO project (project_gid,owner_gid,workspace_gid,team_gid,name,current_status,due_date,start_on,created_at,modified_at,archived,public,members,followers,custom_fields,custom_field_settings,color,html_notes) VALUES ";
+				$query = "INSERT INTO project (project_gid,owner_gid,workspace_gid,team_gid,name,current_status,due_date,start_on,created_at,modified_at,archived,public,members,followers,custom_fields,custom_field_settings,color,html_notes,sections) VALUES ";
 
 				foreach( $newRows as $row )
 				{
-					$query .= "('{$row['project_gid']}','{$row['owner_gid']}','{$row['workspace_gid']}','{$row['team_gid']}',\"{$row['name']}\",\"{$row['current_status']}\",'{$row['due_date']}','{$row['start_on']}','{$row['created_at']}','{$row['modified_at']}','{$row['archived']}','{$row['public']}',\"{$row['members']}\",\"{$row['followers']}\",\"{$row['custom_fields']}\",\"{$row['custom_field_settings']}\",'{$row['color']}',\"{$row['html_notes']}\"),";
+					$query .= "('{$row['project_gid']}','{$row['owner_gid']}','{$row['workspace_gid']}','{$row['team_gid']}',\"{$row['name']}\",\"{$row['current_status']}\",'{$row['due_date']}','{$row['start_on']}','{$row['created_at']}','{$row['modified_at']}','{$row['archived']}','{$row['public']}',\"{$row['members']}\",\"{$row['followers']}\",\"{$row['custom_fields']}\",\"{$row['custom_field_settings']}\",'{$row['color']}',\"{$row['html_notes']}\",\"{$row['sections']}\"),";
 				}
 
 				$query = substr($query,0,-1) . ";";
@@ -330,7 +330,7 @@ class AsanaAPI extends Command
 			{
 				foreach( $oldRows as $row )
 				{
-					$this->DB->query("UPDATE project SET project_gid = '{$row['project_gid']}', owner_gid = '{$row['owner_gid']}', workspace_gid = '{$row['workspace_gid']}', team_gid = '{$row['team_gid']}', name = \"{$row['name']}\", current_status = \"{$row['current_status']}\", due_date = '{$row['due_date']}', start_on = '{$row['start_on']}', created_at = '{$row['created_at']}', modified_at = '{$row['modified_at']}', archived = '{$row['archived']}', public = '{$row['public']}', members = \"{$row['members']}\", followers = \"{$row['followers']}\", custom_fields = \"{$row['custom_fields']}\", custom_field_settings = \"{$row['custom_field_settings']}\", color = '{$row['color']}', html_notes = \"{$row['html_notes']}\", last_update = NOW() WHERE project_gid = '{$row['project_gid']}';");
+					$this->DB->query("UPDATE project SET project_gid = '{$row['project_gid']}', owner_gid = '{$row['owner_gid']}', workspace_gid = '{$row['workspace_gid']}', team_gid = '{$row['team_gid']}', name = \"{$row['name']}\", current_status = \"{$row['current_status']}\", due_date = '{$row['due_date']}', start_on = '{$row['start_on']}', created_at = '{$row['created_at']}', modified_at = '{$row['modified_at']}', archived = '{$row['archived']}', public = '{$row['public']}', members = \"{$row['members']}\", followers = \"{$row['followers']}\", custom_fields = \"{$row['custom_fields']}\", custom_field_settings = \"{$row['custom_field_settings']}\", color = '{$row['color']}', html_notes = \"{$row['html_notes']}\", sections = \"{$row['sections']}\", last_update = NOW() WHERE project_gid = '{$row['project_gid']}';");
 				}
 			}
 		}
@@ -367,7 +367,7 @@ class AsanaAPI extends Command
 			}
 			else
 			{
-				$data = $this->callGet('sections',"/{$workspace}/sections?limit=50");
+				$data = $this->callGet('sections',"/{$project}/sections?limit=50");
 			}
 
 			if ( isset($data['data']) && is_array($data['data']) && count($data['data']) > 0 )
@@ -390,7 +390,7 @@ class AsanaAPI extends Command
 
 		if ( $count > 0 )
 		{
-			$this->DB->query("SELECT * FROM section WHERE project_id = '{$project}';");
+			$this->DB->query("SELECT * FROM section WHERE project_gid = '{$project}';");
 
 			if ( $this->DB->getTotalRows() )
 			{
