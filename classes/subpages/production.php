@@ -69,18 +69,21 @@ class Production extends Subpage
 		{
 			foreach( $this->project['tasks'] as $r )
 			{
-				if ( $r['name'] == 'Closeout:' )
-				{
-					break;
-				}
-
 				if ( $r['resource_subtype'] == 'section' )
 				{
-					$out .= $this->display->compiledTemplates('skin_agenda')->section( $this->tasks[$r] );
-				}
-				else
-				{
-					$out .= $this->display->compiledTemplates('skin_agenda')->production( $this->tasks[$r] );
+					if ( $this->tasks[$r]['name'] == 'Closeout:' )
+					{
+						break;
+					}
+
+					if ( $this->tasks[$r]['resource_subtype'] == 'section' )
+					{
+						$out .= $this->display->compiledTemplates('skin_agenda')->section( $this->tasks[$r] );
+					}
+					else
+					{
+						$out .= $this->display->compiledTemplates('skin_agenda')->production( $this->tasks[$r] );
+					}
 				}
 			}
 		}
