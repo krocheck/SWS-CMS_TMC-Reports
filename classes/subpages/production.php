@@ -16,7 +16,7 @@
  * @version		$Revision: 32 $
  */
 
-class Block extends Subpage
+class Production extends Subpage
 {
 	/**
 	 * The subpage id
@@ -25,7 +25,7 @@ class Block extends Subpage
 	 * @var int
 	 * @since 1.0.0
 	 */
-	protected static $type = 'block';
+	protected static $type = 'production';
 
 	/**
 	 * Constructor that loads the registry
@@ -42,12 +42,49 @@ class Block extends Subpage
 
 	public function getContent()
 	{
-		return $this->registry->parseHTML( $this->metadata['description']['value'] );
+		$out = "";
+		$this->project = array();
+		$this->tasks   = array();
+		$this->DB->query("SELECT project_gid,custom_fields,custom_field_settings,tasks FROM project WHERE project_gid = '{$this->metadata['project']['value']}';");
+
+		while( $r = $this->DB->fetchRow() )
+		{
+			$this->project = $r;
+		}
+
+		$this->project['custom_fields'] = unserialize($this->project['custom_fields']);
+		$this->project['custom_field_settings'] = unserialize($this->project['custom_field_settings']);
+		$this->project['tasks'] = unserialize($this->project['tasks']);
+
+		$this->DB->query("SELECT task_gid,name,completed,custom_fields,due_on,resource_subtype,start_on,tags FROM task WHERE task_gid IN(" . implode(",", $this->project['tasks']) . ") AND completed = 0;");
+
+		while( $r = $this->DB->fetchRow() )
+		{
+			if ( $r['name'] == 'Closeout:' )
+			{
+				break;
+			}
+
+			$this->tasks[$r['task_gid']] = $r;
+			$this->tasks[$r['task_gid']]['custom_fields'] = unserialize($r['custom_fields']);
+			$this->tasks[$r['task_gid']]['tags'] = unserialize($r['tags']);
+
+			if ( $r['resource_subtype'] == 'production' )
+			{
+				$out .= $this->display->compiledTemplates('skin_agenda')->section( $this->tasks[$r['task_gid']] );
+			}
+			else
+			{
+				$out .= $this->display->compiledTemplates('skin_agenda')->show( $this->tasks[$r['task_gid']] );
+			}
+		}
+
+		return $out;
 	}
 
 	public function getID()
 	{
-		return '';
+		return " id='production'";
 	}
 
 	public function getName()
@@ -74,7 +111,7 @@ class Block extends Subpage
  * @since		1.0.0
  */
 
-class BlockType extends SubpageType
+class ShowsType extends SubpageType
 {
 	/**
 	 * The metadata setup: name, type, input, etc.
@@ -83,7 +120,7 @@ class BlockType extends SubpageType
 	 * @var array
 	 * @since 1.0.0
 	 */
-	protected $metadata = array( 'name' => '', 'description' => '' );
+	protected $metadata = array( 'name' => '', 'project' => '' );
 	/**
 	 * The name of the type
 	 *
@@ -91,7 +128,7 @@ class BlockType extends SubpageType
 	 * @var string
 	 * @since 1.0.0
 	 */
-	protected $name = 'block';
+	protected $name = 'shows';
 
 	/**
 	 * MUST BE OVERRIDEN: parses the input and returns true
@@ -106,7 +143,7 @@ class BlockType extends SubpageType
 		$out = FALSE;
 		
 		$this->metadata['name']         = $this->registry->txtStripslashes( trim( $this->input['name'] ) );
-		$this->metadata['description']  = $this->registry->txtStripslashes( trim( $this->input['description'] ) );
+		$this->metadata['project']      = $this->registry->txtStripslashes( trim( $this->input['project'] ) );
 		
 		if ( strlen( $this->metadata['name'] ) < 3 )
 		{
@@ -150,9 +187,9 @@ class BlockType extends SubpageType
 
 		$out .= $ad_skin->addTdRow(
 			array(
-				$this->lang->getString('subpages_'.$type.'_form_description'),
-				($compareID > 0 ? $meta[ $compareID ]['description']['value'] . "<br><br>" : "") .
-				$ad_skin->formRTE( 'description', $_POST['description'] ? $_POST['description'] : $meta[ $languageID ]['description']['value'] )
+				$this->lang->getString('subpages_'.$type.'_form_project'),
+				($compareID > 0 ? $meta[ $compareID ]['project']['value'] . "<br><br>" : "") .
+				$ad_skin->formDropdown( 'project', $this->registry->getAPI('asana')->getProjectsDropdown(), $_POST['project'] ? $_POST['project'] : $meta[ $languageID ]['project']['value'] )
 			)
 		);
 

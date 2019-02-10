@@ -25,7 +25,7 @@ $ELMHTML .= <<<EOF
 EOF;
 foreach( $members as $v ) {
 $ELMHTML .= <<<EOF
-		<div class="group">
+		<div class="group"{$v->getID()}>
 			<hr />
 			<h2>{$v->getName()}</h2>
 			<div>
@@ -110,6 +110,56 @@ $ELMHTML = "";
 $ELMHTML .= <<<EOF
 	<div class="show">
 		<strong>{$r['name']}</strong> | {$location} | {$date}<br />
+		{$r['custom_fields'][512408346444750]} | Producer: {$r['custom_fields'][512462680735933]} | AE: {$r['custom_fields'][512408346444708]} {$tagSep} 
+EOF;
+if (count($r['tags']) > 0) {
+foreach( $r['tags'] as $v ) {
+$ELMHTML .= <<<EOF
+<div class="pill {$tags[$v]['color']}">{$tags[$v]['name']}</div>
+EOF;
+} }
+$ELMHTML .= <<<EOF
+<br />
+{$r['description']}
+	</div>
+
+EOF;
+//--endhtml--//
+return $ELMHTML;
+}
+
+//===========================================================================
+// Production
+//===========================================================================
+public function production( $r ) {
+
+$tags = $this->cache->getCache('tags');
+$date = "";
+
+if ( $r['due_on'] != '0000-00-00' )
+{
+	$endDate = strtotime($r['due_on']);
+	$date = date('F j', $endDate);
+}
+else
+{
+	$date = '?';
+}
+
+if ( count($r['tags']) > 0 )
+{
+	$tagSep = '|';
+}
+else
+{
+	$tagSep = '';
+}
+
+$ELMHTML = "";
+//--starthtml--//
+$ELMHTML .= <<<EOF
+	<div class="show">
+		<strong>{$r['name']}</strong><br /> | Due: {$date}
 		{$r['custom_fields'][512408346444750]} | Producer: {$r['custom_fields'][512462680735933]} | AE: {$r['custom_fields'][512408346444708]} {$tagSep} 
 EOF;
 if (count($r['tags']) > 0) {

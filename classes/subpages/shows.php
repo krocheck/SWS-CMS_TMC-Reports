@@ -77,6 +77,11 @@ class Shows extends Subpage
 		return $out;
 	}
 
+	public function getID()
+	{
+		return " id='shows'";
+	}
+
 	public function getName()
 	{
 		return $this->metadata['name']['value'];

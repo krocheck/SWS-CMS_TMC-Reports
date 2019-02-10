@@ -7,6 +7,11 @@
 		visibility: hidden !important;
 	}
 
+	div#shows, div#production
+	{
+		page-break-inside: auto;
+	}
+
 	div.group
 	{
 		page-break-inside: avoid;
@@ -176,7 +181,7 @@ ul
 
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
-	display: block;
+	display: inline-block;
 	font-weight: 400;
 	border-radius: 8px;
 	font-size: 11px;
