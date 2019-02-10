@@ -369,6 +369,106 @@ class AsanaAPI extends Command
 		return $count;
 	}
 
+/**
+	 * Call the Asana API to retrieve the Users
+	 *
+	 * @return int count of retrieved items
+	 * @access public
+	 * @since 1.0.0
+	*/
+	public function updateUsers()
+	{
+		$userIDs = array();
+		$newRows = array();
+		$oldRows = array();
+		$dbRows = array();
+		$count = 0;
+		$workspace = $this->registry->getSetting('asana_default');
+
+		$data = array();
+
+		do
+		{
+			if ( isset($data['next_page']) && is_array($data['next_page']) )
+			{
+				$data = $this->callGet('next_page', $data['next_page']['path']);
+			}
+			else
+			{
+				$data = $this->callGet('users',"?limit=50&workspace={$workspace}");
+			}
+
+			if ( isset($data['data']) && is_array($data['data']) && count($data['data']) > 0 )
+			{
+				foreach( $data['data'] as $row )
+				{
+					$count++;
+					$userID = $row['gid'];
+					$workspaces = array();
+
+					if ( is_array($row['workspaces']) && count($row['workspaces']) > 0 )
+					{
+						foreach( $row['workspaces'] as $workspace )
+						{
+							$workspaces[] = $workspace['gid'];
+						}
+					}
+
+					$userIDs[]  = $userID;
+					$newRows[ $userID ] = array(
+						'user_gid'   => $userID,
+						'email'      => $row['email'],
+						'name'       => $row['name'],
+						'workspaces' => mysqli_real_escape_string( $this->DB->getConnection(), serialize($workspaces) )
+					);
+				}
+			}
+		} while( isset($data['next_page']) && is_array($data['next_page']) );
+
+		if ( $count > 0 )
+		{
+			$this->DB->query("SELECT * FROM asana_user;");
+
+			if ( $this->DB->getTotalRows() )
+			{
+				while( $row = $this->DB->fetchRow() )
+				{
+					$dbRows[ $row['user_gid'] ] = $row;
+
+					if ( isset( $row['user_gid'] ) && isset( $newRows[ $row['user_gid'] ] ) )
+					{
+						$oldRows[ $row['user_gid'] ] = $newRows[ $row['user_gid'] ];
+						unset( $newRows[ $row['user_gid'] ] );
+					}
+				}
+			}
+
+			if ( count( $newRows ) > 0 )
+			{
+				$query = "INSERT INTO asana_user (user_gid,email,name,workspaces) VALUES ";
+
+				foreach( $newRows as $row )
+				{
+					$query .= "(\"{$row['email']}\",\"{$row['name']}\",\"{$row['workspaces']}\"),";
+				}
+
+				$query = substr($query,0,-1) . ";";
+
+				$this->DB->query( $query );
+			}
+
+			if ( count( $oldRows ) > 0 )
+			{
+				foreach( $oldRows as $row )
+				{
+					$this->DB->query("UPDATE asana_user SET email = \"{$row['email']}\", name = \"{$row['name']}\", workspaces = \"{$row['workspaces']}\", last_update = NOW() WHERE user_gid = '{$row['user_gid']}';");
+				}
+			}
+		}
+
+		return $count;
+	}
+
 	/**
 	 * Call the Asana API to retrieve the Workspaces
 	 *
