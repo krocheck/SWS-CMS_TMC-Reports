@@ -48,7 +48,7 @@ class AsanaAPI extends Command
 			),
 			'projects' => array(
 				'uri'    => $this->registry->getSetting('asana_projects'),
-				'fields' => array('project_gid', 'owner_gid', 'workspace_gid', 'team_gid', 'name', 'current_status', 'due_date', 'start_on', 'created_at', 'modified_at', 'archived', 'public', 'members', 'followers', 'custom_fields', 'custom_field_settings', 'color', 'html_notes', 'layout'),
+				'fields' => array('gid', 'owner', 'workspace', 'team', 'name', 'current_status', 'due_date', 'start_on', 'created_at', 'modified_at', 'archived', 'public', 'members', 'followers', 'custom_fields', 'custom_field_settings', 'color', 'html_notes', 'layout'),
 				'expand' => array()
 			),
 			'workspaces' => array(
@@ -238,8 +238,14 @@ class AsanaAPI extends Command
 				{
 					$count++;
 					$projectID = $row['gid'];
+					$currentStatus = array();
 					$followers = array();
 					$members = array();
+
+					if ( is_array($row['current_status']) && count($row['current_status']) > 0 )
+					{
+						$currentStatus = $row['current_status'];
+					}
 
 					if ( is_array($row['followers']) && count($row['followers']) > 0 )
 					{
@@ -264,7 +270,7 @@ class AsanaAPI extends Command
 						'workspace_gid'         => $workspace,
 						'team_gid'              => $row['team']['gid'],
 						'name'                  => $row['name'],
-						'current_status'        => mysqli_real_escape_string( $this->DB->getConnection(), serialize($row['current_status']) ),
+						'current_status'        => mysqli_real_escape_string( $this->DB->getConnection(), serialize($currentStatus) ),
 						'due_date'              => $row['due_date'],
 						'start_on'              => $row['start_on'],
 						'created_at'            => $this->parseDate( $row['created_at'] ),
