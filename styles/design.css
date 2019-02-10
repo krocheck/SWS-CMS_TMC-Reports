@@ -31,7 +31,7 @@ a:visited
 body
 {
 	color:#000000;
-	font-family:Verdana, Georgia, Times, serif;
+	font-family:Century Gothic, Verdana, Georgia, Times, serif;
 	font-size:13px;
 	margin:0;
 	padding:0;
@@ -91,7 +91,7 @@ h1
 
 h2
 {
-	font-size:16px;
+	font-size:18px;
 	font-weight:700;
 	margin:0 0 16px;
 	padding:0;
@@ -118,8 +118,24 @@ img
 	border:0;
 }
 
+ol li
+{
+	font-weight: 700;
+	padding: 0 0 2px 0;
+}
+
+ol li ul li
+{
+	font-weight: normal;
+}
+
 p
 {
-	margin:0 10px 13px;
+	margin:2px 10px 2px;
 	padding:0;
+}
+
+ul
+{
+	padding: 0 0 4px 0;
 }

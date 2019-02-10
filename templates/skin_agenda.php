@@ -15,6 +15,7 @@ $ELMHTML = "";
 //--starthtml--//
 $ELMHTML .= <<<EOF
 	<div id="header"><a href="{$this->display->buildURL( array() )}"><img src="{$this->registry->getConfig('base_url')}images/admin-logo.png" /></a></div>
+	<hr />
 	<div class="content">
 EOF;
 foreach( $members as $v ) {
@@ -23,6 +24,7 @@ $ELMHTML .= <<<EOF
 		<div>
 {$v->getContent()}
 		</div>
+		<hr />
 
 EOF;
 }
