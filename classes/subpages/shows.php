@@ -71,11 +71,11 @@ class Shows extends Subpage
 			{
 				if ( $r['resource_subtype'] == 'section' )
 				{
-					$out .= $this->display->compiledTemplates('skin_agenda')->section( $this->tasks[$r['task_gid']] );
+					$out .= $this->display->compiledTemplates('skin_agenda')->section( $this->tasks[$r] );
 				}
 				else
 				{
-					$out .= $this->display->compiledTemplates('skin_agenda')->show( $this->tasks[$r['task_gid']] );
+					$out .= $this->display->compiledTemplates('skin_agenda')->show( $this->tasks[$r] );
 				}
 			}
 		}
