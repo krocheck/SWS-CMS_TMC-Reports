@@ -108,7 +108,7 @@ class AsanaAPI extends Command
 			}
 			else
 			{
-				$fields = (strlen($method) > 0 && strpos('?', $method) > 0 ? '&' : '?') . 'opt_fields=' . implode(',',$this->endpoints[ $endpoint ]['fields']);
+				$fields = (strlen($method) > 0 && ( strpos('?', $method) > 0 || substr($method,0,1) == '?' ) ? '&' : '?') . 'opt_fields=' . implode(',',$this->endpoints[ $endpoint ]['fields']);
 			}
 
 			$url = $this->apiURL . $this->endpoints[ $endpoint ]['uri'] . $method . $fields;
