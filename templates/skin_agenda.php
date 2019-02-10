@@ -12,7 +12,7 @@ protected function doExecute( $param )
 public function wrapper( $members ) {
 
 $nextMonday = strtotime('next monday');
-$meetingDate = date('F j, Y', $nextMonday);
+$meetingDate = (date('D') == 'Mon' ? date('F j, Y') : date('F j, Y', $nextMonday));
 
 $ELMHTML = "";
 //--starthtml--//
