@@ -32,6 +32,7 @@ class SpoolerAuto extends Command
 		$this->registry->getAPI('asana')->updateTeams();
 		$this->registry->getAPI('asana')->updateUsers();
 		$this->registry->getAPI('asana')->updateTags();
+		$this->registry->getAPI('asana')->updateFields();
 		$this->registry->getAPI('asana')->updateProjects();
 
 		$this->display->addJSON( 'status', 'complete' );

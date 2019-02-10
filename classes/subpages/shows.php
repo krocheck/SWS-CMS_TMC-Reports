@@ -57,7 +57,7 @@ class Shows extends Subpage
 
 		$this->display->addDebug($this->project);
 
-		$this->DB->query("SELECT task_gid,name,completed,due_on,start_on,tags FROM task WHERE task_gid IN(" . implode(",", $this->project['tasks']) . ") AND completed = 0;");
+		$this->DB->query("SELECT task_gid,name,completed,due_on,resource_subtype,start_on,tags FROM task WHERE task_gid IN(" . implode(",", $this->project['tasks']) . ") AND completed = 0;");
 
 		while( $r = $this->DB->fetchRow() )
 		{

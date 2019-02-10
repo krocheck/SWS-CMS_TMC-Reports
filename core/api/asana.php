@@ -204,6 +204,112 @@ class AsanaAPI extends Command
 	}
 
 	/**
+	 * Call the Asana API to retrieve the Custom Fields
+	 *
+	 * @return int count of retrieved items
+	 * @access public
+	 * @since 1.0.0
+	*/
+	public function updateFields()
+	{
+		$fieldIDs = array();
+		$newRows = array();
+		$oldRows = array();
+		$dbRows = array();
+		$count = 0;
+		$workspace = $this->registry->getSetting('asana_default');
+
+		$data = array();
+
+		do
+		{
+			if ( isset($data['next_page']) && is_array($data['next_page']) )
+			{
+				$data = $this->callGet('next_page', $data['next_page']['path']);
+			}
+			else
+			{
+				$data = $this->callGet('custom_fields',"/{$workspace}/custom_fields?limit=50");
+			}
+
+			if ( isset($data['data']) && is_array($data['data']) && count($data['data']) > 0 )
+			{
+				foreach( $data['data'] as $row )
+				{
+					$count++;
+					$fieldID = $row['gid'];
+					$options = array();
+
+					if ( is_array($row['enum_options']) && count($row['enum_options']) > 0 )
+					{
+						foreach( $row['enum_options'] as $r )
+						{
+							$options[$r['gid']] = array(
+								'color'   => $r['color'],
+								'enabled' => $r['enabled'],
+								'name'    => $r['name'],
+							);
+						}
+					}
+
+					$fieldIDs[]  = $fieldID;
+					$newRows[ $fieldID ] = array(
+						'field_gid'        => $fieldID,
+						'name'             => $row['name'],
+						'resource_subtype' => $row['resource_subtype'],
+						'enum_options'     => mysqli_real_escape_string( $this->DB->getConnection(), serialize($options) )
+					);
+				}
+			}
+		} while( isset($data['next_page']) && is_array($data['next_page']) );
+
+		if ( $count > 0 )
+		{
+			$this->DB->query("SELECT * FROM custom_field;");
+
+			if ( $this->DB->getTotalRows() )
+			{
+				while( $row = $this->DB->fetchRow() )
+				{
+					$dbRows[ $row['field_gid'] ] = $row;
+
+					if ( isset( $row['field_gid'] ) && isset( $newRows[ $row['field_gid'] ] ) )
+					{
+						$oldRows[ $row['field_gid'] ] = $newRows[ $row['field_gid'] ];
+						unset( $newRows[ $row['field_gid'] ] );
+					}
+				}
+			}
+
+			if ( count( $newRows ) > 0 )
+			{
+				$query = "INSERT INTO custom_field (field_gid,resource_subtype,enum_options,name) VALUES ";
+
+				foreach( $newRows as $row )
+				{
+					$query .= "('{$row['field_gid']}','{$row['resource_subtype']}',\"{$row['enum_options']}\",\"{$row['name']}\"),";
+				}
+
+				$query = substr($query,0,-1) . ";";
+
+				$this->DB->query( $query );
+			}
+
+			if ( count( $oldRows ) > 0 )
+			{
+				foreach( $oldRows as $row )
+				{
+					$this->DB->query("UPDATE custom_field SET resource_subtype = '{$row['resource_subtype']}', enum_options = \"{$row['enum_options']}\", name = \"{$row['name']}\", last_update = NOW() WHERE field_gid = '{$row['field_gid']}';");
+				}
+			}
+		}
+
+		$this->cache->update('fields');
+
+		return $count;
+	}
+
+	/**
 	 * Call the Asana API to retrieve the Projects
 	 *
 	 * @return int count of retrieved items
@@ -241,6 +347,7 @@ class AsanaAPI extends Command
 					$currentStatus = array();
 					$followers = array();
 					$members = array();
+					$fields = array();
 
 					if ( is_array($row['current_status']) && count($row['current_status']) > 0 )
 					{
@@ -263,6 +370,14 @@ class AsanaAPI extends Command
 						}
 					}
 
+					if ( is_array($row['custom_field_settings']) && count($row['custom_field_settings']) > 0 )
+					{
+						foreach( $row['custom_field_settings'] as $field )
+						{
+							$fields[] = $field['gid'];
+						}
+					}
+
 					$projectIDs[]  = $projectID;
 					$newRows[ $projectID ] = array(
 						'project_gid'           => $projectID,
@@ -280,7 +395,7 @@ class AsanaAPI extends Command
 						'members'               => mysqli_real_escape_string( $this->DB->getConnection(), serialize($members) ),
 						'followers'             => mysqli_real_escape_string( $this->DB->getConnection(), serialize($followers) ),
 						'custom_fields'         => mysqli_real_escape_string( $this->DB->getConnection(), serialize($row['custom_fields']) ),
-						'custom_field_settings' => mysqli_real_escape_string( $this->DB->getConnection(), serialize($row['custom_field_settings']) ),
+						'custom_field_settings' => mysqli_real_escape_string( $this->DB->getConnection(), serialize($fields) ),
 						'color'                 => $row['color'],
 						'html_notes'            => mysqli_real_escape_string( $this->DB->getConnection(), $row['html_notes'] )
 					);
@@ -572,12 +687,21 @@ class AsanaAPI extends Command
 				{
 					$count++;
 					$taskID = $row['gid'];
+					$fields = array();
 					$dependencies = array();
 					$dependents = array();
 					$followers = array();
 					$likes = array();
 					$projects = array();
 					$tags = array();
+
+					if ( is_array($row['custom_fields']) && count($row['custom_fields']) > 0 )
+					{
+						foreach( $row['custom_fields'] as $r )
+						{
+							$fields[$r['gid']] = (isset($r['enum_value']) ? $r['enum_value']['name'] : $r['text_value']);
+						}
+					}
 
 					if ( is_array($row['dependencies']) && count($row['dependencies']) > 0 )
 					{
@@ -646,7 +770,7 @@ class AsanaAPI extends Command
 						'created_at'       => $this->parseDate( $row['created_at'] ),
 						'completed'        => ( $row['completed'] ? 1 : 0 ),
 						'completed_at'     => $this->parseDate( $row['completed_at'] ),
-						'custom_fields'    => mysqli_real_escape_string( $this->DB->getConnection(), serialize($row['custom_fields']) ),
+						'custom_fields'    => mysqli_real_escape_string( $this->DB->getConnection(), serialize($fields) ),
 						'dependencies'     => mysqli_real_escape_string( $this->DB->getConnection(), serialize($dependencies) ),
 						'dependents'       => mysqli_real_escape_string( $this->DB->getConnection(), serialize($dependents) ),
 						'due_on'           => $row['due_on'],
