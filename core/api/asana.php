@@ -573,7 +573,7 @@ class AsanaAPI extends Command
 					$count++;
 					$taskID = $row['gid'];
 					$dependencies = array();
-					$dependencies = array();
+					$dependents = array();
 					$followers = array();
 					$likes = array();
 					$projects = array();

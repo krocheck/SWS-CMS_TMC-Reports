@@ -28,12 +28,11 @@ class SpoolerAuto extends Command
 	 */
 	protected function doExecute( $params )
 	{
-		$this->registry->getAPI('toast')->updateCategories();
-		$this->registry->getAPI('toast')->updateDiscounts();
-		$this->registry->getAPI('toast')->updateMenuItems();
-		$this->registry->getAPI('toast')->updateActiveMenuItems();
-		$this->registry->getAPI('toast')->updateOrders();
-		$this->registry->getAPI('toast')->processRewards();
+		$this->registry->getAPI('asana')->updateWorkspaces();
+		$this->registry->getAPI('asana')->updateTeams();
+		$this->registry->getAPI('asana')->updateUsers();
+		$this->registry->getAPI('asana')->updateTags();
+		$this->registry->getAPI('asana')->updateProjects();
 
 		$this->display->addJSON( 'status', 'complete' );
 		$this->display->doJSON();
