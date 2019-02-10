@@ -1340,10 +1340,11 @@ class AsanaAPI extends Command
 				foreach( $data['data'] as $row )
 				{
 					$count++;
+					$workspaceID = $row['gid'];
 
-					$workspaceIDs[]  = $row['gid'];
-					$newRows[ $discountID ] = array(
-						'workspace_gid'   => $row['gid'],
+					$workspaceIDs[]  = $workspaceID;
+					$newRows[ $workspaceID ] = array(
+						'workspace_gid'   => $workspaceID,
 						'name'            => $row['name'],
 						'is_organization' => ( $row['is_organization'] ? 1 : 0 )
 					);
