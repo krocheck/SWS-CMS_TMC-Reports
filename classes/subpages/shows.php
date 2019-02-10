@@ -63,6 +63,11 @@ class Shows extends Subpage
 			$this->tasks[$r['task_gid']] = $r;
 			$this->tasks[$r['task_gid']]['custom_fields'] = unserialize($r['custom_fields']);
 			$this->tasks[$r['task_gid']]['tags'] = unserialize($r['tags']);
+
+			if ( isset($this->metadata[$r['task_gid']]) )
+			{
+				$this->tasks[$r['task_gid']]['description'] = $this->registry->parseHTML( $this->metadata[$r['task_gid']]['value'] );
+			}
 		}
 
 		if ( is_array($this->project['tasks']) && count($this->project['tasks']) > 0 )
