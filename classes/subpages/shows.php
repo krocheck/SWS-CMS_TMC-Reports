@@ -42,6 +42,7 @@ class Shows extends Subpage
 
 	public function getContent()
 	{
+		$out = "";
 		$this->project = array();
 		$this->tasks   = array();
 		$this->DB->query("SELECT project_gid,custom_fields,custom_field_settings,tasks FROM project WHERE project_gid = '{$this->metadata['project']['value']}';");
@@ -55,19 +56,18 @@ class Shows extends Subpage
 		$this->project['custom_field_settings'] = unserialize($this->project['custom_field_settings']);
 		$this->project['tasks'] = unserialize($this->project['tasks']);
 
-		$this->display->addDebug($this->project);
-
-		$this->DB->query("SELECT task_gid,name,completed,due_on,resource_subtype,start_on,tags FROM task WHERE task_gid IN(" . implode(",", $this->project['tasks']) . ") AND completed = 0;");
+		$this->DB->query("SELECT task_gid,name,completed,custom_fields,due_on,resource_subtype,start_on,tags FROM task WHERE task_gid IN(" . implode(",", $this->project['tasks']) . ") AND completed = 0;");
 
 		while( $r = $this->DB->fetchRow() )
 		{
 			$this->tasks[$r['task_gid']] = $r;
 			$this->tasks[$r['task_gid']]['custom_fields'] = unserialize($r['custom_fields']);
 			$this->tasks[$r['task_gid']]['tags'] = unserialize($r['tags']);
-			$this->display->addDebug($r);
+			
+			$out .= $this->display->compiledTemplates('skin_agenda')->show( $r );
 		}
 
-		return "Test";
+		return $out;;
 	}
 
 	public function getName()

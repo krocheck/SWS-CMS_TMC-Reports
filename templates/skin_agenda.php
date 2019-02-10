@@ -43,6 +43,74 @@ EOF;
 return $ELMHTML;
 }
 
+//===========================================================================
+// Show
+//===========================================================================
+public function show( $r ) {
+
+$tags = $this->cache->getCache('tags');
+$date = "";
+
+if ( $r['start_on'] != '0000-00-00' )
+{
+	$startDate = strtotime($r['start_on']);
+	$endDate = strtotime($r['due_on']);
+
+	if ( date('M', $startDate) != date('M', $endDate) )
+	{
+		$date = date('M j', $startDate) . ' - ' . date('M j', $endDate);
+	}
+	else
+	{
+		$date = date('M j', $startDate) . ' - ' . date('j', $endDate);
+	}
+}
+else
+{
+	$endDate = strtotime($r['due_on']);
+	$date = date('M j', $endDate);
+}
+
+if ( count($r['tags']) > 0 )
+{
+	$tagSep = '|';
+}
+else
+{
+	$tagSep = '';
+}
+
+if ( strlen($r['custom_fields'][512544451401414]) > 0 && strlen($r['custom_fields'][512544451401416]) > 0 )
+{
+	$location = $r['custom_fields'][512544451401414] . ' @ ' . $r['custom_fields'][512544451401416];
+}
+else
+{
+	$location = $r['custom_fields'][512544451401414] . $r['custom_fields'][512544451401416];
+}
+
+$ELMHTML = "";
+//--starthtml--//
+$ELMHTML .= <<<EOF
+	<div class="show">
+		<strong>{$r['name']}</strong> | {$location} | {$date}<br />
+		{$r['custom_fields'][512408346444750]} | Producer: {$r['custom_fields'][512462680735933]} | AE: {$r['custom_fields'][512408346444708]} {$tagSep} 
+EOF;
+foreach( $row['tags'] as $v ) {
+$ELMHTML .= <<<EOF
+<div class="pill {$tags[$v]['color']}">{$tags[$v]['name']}</div>
+EOF;
+}
+$ELMHTML .= <<<EOF
+<br />
+{$r['description']}
+	</div>
+
+EOF;
+//--endhtml--//
+return $ELMHTML;
+}
+
 }
 
 ?>
