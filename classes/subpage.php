@@ -354,6 +354,26 @@ class SubpageController extends Command
 	}
 
 	/**
+	 * Get a specific type
+	 *
+	 * @param string $type the key of the type
+	 * @return string the required type
+	 * @access public
+	 * @since 1.0.0
+	 */
+	public function getClass( $type )
+	{
+		$out = "";
+		
+		if ( isset( $this->types[ $type ] ) && is_array( $this->types[ $type ] ) )
+		{
+			$out = $this->types[ $type ][0];
+		}
+		
+		return $out;
+	}
+
+	/**
 	 * Get an array of the types to create a dropdown or multi-select
 	 *
 	 * @return array the types

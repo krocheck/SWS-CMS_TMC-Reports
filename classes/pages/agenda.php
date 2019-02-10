@@ -51,12 +51,12 @@ class Agenda extends Page
 			$this->display->addJavascript( $js );
 		}
 
-		$this->DB->query("SELECT subpage_id FROM subpage WHERE page_id = '{$this->id}' ORDER BY position;");
+		$this->DB->query("SELECT * FROM subpage WHERE page_id = '{$this->id}' ORDER BY position;");
 
 		while( $r = $this->DB->fetchRow() )
 		{
-			$TYPE_CLASSES = $this->subpage->getType($r['type']);
-			$ids[$r['subpage_id']] = $TYPE_CLASSES[0]($r);
+			$TYPE_CLASS = $this->subpage->getType($r['type']);
+			$ids[$r['subpage_id']] = $TYPE_CLASS($r);
 		}
 
 		$this->DB->query("SELECT * FROM metadata_subpage WHERE language_id = '{$this->lang->getLanguageID()}' AND id IN(".implode(",",$ids).");");
