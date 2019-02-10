@@ -16,6 +16,11 @@
 	{
 		page-break-inside: avoid;
 	}
+
+	div.show, div.production
+	{
+		page-break-inside: avoid;
+	}
 }
 
 #debug
