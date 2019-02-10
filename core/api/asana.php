@@ -369,7 +369,99 @@ class AsanaAPI extends Command
 		return $count;
 	}
 
-/**
+	/**
+	 * Call the Asana API to retrieve the Teams
+	 *
+	 * @return int count of retrieved items
+	 * @access public
+	 * @since 1.0.0
+	*/
+	public function updateTeams()
+	{
+		$teamIDs = array();
+		$newRows = array();
+		$oldRows = array();
+		$dbRows = array();
+		$count = 0;
+		$workspace = $this->registry->getSetting('asana_default');
+
+		$data = array();
+
+		do
+		{
+			if ( isset($data['next_page']) && is_array($data['next_page']) )
+			{
+				$data = $this->callGet('next_page', $data['next_page']['path']);
+			}
+			else
+			{
+				$data = $this->callGet('teams',"?limit=50&workspace={$workspace}");
+			}
+
+			if ( isset($data['data']) && is_array($data['data']) && count($data['data']) > 0 )
+			{
+				foreach( $data['data'] as $row )
+				{
+					$count++;
+					$teamID = $row['gid'];
+
+					$teamIDs[]  = $teamID;
+					$newRows[ $teamID ] = array(
+						'team_gid'          => $teamID,
+						'html_description' => mysqli_real_escape_string( $this->DB->getConnection(), $row['html_description'] ),
+						'name'             => $row['name']
+					);
+				}
+			}
+		} while( isset($data['next_page']) && is_array($data['next_page']) );
+
+		if ( $count > 0 )
+		{
+			$this->DB->query("SELECT * FROM team;");
+
+			if ( $this->DB->getTotalRows() )
+			{
+				while( $row = $this->DB->fetchRow() )
+				{
+					$dbRows[ $row['team_gid'] ] = $row;
+
+					if ( isset( $row['team_gid'] ) && isset( $newRows[ $row['team_gid'] ] ) )
+					{
+						$oldRows[ $row['team_gid'] ] = $newRows[ $row['team_gid'] ];
+						unset( $newRows[ $row['team_gid'] ] );
+					}
+				}
+			}
+
+			if ( count( $newRows ) > 0 )
+			{
+				$query = "INSERT INTO team (team_gid,html_description,name) VALUES ";
+
+				foreach( $newRows as $row )
+				{
+					$query .= "('{$row['team_gid']}',\"{$row['html_description']}\",\"{$row['name']}\"),";
+				}
+
+				$query = substr($query,0,-1) . ";";
+
+				$this->DB->query( $query );
+			}
+
+			if ( count( $oldRows ) > 0 )
+			{
+				foreach( $oldRows as $row )
+				{
+					$this->DB->query("UPDATE team SET html_description = \"{$row['html_description']}\", name = \"{$row['name']}\", last_update = NOW() WHERE team_gid = '{$row['team_gid']}';");
+				}
+			}
+		}
+
+		$this->cache->update('teams');
+
+		return $count;
+	}
+
+	/**
 	 * Call the Asana API to retrieve the Users
 	 *
 	 * @return int count of retrieved items
@@ -449,7 +541,7 @@ class AsanaAPI extends Command
 
 				foreach( $newRows as $row )
 				{
-					$query .= "(\"{$row['email']}\",\"{$row['name']}\",\"{$row['workspaces']}\"),";
+					$query .= "('{$row['user_gid']}',\"{$row['email']}\",\"{$row['name']}\",\"{$row['workspaces']}\"),";
 				}
 
 				$query = substr($query,0,-1) . ";";
