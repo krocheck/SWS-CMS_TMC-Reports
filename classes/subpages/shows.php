@@ -69,7 +69,7 @@ class Shows extends Subpage
 		{
 			foreach( $this->project['tasks'] as $r )
 			{
-				if ( $r['resource_subtype'] == 'section' )
+				if ( isset($this->tasks[$r]) && is_array($this->tasks[$r]) )
 				{
 					if ( $this->tasks[$r]['resource_subtype'] == 'section' )
 					{
