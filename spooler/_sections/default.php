@@ -16,7 +16,7 @@
  * @version		$Revision: 27 $
  */
 
-class SpoolerCategories extends Command
+class SpoolerSections extends Command
 {
 	/**
 	 * The main execute function
@@ -28,7 +28,7 @@ class SpoolerCategories extends Command
 	 */
 	protected function doExecute( $params )
 	{
-		if ( $this->registry->getAPI('toast')->updateCategories() > 0 )
+		if ( $this->registry->getAPI('asana')->updateSections() > 0 )
 		{
 			$this->display->addJSON( 'status', 'complete' );
 		}

@@ -27,8 +27,12 @@ $lang['settings_session_timeout']      = "<strong>Session Timeout</strong><br>Mi
 $lang['settings_asana_url']            = "<strong>Asana API URL</strong>";
 $lang['settings_asana_token']          = "<strong>Asana Auth Token</strong>";
 $lang['settings_asana_tasks']          = "<strong>Asana Tasks Endpoint</strong>";
+$lang['settings_asana_sections']       = "<strong>Asana Sections Endpoint</strong>";
 $lang['settings_asana_projects']       = "<strong>Asana Projects Endpoint</strong>";
+$lang['settings_asana_workspaces']     = "<strong>Asana Workspaces Endpoint</strong>";
 $lang['settings_asana_teams']          = "<strong>Asana Teams Endpoint</strong>";
 $lang['settings_asana_users']          = "<strong>Asana Users Endpoint</strong>";
+$lang['settings_asana_tags']           = "<strong>Asana Tags Endpoint</strong>";
+$lang['settings_asana_custom_fields']  = "<strong>Asana Custom Fields Endpoint</strong>";
 
 ?>

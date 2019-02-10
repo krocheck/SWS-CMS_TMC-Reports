@@ -110,25 +110,41 @@ class SpoolerApp extends Application
 				require_once( SWS_ROOT_PATH . 'spooler/_auto/default.php' );
 				$module = new SpoolerAuto();
 				break;
-			case 'rewards':
-				require_once( SWS_ROOT_PATH . 'spooler/_rewards/default.php' );
-				$module = new SpoolerRewards();
-				break;
-			case 'transactions':
-				require_once( SWS_ROOT_PATH . 'spooler/_transactions/default.php' );
-				$module = new SpoolerTransactions();
+			case 'fields':
+				require_once( SWS_ROOT_PATH . 'spooler/_fields/default.php' );
+				$module = new SpoolerFields();
 				break;
 			case 'items':
 				require_once( SWS_ROOT_PATH . 'spooler/_items/default.php' );
 				$module = new SpoolerItems();
 				break;
-			case 'categories':
-				require_once( SWS_ROOT_PATH . 'spooler/_categories/default.php' );
-				$module = new SpoolerCategories();
+			case 'projects':
+				require_once( SWS_ROOT_PATH . 'spooler/_projects/default.php' );
+				$module = new SpoolerProjects();
 				break;
-			case 'check':
-				require_once( SWS_ROOT_PATH . 'spooler/_check/default.php' );
-				$module = new SpoolerCheck();
+			case 'sections':
+				require_once( SWS_ROOT_PATH . 'spooler/_sections/default.php' );
+				$module = new SpoolerSections();
+				break;
+			case 'tags':
+				require_once( SWS_ROOT_PATH . 'spooler/_tags/default.php' );
+				$module = new SpoolerTags();
+				break;
+			case 'tasks':
+				require_once( SWS_ROOT_PATH . 'spooler/_tasks/default.php' );
+				$module = new SpoolerTasks();
+				break;
+			case 'teams':
+				require_once( SWS_ROOT_PATH . 'spooler/_teams/default.php' );
+				$module = new SpoolerTeams();
+				break;
+			case 'users':
+				require_once( SWS_ROOT_PATH . 'spooler/_users/default.php' );
+				$module = new SpoolerUsers();
+				break;
+			case 'workspaces':
+				require_once( SWS_ROOT_PATH . 'spooler/_workspaces/default.php' );
+				$module = new SpoolerWorkspaces();
 				break;
 		}
 

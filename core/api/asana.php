@@ -36,9 +36,46 @@ class AsanaAPI extends Command
 		$this->apiURL = $this->registry->getSetting('asana_url');
 
 		$this->endpoints = array(
-			'orders'  => $this->registry->getSetting('asana_orders'),
-			'config'  => $this->registry->getSetting('asana_config'),
-			'crm'     => $this->registry->getSetting('asana_crm')
+			'tasks' => array(
+				'uri'    => $this->registry->getSetting('asana_tasks'),
+				'fields' => array('gid', 'parent', 'workspace', 'assignee', 'resource_subtype', 'assignee_status', 'created_at', 'completed', 'completed_at', 'custom_fields', 'dependencies', 'dependents', 'due_on', 'due_at', 'followers', 'liked', 'likes', 'modified_at', 'name', 'html_notes', 'num_likes', 'projects', 'start_on', 'memberships', 'tags'),
+				'expand' => array()
+			),
+			'sections' => array(
+				'uri'    => $this->registry->getSetting('asana_sections'),
+				'fields' => array('gid', 'project', 'name', 'created_at'),
+				'expand' => array()
+			),
+			'projects' => array(
+				'uri'    => $this->registry->getSetting('asana_projects'),
+				'fields' => array('project_gid', 'owner_gid', 'workspace_gid', 'team_gid', 'name', 'current_status', 'due_date', 'start_on', 'created_at', 'modified_at', 'archived', 'public', 'members', 'followers', 'custom_fields', 'custom_field_settings', 'color', 'html_notes', 'layout'),
+				'expand' => array()
+			),
+			'workspaces' => array(
+				'uri'    => $this->registry->getSetting('asana_workspaces'),
+				'fields' => array('gid', 'name', 'is_organization'),
+				'expand' => array()
+			),
+			'teams' => array(
+				'uri'    => $this->registry->getSetting('asana_teams'),
+				'fields' => array('gid', 'name', 'html_description'),
+				'expand' => array()
+			),
+			'users' => array(
+				'uri'    => $this->registry->getSetting('asana_users'),
+				'fields' => array('gid', 'name', 'email', 'workspaces'),
+				'expand' => array()
+			),
+			'tags' => array(
+				'uri'    => $this->registry->getSetting('asana_tags'),
+				'fields' => array('gid', 'workspace', 'created_at', 'followers', 'name', 'color'),
+				'expand' => array()
+			),
+			'custom_fields' => array(
+				'uri'    => $this->registry->getSetting('asana_custom_fields'),
+				'fields' => array('gid', 'name', 'resource_subtype', 'description', 'enum_options'),
+				'expand' => array()
+			)
 		);
 
 		$this->token = $this->registry->getSetting('asana_token');
@@ -150,11 +187,11 @@ class AsanaAPI extends Command
 	 * Generate v4 UUID
 	 * 
 	 * Version 4 UUIDs are pseudo-random.
-	 * @return string a pseudo-random GUID
+	 * @return string a pseudo-random GID
 	 * @access protected
 	 * @since 1.0.0
 	 */
-	public static function generateGUID() 
+	public static function generateGID() 
 	{
 		return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
 		// 32 bits for "time_low"
@@ -176,15 +213,15 @@ class AsanaAPI extends Command
 	/**
 	 * Call the Asana API to retrieve the specified Menu Group
 	 *
-	 * @param $guid string the GUID to query
+	 * @param $gid string the GID to query
 	 * @return array the salesCategories
 	 * @access public
 	 * @since 1.0.0
 	*/
-	protected function getMenuGroup( $guid )
+	protected function getMenuGroup( $gid )
 	{
 		$out = array();
-		$menuGroup = $this->callGet('config',"/menuGroups/{$guid}");
+		$menuGroup = $this->callGet('config',"/menuGroups/{$gid}");
 		
 		if ( is_array( $menuGroup ) && isset( $menuGroup['items'] ) && is_array( $menuGroup['items'] ) )
 		{
@@ -197,7 +234,7 @@ class AsanaAPI extends Command
 	/**
 	 * Call the Asana API to retrieve the specified Menu Group
 	 *
-	 * @param $guid int the number of results to return
+	 * @param $gid int the number of results to return
 	 * @oaram $page int the page number
 	 * @param $lastModified string the date/time to return changes after in ISO-8601 format
 	 * @return array the salesCategories
@@ -223,15 +260,15 @@ class AsanaAPI extends Command
 	/**
 	 * Call the Asana API to retrieve the specified order
 	 *
-	 * @param $guid string the date/time to return changes after is ISO-8601 format
-	 * @return array the order GUIDs
+	 * @param $gid string the date/time to return changes after is ISO-8601 format
+	 * @return array the order GIDs
 	 * @access protected
 	 * @since 1.0.0
 	*/
-	protected function getOrder( $guid )
+	protected function getOrder( $gid )
 	{
 		$out = array();
-		$order = $this->callGet('orders',"/orders/{$guid}");
+		$order = $this->callGet('orders',"/orders/{$gid}");
 
 		if ( is_array( $order ) )
 		{
@@ -245,7 +282,7 @@ class AsanaAPI extends Command
 	 * Call the Asana API to retrieve the specified orders
 	 *
 	 * @param $date string the date/time to return changes after in YYYYMMDD format
-	 * @return array the order GUIDs
+	 * @return array the order GIDs
 	 * @access protected
 	 * @since 1.0.0
 	*/
@@ -270,7 +307,7 @@ class AsanaAPI extends Command
 	 *
 	 * @param $start string the date/time to start the range in ISO-8601 format
 	 * @param $end string the date/time to end the range in ISO-8601 format
-	 * @return array the order GUIDs
+	 * @return array the order GIDs
 	 * @access protected
 	 * @since 1.0.0
 	*/
@@ -300,7 +337,7 @@ class AsanaAPI extends Command
 	protected function processMenuItems( $data, $updateTimestamp = FALSE )
 	{
 		$itemIDs = array();
-		$guids   = array();
+		$gids   = array();
 		$newRows = array();
 		$oldRows = array();
 		$total = 0;
@@ -309,7 +346,7 @@ class AsanaAPI extends Command
 		{
 			$itemID = intval($row['sku']);
 			$text = $row['name'];
-			$guid = $row['guid'];
+			$gid = $row['gid'];
 			//$categoryID = $row[2];
 			//$active = $row[3];
 			//$price = $row[4];
@@ -319,26 +356,26 @@ class AsanaAPI extends Command
 				$itemIDs[] = $itemID;
 			}
 
-			$guids[] = $guid;
-			$newRows[ $guid ] = array( 'menu_item_id' => $itemID, 'guid' => $guid, 'title' => $text);
+			$gids[] = $gid;
+			$newRows[ $gid ] = array( 'menu_item_id' => $itemID, 'gid' => $gid, 'title' => $text);
 
 			$total++;
 		}
 
-		$total = count( $guids );
+		$total = count( $gids );
 
-		if ( count( $itemIDs) > 0 || count( $guids ) > 0 )
+		if ( count( $itemIDs) > 0 || count( $gids ) > 0 )
 		{
-			$this->DB->query("SELECT menu_item_id,asana_guid FROM menu_item WHERE menu_item_id IN('".implode("','",$itemIDs)."') OR asana_guid IN('".implode("','",$guids)."');");
+			$this->DB->query("SELECT menu_item_id,asana_gid FROM menu_item WHERE menu_item_id IN('".implode("','",$itemIDs)."') OR asana_gid IN('".implode("','",$gids)."');");
 
 			if ( $this->DB->getTotalRows() )
 			{
 				while( $row = $this->DB->fetchRow() )
 				{
-					if ( isset( $row['asana_guid'] ) && strlen( $row['asana_guid'] ) > 0 )
+					if ( isset( $row['asana_gid'] ) && strlen( $row['asana_gid'] ) > 0 )
 					{
-						$oldRows[ $row['asana_guid'] ] = $newRows[ $row['asana_guid'] ];
-						unset( $newRows[ $row['asana_guid'] ] );
+						$oldRows[ $row['asana_gid'] ] = $newRows[ $row['asana_gid'] ];
+						unset( $newRows[ $row['asana_gid'] ] );
 					}
 					else if ( isset( $row['menu_item_id'] ) && $row['menu_item_id'] > 0 )
 					{
@@ -346,8 +383,8 @@ class AsanaAPI extends Command
 						{
 							if ( isset( $test['menu_item_id'] ) && $test['menu_item_id'] > 0 && $row['menu_item_id'] == $test['menu_item_id'] )
 							{
-								$oldRows[ $test['guid'] ] = $newRows[ $test['guid'] ];
-								unset( $newRows[ $test['guid'] ] );
+								$oldRows[ $test['gid'] ] = $newRows[ $test['gid'] ];
+								unset( $newRows[ $test['gid'] ] );
 								break;
 							}
 						}
@@ -358,11 +395,11 @@ class AsanaAPI extends Command
 
 		if ( count( $newRows ) > 0 )
 		{
-			$query = "INSERT INTO menu_item (asana_guid,title".($updateTimestamp ? ",last_modified" : '').") VALUES ";
+			$query = "INSERT INTO menu_item (asana_gid,title".($updateTimestamp ? ",last_modified" : '').") VALUES ";
 
 			foreach( $newRows as $row )
 			{
-				$query .= "('{$row['guid']}',\"{$row['title']}\"".($updateTimestamp ? ",NOW()" : '')."),";
+				$query .= "('{$row['gid']}',\"{$row['title']}\"".($updateTimestamp ? ",NOW()" : '')."),";
 			}
 
 			$query = substr($query,0,-1) . ";";
@@ -376,11 +413,11 @@ class AsanaAPI extends Command
 			{
 				if ( isset( $row['menu_item_id'] ) && $row['menu_item_id'] > 0 )
 				{
-					$this->DB->query("UPDATE menu_item SET title = \"{$row['title']}\", asana_guid = '{$row['guid']}'".($updateTimestamp ? ", last_modified = NOW()" : '')." WHERE menu_item_id = '{$row['menu_item_id']}';");
+					$this->DB->query("UPDATE menu_item SET title = \"{$row['title']}\", asana_gid = '{$row['gid']}'".($updateTimestamp ? ", last_modified = NOW()" : '')." WHERE menu_item_id = '{$row['menu_item_id']}';");
 				}
-				else if ( isset( $row['guid'] ) && strlen( $row['guid'] ) > 0 )
+				else if ( isset( $row['gid'] ) && strlen( $row['gid'] ) > 0 )
 				{
-					$this->DB->query("UPDATE menu_item SET title = \"{$row['title']}\"".($updateTimestamp ? ", last_modified = NOW()" : '')." WHERE asana_guid = '{$row['guid']}';");
+					$this->DB->query("UPDATE menu_item SET title = \"{$row['title']}\"".($updateTimestamp ? ", last_modified = NOW()" : '')." WHERE asana_gid = '{$row['gid']}';");
 				}
 			}
 		}
@@ -389,7 +426,7 @@ class AsanaAPI extends Command
 	}
 
 	/**
-	 * Updates/adds the passed order guids into the database
+	 * Updates/adds the passed order gids into the database
 	 *
 	 * @return int the total number of processed items
 	 * @access protected
@@ -402,11 +439,11 @@ class AsanaAPI extends Command
 		$total = 0;
 		$items = $this->cache->getCache('items');
 
-		$orderGUIDs     = array();
+		$orderGIDs     = array();
 		$orders         = array();
-		$checkGUIDs     = array();
+		$checkGIDs     = array();
 		$checks         = array();
-		$selectionGUIDs = array();
+		$selectionGIDs = array();
 		$selections     = array();
 		
 		foreach( $data as $row )
@@ -415,19 +452,19 @@ class AsanaAPI extends Command
 			{
 				$order = $this->getOrder( $row );
 
-				if ( is_array( $order ) && isset( $order['guid'] ) && $row = $order['guid'] )
+				if ( is_array( $order ) && isset( $order['gid'] ) && $row = $order['gid'] )
 				{
-					$orderGUID = $order['guid'];
+					$orderGID = $order['gid'];
 					$void = ( $order['voided'] == 'true' ? 1 : 0 );
 					$deleted = ( $order['deleted'] == 'true' ? 1 : 0 );
 					$businessDate = date_create( $order['businessDate'] )->format("Y-m-d");
 					$createdDate = date_create( $order['openedDate'] )->format("Y-m-d H:i:s");
 					$closedDate = ( $order['closedDate'] <> '' ? date_create( $order['closedDate'] )->format("Y-m-d H:i:s") : '0000-00-00 00:00:00' );
 
-					$orderGUIDs[] = $orderGUID;
+					$orderGIDs[] = $orderGID;
 
-					$orders[ $orderGUID ] = array(
-						'order_guid'    => $orderGUID,
+					$orders[ $orderGID ] = array(
+						'order_gid'    => $orderGID,
 						'void'          => $void,
 						'deleted'       => $deleted,
 						'business_date' => $businessDate,
@@ -439,9 +476,9 @@ class AsanaAPI extends Command
 					{
 						foreach( $order['checks'] as $check )
 						{
-							if ( is_array( $check ) && isset( $check['guid'] ) && $row = $check['guid'] )
+							if ( is_array( $check ) && isset( $check['gid'] ) && $row = $check['gid'] )
 							{
-								$checkGUID = $check['guid'];
+								$checkGID = $check['gid'];
 								$void = ( $check['voided'] == 'true' ? 1 : 0 );
 								$deleted = ( $check['deleted'] == 'true' ? 1 : 0 );
 								$createdDate = date_create( $check['openedDate'] )->format("Y-m-d H:i:s");
@@ -464,15 +501,15 @@ class AsanaAPI extends Command
 								{
 									foreach( $check['appliedDiscounts'] as $discount )
 									{
-										$appliedDiscounts[ $discount['guid'] ] = $discount;
+										$appliedDiscounts[ $discount['gid'] ] = $discount;
 									}
 								}
 
-								$checkGUIDs[] = $checkGUID;
+								$checkGIDs[] = $checkGID;
 
-								$checks[ $checkGUID ] = array(
-									'check_guid'        => $checkGUID,
-									'order_guid'        => $orderGUID,
+								$checks[ $checkGID ] = array(
+									'check_gid'        => $checkGID,
+									'order_gid'        => $orderGID,
 									'void'              => $void,
 									'deleted'           => $deleted,
 									'opened_date'       => $createdDate,
@@ -487,11 +524,11 @@ class AsanaAPI extends Command
 								{
 									foreach( $check['selections'] as $item )
 									{
-										if ( is_array( $item ) && isset( $item['guid'] ) && $row = $item['guid'] )
+										if ( is_array( $item ) && isset( $item['gid'] ) && $row = $item['gid'] )
 										{
-											$selectionGUID = $item['guid'];
-											$itemGUID = $item['item']['guid'];
-											$categoryGUID = $item['salesCategory']['guid'];
+											$selectionGID = $item['gid'];
+											$itemGID = $item['item']['gid'];
+											$categoryGID = $item['salesCategory']['gid'];
 											$void = ( $item['voided'] == 'true' ? 1 : 0 );
 											$createdDate = date_create( $item['createdDate'] )->format("Y-m-d H:i:s");
 											$price = $item['price'] + $item['taxAmount'];
@@ -502,17 +539,17 @@ class AsanaAPI extends Command
 											{
 												foreach( $check['appliedDiscounts'] as $discount )
 												{
-													$appliedDiscounts[ $discount['guid'] ] = $discount;
+													$appliedDiscounts[ $discount['gid'] ] = $discount;
 												}
 											}
 
-											$selectionGUIDs[] = $selectionGUID;
+											$selectionGIDs[] = $selectionGID;
 
-											$selections[ $selectionGUID ] = array(
-												'selection_guid'    => $selectionGUID,
-												'check_guid'        => $checkGUID,
-												'item_guid'         => $itemGUID,
-												'category_guid'     => $categoryGUID,
+											$selections[ $selectionGID ] = array(
+												'selection_gid'    => $selectionGID,
+												'check_gid'        => $checkGID,
+												'item_gid'         => $itemGID,
+												'category_gid'     => $categoryGID,
 												'void'              => $void,
 												'created_date'      => $createdDate,
 												'price'             => $price,
@@ -533,20 +570,20 @@ class AsanaAPI extends Command
 
 		$oldRows = array();
 		$newRows = $orders;
-		$guids   = $orderGUIDs;
+		$gids   = $orderGIDs;
 
-		if ( count( $guids ) > 0 )
+		if ( count( $gids ) > 0 )
 		{
-			$this->DB->query("SELECT order_guid FROM `order` WHERE order_guid IN('".implode("','",$guids)."');");
+			$this->DB->query("SELECT order_gid FROM `order` WHERE order_gid IN('".implode("','",$gids)."');");
 
 			if ( $this->DB->getTotalRows() )
 			{
 				while( $row = $this->DB->fetchRow() )
 				{
-					if ( isset( $row['order_guid'] ) && strlen( $row['order_guid'] ) > 0 )
+					if ( isset( $row['order_gid'] ) && strlen( $row['order_gid'] ) > 0 )
 					{
-						$oldRows[ $row['order_guid'] ] = $newRows[ $row['order_guid'] ];
-						unset( $newRows[ $row['order_guid'] ] );
+						$oldRows[ $row['order_gid'] ] = $newRows[ $row['order_gid'] ];
+						unset( $newRows[ $row['order_gid'] ] );
 					}
 				}
 			}
@@ -554,11 +591,11 @@ class AsanaAPI extends Command
 
 		if ( count( $newRows ) > 0 )
 		{
-			$query = "INSERT INTO `order` (order_guid,void,deleted,business_date,opened_date,closed_date) VALUES ";
+			$query = "INSERT INTO `order` (order_gid,void,deleted,business_date,opened_date,closed_date) VALUES ";
 
 			foreach( $newRows as $row )
 			{
-				$query .= "('{$row['order_guid']}','{$row['void']}','{$row['deleted']}','{$row['business_date']}','{$row['opened_date']}','{$row['closed_date']}'),";
+				$query .= "('{$row['order_gid']}','{$row['void']}','{$row['deleted']}','{$row['business_date']}','{$row['opened_date']}','{$row['closed_date']}'),";
 			}
 
 			$query = substr($query,0,-1) . ";";
@@ -570,26 +607,26 @@ class AsanaAPI extends Command
 		{
 			foreach( $oldRows as $row )
 			{
-				$this->DB->query("UPDATE `order` SET void = '{$row['void']}', deleted = '{$row['deleted']}', business_date = '{$row['business_date']}', opened_date = '{$row['opened_date']}', closed_date = '{$row['closed_date']}' WHERE order_guid = '{$row['order_guid']}';");
+				$this->DB->query("UPDATE `order` SET void = '{$row['void']}', deleted = '{$row['deleted']}', business_date = '{$row['business_date']}', opened_date = '{$row['opened_date']}', closed_date = '{$row['closed_date']}' WHERE order_gid = '{$row['order_gid']}';");
 			}
 		}
 
 		$oldRows = array();
 		$newRows = $checks;
-		$guids   = $checkGUIDs;
+		$gids   = $checkGIDs;
 
-		if ( count( $guids ) > 0 )
+		if ( count( $gids ) > 0 )
 		{
-			$this->DB->query("SELECT check_guid FROM `check` WHERE check_guid IN('".implode("','",$guids)."');");
+			$this->DB->query("SELECT check_gid FROM `check` WHERE check_gid IN('".implode("','",$gids)."');");
 
 			if ( $this->DB->getTotalRows() )
 			{
 				while( $row = $this->DB->fetchRow() )
 				{
-					if ( isset( $row['check_guid'] ) && strlen( $row['check_guid'] ) > 0 )
+					if ( isset( $row['check_gid'] ) && strlen( $row['check_gid'] ) > 0 )
 					{
-						$oldRows[ $row['check_guid'] ] = $newRows[ $row['check_guid'] ];
-						unset( $newRows[ $row['check_guid'] ] );
+						$oldRows[ $row['check_gid'] ] = $newRows[ $row['check_gid'] ];
+						unset( $newRows[ $row['check_gid'] ] );
 					}
 				}
 			}
@@ -597,11 +634,11 @@ class AsanaAPI extends Command
 
 		if ( count( $newRows ) > 0 )
 		{
-			$query = "INSERT INTO `check` (check_guid,order_guid,void,deleted,opened_date,closed_date,tab_name,club_id,display_number,applied_discounts) VALUES ";
+			$query = "INSERT INTO `check` (check_gid,order_gid,void,deleted,opened_date,closed_date,tab_name,club_id,display_number,applied_discounts) VALUES ";
 
 			foreach( $newRows as $row )
 			{
-				$query .= "('{$row['check_guid']}','{$row['order_guid']}','{$row['void']}','{$row['deleted']}','{$row['opened_date']}','{$row['closed_date']}',\"{$row['tab_name']}\",'{$row['club_id']}','{$row['display_number']}',\"{$row['applied_discounts']}\"),";
+				$query .= "('{$row['check_gid']}','{$row['order_gid']}','{$row['void']}','{$row['deleted']}','{$row['opened_date']}','{$row['closed_date']}',\"{$row['tab_name']}\",'{$row['club_id']}','{$row['display_number']}',\"{$row['applied_discounts']}\"),";
 			}
 
 			$query = substr($query,0,-1) . ";";
@@ -613,26 +650,26 @@ class AsanaAPI extends Command
 		{
 			foreach( $oldRows as $row )
 			{
-				$this->DB->query("UPDATE `check` SET order_guid = '{$row['order_guid']}', void = '{$row['void']}', deleted = '{$row['deleted']}', opened_date = '{$row['opened_date']}', closed_date = '{$row['closed_date']}', tab_name = \"{$row['tab_name']}\", club_id = '{$row['club_id']}', display_number = '{$row['display_number']}', applied_discounts = \"{$row['applied_discounts']}\" WHERE check_guid = '{$row['check_guid']}';");
+				$this->DB->query("UPDATE `check` SET order_gid = '{$row['order_gid']}', void = '{$row['void']}', deleted = '{$row['deleted']}', opened_date = '{$row['opened_date']}', closed_date = '{$row['closed_date']}', tab_name = \"{$row['tab_name']}\", club_id = '{$row['club_id']}', display_number = '{$row['display_number']}', applied_discounts = \"{$row['applied_discounts']}\" WHERE check_gid = '{$row['check_gid']}';");
 			}
 		}
 
 		$oldRows = array();
 		$newRows = $selections;
-		$guids   = $selectionGUIDs;
+		$gids   = $selectionGIDs;
 
-		if ( count( $guids ) > 0 )
+		if ( count( $gids ) > 0 )
 		{
-			$this->DB->query("SELECT selection_guid FROM `selection` WHERE selection_guid IN('".implode("','",$guids)."');");
+			$this->DB->query("SELECT selection_gid FROM `selection` WHERE selection_gid IN('".implode("','",$gids)."');");
 
 			if ( $this->DB->getTotalRows() )
 			{
 				while( $row = $this->DB->fetchRow() )
 				{
-					if ( isset( $row['selection_guid'] ) && strlen( $row['selection_guid'] ) > 0 )
+					if ( isset( $row['selection_gid'] ) && strlen( $row['selection_gid'] ) > 0 )
 					{
-						$oldRows[ $row['selection_guid'] ] = $newRows[ $row['selection_guid'] ];
-						unset( $newRows[ $row['selection_guid'] ] );
+						$oldRows[ $row['selection_gid'] ] = $newRows[ $row['selection_gid'] ];
+						unset( $newRows[ $row['selection_gid'] ] );
 					}
 				}
 			}
@@ -640,11 +677,11 @@ class AsanaAPI extends Command
 
 		if ( count( $newRows ) > 0 )
 		{
-			$query = "INSERT INTO `selection` (selection_guid,check_guid,item_guid,category_guid,void,created_date,price,quantity,applied_discounts) VALUES ";
+			$query = "INSERT INTO `selection` (selection_gid,check_gid,item_gid,category_gid,void,created_date,price,quantity,applied_discounts) VALUES ";
 
 			foreach( $newRows as $row )
 			{
-				$query .= "('{$row['selection_guid']}','{$row['check_guid']}','{$row['item_guid']}','{$row['category_guid']}','{$row['void']}','{$row['created_date']}','{$row['price']}','{$row['quantity']}',\"{$row['applied_discounts']}\"),";
+				$query .= "('{$row['selection_gid']}','{$row['check_gid']}','{$row['item_gid']}','{$row['category_gid']}','{$row['void']}','{$row['created_date']}','{$row['price']}','{$row['quantity']}',\"{$row['applied_discounts']}\"),";
 			}
 
 			$query = substr($query,0,-1) . ";";
@@ -656,16 +693,16 @@ class AsanaAPI extends Command
 		{
 			foreach( $oldRows as $row )
 			{
-				$this->DB->query("UPDATE `selection` SET check_guid = '{$row['check_guid']}', item_guid = '{$row['item_guid']}', category_guid = '{$row['category_guid']}', void = '{$row['void']}', created_date = '{$row['created_date']}', price = '{$row['price']}', quantity = '{$row['quantity']}', applied_discounts = \"{$row['applied_discounts']}\" WHERE selection_guid = '{$row['selection_guid']}';");
+				$this->DB->query("UPDATE `selection` SET check_gid = '{$row['check_gid']}', item_gid = '{$row['item_gid']}', category_gid = '{$row['category_gid']}', void = '{$row['void']}', created_date = '{$row['created_date']}', price = '{$row['price']}', quantity = '{$row['quantity']}', applied_discounts = \"{$row['applied_discounts']}\" WHERE selection_gid = '{$row['selection_gid']}';");
 			}
 		}
 
-		$this->DB->query("SELECT `selection`.`selection_guid`, `selection`.`item_guid`, `selection`.`category_guid`, 
+		$this->DB->query("SELECT `selection`.`selection_gid`, `selection`.`item_gid`, `selection`.`category_gid`, 
 									IF(`selection`.`void` = 1 OR `check`.`void` = 1 OR `check`.`deleted` = 1 OR `order`.`void` = 1 OR `order`.`deleted` = 1,1,0) AS `void`, 
 									`selection`.`created_date` AS `date_time`, `selection`.`quantity`, `check`.`club_id`, `order`.`business_date`
 								FROM `selection`
-									INNER JOIN `check` ON `selection`.`check_guid`=`check`.`check_guid`
-									INNER JOIN `order` ON `check`.`order_guid`=`order`.`order_guid`
+									INNER JOIN `check` ON `selection`.`check_gid`=`check`.`check_gid`
+									INNER JOIN `order` ON `check`.`order_gid`=`order`.`order_gid`
 								WHERE `selection`.`rewarded` = 0 AND `check`.`closed_date` > 0 AND `check`.`club_id` > 0
 								ORDER BY `selection`.`created_date` ASC");
 
@@ -675,12 +712,12 @@ class AsanaAPI extends Command
 		{
 			while( $r = $this->DB->fetchRow() )
 			{
-				$closedTransactions[ $r['selection_guid'] ] = array(
-					'selection_guid' => $r['selection_guid'],
-					'category_guid' => $r['category_guid'],
+				$closedTransactions[ $r['selection_gid'] ] = array(
+					'selection_gid' => $r['selection_gid'],
+					'category_gid' => $r['category_gid'],
 					'date_time' => $r['date_time'],
 					'business_date' => $r['business_date'],
-					'menu_id' => $items[ $r['item_guid'] ],
+					'menu_id' => $items[ $r['item_gid'] ],
 					'club_id' => $r['club_id'],
 					'quantity' =>$r['quantity'],
 					'void' => $r['void']
@@ -690,13 +727,13 @@ class AsanaAPI extends Command
 
 		if ( count( $closedTransactions ) > 0 )
 		{
-			$query = "INSERT INTO `transaction` (selection_guid,category_guid,date_time,business_date,menu_id,club_id,quantity,void) VALUES ";
-			$query2 = "UPDATE `selection` SET `rewarded` = 1 WHERE selection_guid IN(";
+			$query = "INSERT INTO `transaction` (selection_gid,category_gid,date_time,business_date,menu_id,club_id,quantity,void) VALUES ";
+			$query2 = "UPDATE `selection` SET `rewarded` = 1 WHERE selection_gid IN(";
 
 			foreach( $closedTransactions as $row )
 			{
-				$query .= "('{$row['selection_guid']}','{$row['category_guid']}','{$row['date_time']}','{$row['business_date']}','{$row['menu_id']}','{$row['club_id']}','{$row['quantity']}','{$row['void']}'),";
-				$query2 .="'{$row['selection_guid']}',";
+				$query .= "('{$row['selection_gid']}','{$row['category_gid']}','{$row['date_time']}','{$row['business_date']}','{$row['menu_id']}','{$row['club_id']}','{$row['quantity']}','{$row['void']}'),";
+				$query2 .="'{$row['selection_gid']}',";
 			}
 
 			$query = substr($query, 0, -1) . ";";
@@ -706,11 +743,11 @@ class AsanaAPI extends Command
 			$this->DB->query( $query2 );
 		}
 
-		$this->DB->query("SELECT `selection`.`selection_guid`, `selection`.`item_guid`, `selection`.`category_guid`, 
+		$this->DB->query("SELECT `selection`.`selection_gid`, `selection`.`item_gid`, `selection`.`category_gid`, 
 									`selection`.`created_date` AS `date_time`, `check`.`club_id`, `selection`.`quantity`, `selection`.`void`
 								FROM `selection`
-									INNER JOIN `check` ON `selection`.`check_guid`=`check`.`check_guid`
-									INNER JOIN `order` ON `check`.`order_guid`=`order`.`order_guid`
+									INNER JOIN `check` ON `selection`.`check_gid`=`check`.`check_gid`
+									INNER JOIN `order` ON `check`.`order_gid`=`order`.`order_gid`
 								WHERE `selection`.`rewarded` = 0 AND `check`.`closed_date` = 0 AND `check`.`club_id` > 0 AND `selection`.`void` = 0 AND `check`.`void` = 0 AND `check`.`deleted` = 0 AND `order`.`void` = 0 AND `order`.`deleted` = 0
 								ORDER BY `selection`.`created_date` ASC");
 
@@ -720,11 +757,11 @@ class AsanaAPI extends Command
 		{
 			while( $r = $this->DB->fetchRow() )
 			{
-				$pendingTransactions[ $r['selection_guid'] ] = array(
-					'selection_guid' => $r['selection_guid'],
-					'category_guid' => $r['category_guid'],
+				$pendingTransactions[ $r['selection_gid'] ] = array(
+					'selection_gid' => $r['selection_gid'],
+					'category_gid' => $r['category_gid'],
 					'date_time' => $r['date_time'],
-					'menu_id' => $items[ $r['item_guid'] ],
+					'menu_id' => $items[ $r['item_gid'] ],
 					'club_id' => $r['club_id'],
 					'quantity' =>$r['quantity'],
 					'void' => $r['void']
@@ -736,11 +773,11 @@ class AsanaAPI extends Command
 
 		if ( count( $pendingTransactions ) > 0 )
 		{
-			$query = "INSERT INTO `pending_transaction` (selection_guid,category_guid,date_time,menu_id,club_id,quantity,void) VALUES ";
+			$query = "INSERT INTO `pending_transaction` (selection_gid,category_gid,date_time,menu_id,club_id,quantity,void) VALUES ";
 
 			foreach( $pendingTransactions as $row )
 			{
-				$query .= "('{$row['selection_guid']}','{$row['category_guid']}','{$row['date_time']}','{$row['menu_id']}','{$row['club_id']}','{$row['quantity']}','{$row['void']}'),";
+				$query .= "('{$row['selection_gid']}','{$row['category_gid']}','{$row['date_time']}','{$row['menu_id']}','{$row['club_id']}','{$row['quantity']}','{$row['void']}'),";
 			}
 
 			$query = substr($query, 0, -1) . ";";
@@ -776,7 +813,7 @@ class AsanaAPI extends Command
 
 		foreach( $categories as $cat )
 		{
-			$catIDs[] = $cat['asana_guid'];
+			$catIDs[] = $cat['asana_gid'];
 		}
 
 		$catIDs = "'" . implode("','", $catIDs ) . "'";
@@ -786,7 +823,7 @@ class AsanaAPI extends Command
 				FROM transaction t
 				LEFT JOIN reward r ON (t.reward_id = r.reward_id)
 				INNER JOIN menu_item m ON (t.menu_id = m.menu_item_id)
-				WHERE r.reward_id IS NULL AND t.void = 0 AND t.web_void = 0 AND t.excluded = 0 AND t.category_guid IN ({$catIDs})
+				WHERE r.reward_id IS NULL AND t.void = 0 AND t.web_void = 0 AND t.excluded = 0 AND t.category_gid IN ({$catIDs})
 				ORDER BY t.date_time, t.transaction_id
 				LIMIT 0, 200;"
 		);
@@ -801,7 +838,7 @@ class AsanaAPI extends Command
 				{
 					foreach( $categories as $cat )
 					{
-						if ( $r['category_guid'] == $cat['asana_guid'] && $cat['type'] == 'tap' )
+						if ( $r['category_gid'] == $cat['asana_gid'] && $cat['type'] == 'tap' )
 						{
 							$excluded[] = $r['transaction_id'];
 							$test = FALSE;
@@ -1108,32 +1145,32 @@ class AsanaAPI extends Command
 
 		foreach( $cats as $cat )
 		{
-			if ( isset( $cat['menu_guid'] ) && strlen( $cat['menu_guid'] ) > 0 )
+			if ( isset( $cat['menu_gid'] ) && strlen( $cat['menu_gid'] ) > 0 )
 			{
 				$catItems = array();
 
-				$items = $this->getMenuGroup( $cat['menu_guid'] );
+				$items = $this->getMenuGroup( $cat['menu_gid'] );
 
 				if ( is_array( $items ) && count( $items ) > 0 )
 				{
 					foreach( $items as $item )
 					{
-						$activeItems[] = $item['guid'];
-						$catItems[] = $item['guid'];
+						$activeItems[] = $item['gid'];
+						$catItems[] = $item['gid'];
 						$out++;
 					}
 				}
 
 				if ( count( $catItems ) > 0 )
 				{
-					$this->DB->query( $updateSalesCategory . $cat['category_id'] . " WHERE asana_guid IN('".implode("','",$catItems)."');");
+					$this->DB->query( $updateSalesCategory . $cat['category_id'] . " WHERE asana_gid IN('".implode("','",$catItems)."');");
 				}
 			}
 		}
 
 		if ( count( $activeItems ) > 0 )
 		{
-			$this->DB->query("UPDATE menu_item SET active = 1 WHERE asana_guid IN('".implode("','",$activeItems)."');");
+			$this->DB->query("UPDATE menu_item SET active = 1 WHERE asana_gid IN('".implode("','",$activeItems)."');");
 		}
 
 		if ( $out > 0 )
@@ -1166,11 +1203,11 @@ class AsanaAPI extends Command
 		{
 			foreach( $data as $row )
 			{
-				$categoryID = $row['guid'];
+				$categoryID = $row['gid'];
 				$categoryText = $row['name'];
 
 				$categoryIDs[]  = $categoryID;
-				$newRows[ $categoryID ] = array('guid' => $categoryID, 'name' => $categoryText);
+				$newRows[ $categoryID ] = array('gid' => $categoryID, 'name' => $categoryText);
 			}
 
 			$this->DB->query("SELECT * FROM menu_category;");
@@ -1181,11 +1218,11 @@ class AsanaAPI extends Command
 				{
 					$dbRows[ $row['category_id'] ] = $row;
 					
-					if ( isset( $row['category_id'] ) && isset( $newRows[ $row['asana_guid'] ] ) )
+					if ( isset( $row['category_id'] ) && isset( $newRows[ $row['asana_gid'] ] ) )
 					{
-						$oldRows[ $row['asana_guid'] ] = $newRows[ $row['asana_guid'] ];
-						$oldRows[ $row['asana_guid'] ]['category_id'] = $row['category_id'];
-						unset( $newRows[ $row['asana_guid'] ] );
+						$oldRows[ $row['asana_gid'] ] = $newRows[ $row['asana_gid'] ];
+						$oldRows[ $row['asana_gid'] ]['category_id'] = $row['category_id'];
+						unset( $newRows[ $row['asana_gid'] ] );
 					}
 				}
 			}
@@ -1204,8 +1241,8 @@ class AsanaAPI extends Command
 
 				$categoryID = $this->DB->fetchRow();
 
-				$queryInsert = "INSERT INTO menu_category (category_id,title,asana_guid,active,type,position) VALUES ";
-				$queryUpdate = "UPDATE menu_category SET asana_guid = ";
+				$queryInsert = "INSERT INTO menu_category (category_id,title,asana_gid,active,type,position) VALUES ";
+				$queryUpdate = "UPDATE menu_category SET asana_gid = ";
 				
 				foreach( $newRows as $row )
 				{
@@ -1213,16 +1250,16 @@ class AsanaAPI extends Command
 					
 					foreach( $dbRows as $test )
 					{
-						if ( $test['asana_guid'] == '' && $test['title'] == $row['name'] )
+						if ( $test['asana_gid'] == '' && $test['title'] == $row['name'] )
 						{
-							$this->DB->query( $queryUpdate . "'{$row['guid']}' WHERE category_id={$test['category_id']};" );
+							$this->DB->query( $queryUpdate . "'{$row['gid']}' WHERE category_id={$test['category_id']};" );
 							$check = true;
 						}
 					}
 
 					if ( $check == false )
 					{
-						$queryInsert .= "('{$categoryID['new_category_id']}','{$row['name']}','{$row['guid']}',1,'na',{$position['new_position']}),";
+						$queryInsert .= "('{$categoryID['new_category_id']}','{$row['name']}','{$row['gid']}',1,'na',{$position['new_position']}),";
 						$categoryID['new_category_id'] += 1;
 						$position['new_position'] += 1;
 					}
@@ -1239,13 +1276,13 @@ class AsanaAPI extends Command
 				{
 					if ( $dbRows[ $row['category_id'] ]['title'] <> $row['name'] )
 					{
-						$this->DB->query("UPDATE menu_category SET title = '{$row['name']}' WHERE asana_guid = '{$row['guid']}';");
+						$this->DB->query("UPDATE menu_category SET title = '{$row['name']}' WHERE asana_gid = '{$row['gid']}';");
 					}
 				}
 			}
 
 			$this->DB->query("UPDATE menu_category SET active = 0;");
-			$this->DB->query("UPDATE menu_category SET active = 1 WHERE asana_guid IN('". implode("','", $categoryIDs) ."');");
+			$this->DB->query("UPDATE menu_category SET active = 1 WHERE asana_gid IN('". implode("','", $categoryIDs) ."');");
 
 			$this->cache->update('categories');
 		}
@@ -1254,87 +1291,84 @@ class AsanaAPI extends Command
 	}
 
 	/**
-	 * Call the Asana API to retrieve the Discounts
+	 * Call the Asana API to retrieve the Workspaces
 	 *
-	 * @return bool success
+	 * @return int count of retrieved items
 	 * @access public
 	 * @since 1.0.0
 	*/
-	public function updateDiscounts()
+	public function updateWorkspaces()
 	{
-		$discountIDs = array();
+		$workspaceIDs = array();
 		$newRows = array();
 		$oldRows = array();
 		$dbRows = array();
+		$count = 0;
 
-		$data = $this->callGet('config','/discounts?pageSize=50');
+		$data = array();
 
-		$count = count( $data );
-
-		if ( is_array( $data ) && $count > 0 )
+		do
 		{
-			foreach( $data as $row )
+			if ( isset($data['next_page']) && is_array($data['next_page']) )
 			{
-				$discountID = $row['guid'];
-				$discountText = $row['name'];
-				$active = ( $row['active'] ? 1 : 0 );
-				$amount = $row['amount'];
-				$percentage = $row['percentage'];
-				$type = $row['type'];
-				$selectionType = $row['selectionType'];
-
-				$discountIDs[]  = $discountID;
-				$newRows[ $discountID ] = array(
-					'asana_guid' => $discountID,
-					'title' => $discountText,
-					'active' => $active,
-					'amount' => $amount,
-					'percentage' => $percentage,
-					'type' => $type,
-					'selection_type' => $selectionType
-				);
+				$data = $this->callGet('next_page', $data['next_page']['path']);
+			}
+			else
+			{
+				$data = $this->callGet('workspaces','?limit=50');
 			}
 
-			$this->DB->query("SELECT * FROM discount;");
-
-			if ( $this->DB->getTotalRows() )
+			if ( isset($data['data']) && is_array($data['data']) && count($data['data']) > 0 )
 			{
-				while( $row = $this->DB->fetchRow() )
+				foreach( $data as $row )
 				{
-					$dbRows[ $row['asana_guid'] ] = $row;
+					$workspaceIDs[]  = $row['gid'];
+					$newRows[ $discountID ] = array(
+						'workspace_gid'   => $row['gid'],
+						'name'            => $row['name'],
+						'is_organization' => ( $row['is_organization'] ? 1 : 0 )
+					);
+				}
 
-					if ( isset( $row['asana_guid'] ) && isset( $newRows[ $row['asana_guid'] ] ) )
+				$this->DB->query("SELECT * FROM workspace;");
+
+				if ( $this->DB->getTotalRows() )
+				{
+					while( $row = $this->DB->fetchRow() )
 					{
-						$oldRows[ $row['asana_guid'] ] = $newRows[ $row['asana_guid'] ];
-						unset( $newRows[ $row['asana_guid'] ] );
+						$dbRows[ $row['workspace_gid'] ] = $row;
+
+						if ( isset( $row['workspace_gid'] ) && isset( $newRows[ $row['workspace_gid'] ] ) )
+						{
+							$oldRows[ $row['workspace_gid'] ] = $newRows[ $row['workspace_gid'] ];
+							unset( $newRows[ $row['workspace_gid'] ] );
+						}
+					}
+				}
+
+				if ( count( $newRows ) > 0 )
+				{
+					$query = "INSERT INTO workspace (workspace_gid,name,is_organization) VALUES ";
+
+					foreach( $newRows as $row )
+					{
+						$query .= "('{$row['workspace_gid']}',\"{$row['name']}\",'{$row['is_organization']}'),";
+					}
+
+					$query = substr($query,0,-1) . ";";
+
+					$this->DB->query( $query );
+				}
+
+				if ( count( $oldRows ) > 0 )
+				{
+					foreach( $oldRows as $row )
+					{
+						$this->DB->query("UPDATE workspace SET name = \"{$row['name']}\", is_organization = '{$row['is_organization']}', last_update = NOW() WHERE workspace_gid = '{$row['workspace_gid']}';");
 					}
 				}
 			}
-
-			if ( count( $newRows ) > 0 )
-			{
-				$query = "INSERT INTO discount (asana_guid,title,active,amount,percentage,type,selection_type,exclude) VALUES ";
-
-				foreach( $newRows as $row )
-				{
-					$query .= "('{$row['asana_guid']}',\"{$row['title']}\",'{$row['active']}','{$row['amount']}','{$row['percentage']}','{$row['type']}','{$row['selection_type']}',0),";
-				}
-
-				$query = substr($query,0,-1) . ";";
-
-				$this->DB->query( $query );
-			}
-
-			if ( count( $oldRows ) > 0 )
-			{
-				foreach( $oldRows as $row )
-				{
-					$this->DB->query("UPDATE discount SET title = \"{$row['title']}\", active = '{$row['active']}', amount = '{$row['amount']}', percentage = '{$row['percentage']}', type = '{$row['type']}', selection_type = '{$row['selection_type']}' WHERE asana_guid = '{$row['asana_guid']}';");
-				}
-			}
-
-			$this->cache->update('discounts');
-		}
+		} while( isset($data['next_page']) && is_array($data['next_page']) );
 
 		return $count;
 	}

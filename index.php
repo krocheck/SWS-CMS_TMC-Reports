@@ -10,7 +10,7 @@
  * @author		$Author: krocheck $
  * @copyright	2009 Simna Web Services, LLC
  * @package		SWS-CMS
- * @link		http://www.backlotimaging.com
+ * @link		http://www.simnaweb.com
  * @since		1.0.0
  * @version		$Revision: 2 $
  */

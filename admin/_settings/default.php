@@ -140,7 +140,9 @@ class AdminSettings extends Command
 		$settings['asana_url']              = trim( $this->input['asana_url'] );
 		$settings['asana_token']            = trim( $this->input['asana_token'] );
 		$settings['asana_tasks']            = trim( $this->input['asana_tasks'] );
+		$settings['asana_sections']            = trim( $this->input['asana_sections'] );
 		$settings['asana_projects']         = trim( $this->input['asana_projects'] );
+		$settings['asana_workspaces']       = trim( $this->input['asana_workspaces'] );
 		$settings['asana_teams']            = trim( $this->input['asana_teams'] );
 		$settings['asana_users']            = trim( $this->input['asana_users'] );
 
@@ -410,8 +412,22 @@ class AdminSettings extends Command
 
 		$html .= $this->html->addTdRow(
 			array(
+				$this->lang->getString('settings_asana_sections'),
+				$this->html->formInput( 'asana_sections', $this->registry->txtStripslashes( $_POST['asana_sections'] ? $_POST['asana_sections'] : $settings['asana_sections'] ) )
+			)
+		);
+
+		$html .= $this->html->addTdRow(
+			array(
 				$this->lang->getString('settings_asana_projects'),
 				$this->html->formInput( 'asana_projects', $this->registry->txtStripslashes( $_POST['asana_projects'] ? $_POST['asana_projects'] : $settings['asana_projects'] ) )
+			)
+		);
+
+		$html .= $this->html->addTdRow(
+			array(
+				$this->lang->getString('settings_asana_workspaces'),
+				$this->html->formInput( 'asana_workspaces', $this->registry->txtStripslashes( $_POST['asana_workspaces'] ? $_POST['asana_workspaces'] : $settings['asana_workspaces'] ) )
 			)
 		);
 
@@ -426,6 +442,20 @@ class AdminSettings extends Command
 			array(
 				$this->lang->getString('settings_asana_users'),
 				$this->html->formInput( 'asana_users', $this->registry->txtStripslashes( $_POST['asana_users'] ? $_POST['asana_users'] : $settings['asana_users'] ) )
+			)
+		);
+
+		$html .= $this->html->addTdRow(
+			array(
+				$this->lang->getString('settings_asana_tags'),
+				$this->html->formInput( 'asana_tags', $this->registry->txtStripslashes( $_POST['asana_tags'] ? $_POST['asana_tags'] : $settings['asana_tags'] ) )
+			)
+		);
+
+		$html .= $this->html->addTdRow(
+			array(
+				$this->lang->getString('settings_asana_custom_fields'),
+				$this->html->formInput( 'asana_custom_fields', $this->registry->txtStripslashes( $_POST['asana_custom_fields'] ? $_POST['asana_custom_fields'] : $settings['asana_custom_fields'] ) )
 			)
 		);
 
