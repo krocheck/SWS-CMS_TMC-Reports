@@ -158,7 +158,7 @@ else
 $ELMHTML = "";
 //--starthtml--//
 $ELMHTML .= <<<EOF
-	<div class="show">
+	<div class="production">
 		<strong>{$r['name']}</strong><br /> | Due: {$date}
 		{$r['custom_fields'][512408346444750]} | Producer: {$r['custom_fields'][512462680735933]} | AE: {$r['custom_fields'][512408346444708]} {$tagSep} 
 EOF;

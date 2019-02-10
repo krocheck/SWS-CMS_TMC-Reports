@@ -69,7 +69,7 @@ class Production extends Subpage
 			$this->tasks[$r['task_gid']]['custom_fields'] = unserialize($r['custom_fields']);
 			$this->tasks[$r['task_gid']]['tags'] = unserialize($r['tags']);
 
-			if ( $r['resource_subtype'] == 'production' )
+			if ( $r['resource_subtype'] == 'section' )
 			{
 				$out .= $this->display->compiledTemplates('skin_agenda')->section( $this->tasks[$r['task_gid']] );
 			}
@@ -111,7 +111,7 @@ class Production extends Subpage
  * @since		1.0.0
  */
 
-class ShowsType extends SubpageType
+class ProductionType extends SubpageType
 {
 	/**
 	 * The metadata setup: name, type, input, etc.
@@ -128,7 +128,7 @@ class ShowsType extends SubpageType
 	 * @var string
 	 * @since 1.0.0
 	 */
-	protected $name = 'shows';
+	protected $name = 'production';
 
 	/**
 	 * MUST BE OVERRIDEN: parses the input and returns true
