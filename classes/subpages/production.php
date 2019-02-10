@@ -60,22 +60,28 @@ class Production extends Subpage
 
 		while( $r = $this->DB->fetchRow() )
 		{
-			if ( $r['name'] == 'Closeout:' )
-			{
-				break;
-			}
-
 			$this->tasks[$r['task_gid']] = $r;
 			$this->tasks[$r['task_gid']]['custom_fields'] = unserialize($r['custom_fields']);
 			$this->tasks[$r['task_gid']]['tags'] = unserialize($r['tags']);
+		}
 
-			if ( $r['resource_subtype'] == 'section' )
+		if ( is_array($this->project['tasks']) && count($this->project['tasks']) > 0 )
+		{
+			foreach( $this->project['tasks'] as $r )
 			{
-				$out .= $this->display->compiledTemplates('skin_agenda')->section( $this->tasks[$r['task_gid']] );
-			}
-			else
-			{
-				$out .= $this->display->compiledTemplates('skin_agenda')->show( $this->tasks[$r['task_gid']] );
+				if ( $r['name'] == 'Closeout:' )
+				{
+					break;
+				}
+
+				if ( $r['resource_subtype'] == 'section' )
+				{
+					$out .= $this->display->compiledTemplates('skin_agenda')->section( $this->tasks[$r] );
+				}
+				else
+				{
+					$out .= $this->display->compiledTemplates('skin_agenda')->production( $this->tasks[$r] );
+				}
 			}
 		}
 
