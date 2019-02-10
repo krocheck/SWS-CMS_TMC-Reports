@@ -197,9 +197,7 @@ $HTML .= <<<EOF
 
 <body>
 {$content}
-	<div id="footer">
-		{$this->lang->getString('copyright')}
-	</div>
+
 {$debug}
 </body>
 </html>

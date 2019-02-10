@@ -51,26 +51,31 @@ body
 	vertical-align:top;
 }
 
+div.content
+{
+	margin: -10px 0 0 0;
+}
+
 div.content div
 {
 	margin:0 0 0 30px;
 }
 
-div#footer
+div.content div.group
 {
-	margin: 10px auto;
-	padding: 10px 5px;
-	width:800px;
-	font-size: 10px;
-	font-family:Arial, Helvetica, sans-serif;
-	color: #000000;
-	text-align:center;
+	margin:0;
+	padding:0;
 }
 
 div#header
 {
 	width:100%;
 	text-align:left;
+}
+
+div#header .float
+{
+	float:right;
 }
 
 div.hidden,
