@@ -291,6 +291,11 @@ class AsanaAPI extends Command
 
 		if ( $count > 0 )
 		{
+			foreach( $projectIDs as $projectID )
+			{
+				$newRows[ $projectID ]['sections'] = mysqli_real_escape_string( $this->DB->getConnection(), serialize($this->updateSections($projectID)));
+			}
+
 			$this->DB->query("SELECT * FROM project;");
 
 			if ( $this->DB->getTotalRows() )
@@ -333,6 +338,98 @@ class AsanaAPI extends Command
 		$this->cache->update('projects');
 
 		return $count;
+	}
+
+	/**
+	 * Call the Asana API to retrieve the Sections of a Project
+	 *
+	 * @param string $project the project id to scan
+	 * @return array the gids retrieved
+	 * @access public
+	 * @since 1.0.0
+	*/
+	public function updateSections($project)
+	{
+		$sectionIDs = array();
+		$newRows = array();
+		$oldRows = array();
+		$dbRows = array();
+		$count = 0;
+		$workspace = $this->registry->getSetting('asana_default');
+
+		$data = array();
+
+		do
+		{
+			if ( isset($data['next_page']) && is_array($data['next_page']) )
+			{
+				$data = $this->callGet('next_page', $data['next_page']['path']);
+			}
+			else
+			{
+				$data = $this->callGet('sections',"/{$workspace}/sections?limit=50");
+			}
+
+			if ( isset($data['data']) && is_array($data['data']) && count($data['data']) > 0 )
+			{
+				foreach( $data['data'] as $row )
+				{
+					$count++;
+					$sectionID = $row['gid'];
+
+					$sectionIDs[]  = $sectionID;
+					$newRows[ $sectionID ] = array(
+						'section_gid' => $sectionID,
+						'project_gid' => $project,
+						'name'        => $row['name'],
+						'created_at'  => $this->parseDate( $row['created_at'] )
+					);
+				}
+			}
+		} while( isset($data['next_page']) && is_array($data['next_page']) );
+
+		if ( $count > 0 )
+		{
+			$this->DB->query("SELECT * FROM section WHERE project_id = '{$project}';");
+
+			if ( $this->DB->getTotalRows() )
+			{
+				while( $row = $this->DB->fetchRow() )
+				{
+					$dbRows[ $row['section_gid'] ] = $row;
+
+					if ( isset( $row['section_gid'] ) && isset( $newRows[ $row['section_gid'] ] ) )
+					{
+						$oldRows[ $row['section_gid'] ] = $newRows[ $row['section_gid'] ];
+						unset( $newRows[ $row['section_gid'] ] );
+					}
+				}
+			}
+
+			if ( count( $newRows ) > 0 )
+			{
+				$query = "INSERT INTO section (section_gid,project_gid,name,created_at) VALUES ";
+
+				foreach( $newRows as $row )
+				{
+					$query .= "('{$row['section_gid']}','{$row['project_gid']}',\"{$row['name']}\",'{$row['created_at']}'),";
+				}
+
+				$query = substr($query,0,-1) . ";";
+
+				$this->DB->query( $query );
+			}
+
+			if ( count( $oldRows ) > 0 )
+			{
+				foreach( $oldRows as $row )
+				{
+					$this->DB->query("UPDATE section SET project_gid = '{$row['project_gid']}', name = \"{$row['name']}\", created_at = '{$row['created_at']}', last_update = NOW() WHERE section_gid = '{$row['section_gid']}';");
+				}
+			}
+		}
+
+		return $sectionIDs;
 	}
 
 	/**
