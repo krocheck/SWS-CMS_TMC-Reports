@@ -272,7 +272,7 @@ class AsanaAPI extends Command
 	 * @access public
 	 * @since 1.0.0
 	*/
-	public function updateTag()
+	public function updateTags()
 	{
 		$tagIDs = array();
 		$newRows = array();
@@ -306,7 +306,7 @@ class AsanaAPI extends Command
 					{
 						foreach( $row['followers'] as $follower )
 						{
-							$folowers[] = $followers['gid'];
+							$followers[] = $follower['gid'];
 						}
 					}
 
@@ -316,50 +316,53 @@ class AsanaAPI extends Command
 						'workspace_gid' => $workspace,
 						'color'         => $row['color'],
 						'created_at'    => $this->parseDate( $row['created_at'] ),
-						'followers'     => mysql_real_escape_string( serialize($followers) ),
+						'followers'     => mysqli_real_escape_string( $this->DB->getConnection(), serialize($followers) ),
 						'name'          => $row['name']
 					);
 				}
+			}
+		} while( isset($data['next_page']) && is_array($data['next_page']) );
 
-				$this->DB->query("SELECT * FROM tag;");
+		if ( $count > 0 )
+		{
+			$this->DB->query("SELECT * FROM tag;");
 
-				if ( $this->DB->getTotalRows() )
+			if ( $this->DB->getTotalRows() )
+			{
+				while( $row = $this->DB->fetchRow() )
 				{
-					while( $row = $this->DB->fetchRow() )
+					$dbRows[ $row['tag_gid'] ] = $row;
+
+					if ( isset( $row['tag_gid'] ) && isset( $newRows[ $row['tag_gid'] ] ) )
 					{
-						$dbRows[ $row['tag_gid'] ] = $row;
-
-						if ( isset( $row['tag_gid'] ) && isset( $newRows[ $row['taggid'] ] ) )
-						{
-							$oldRows[ $row['tag_gid'] ] = $newRows[ $row['tag_gid'] ];
-							unset( $newRows[ $row['tag_gid'] ] );
-						}
-					}
-				}
-
-				if ( count( $newRows ) > 0 )
-				{
-					$query = "INSERT INTO tag (tag_gid,workspace_gid,color,created_at,followers,name) VALUES ";
-
-					foreach( $newRows as $row )
-					{
-						$query .= "('{$row['tag_gid']}','{$row['workspace_gid']}','{$row['color']}','{$row['created_at']}',\"{$row['followers']}\",\"{$row['name']}\"),";
-					}
-
-					$query = substr($query,0,-1) . ";";
-
-					$this->DB->query( $query );
-				}
-
-				if ( count( $oldRows ) > 0 )
-				{
-					foreach( $oldRows as $row )
-					{
-						$this->DB->query("UPDATE tag SET workspace_gid = '{$row['workspace_gid']}', color = '{$row['color']}', created_at = '{$row['created_at']}', followers = \"{$row['followers']}\", name = \"{$row['name']}\", last_update = NOW() WHERE tag_gid = '{$row['tag_gid']}';");
+						$oldRows[ $row['tag_gid'] ] = $newRows[ $row['tag_gid'] ];
+						unset( $newRows[ $row['tag_gid'] ] );
 					}
 				}
 			}
-		} while( isset($data['next_page']) && is_array($data['next_page']) );
+
+			if ( count( $newRows ) > 0 )
+			{
+				$query = "INSERT INTO tag (tag_gid,workspace_gid,color,created_at,followers,name) VALUES ";
+
+				foreach( $newRows as $row )
+				{
+					$query .= "('{$row['tag_gid']}','{$row['workspace_gid']}','{$row['color']}','{$row['created_at']}',\"{$row['followers']}\",\"{$row['name']}\"),";
+				}
+
+				$query = substr($query,0,-1) . ";";
+
+				$this->DB->query( $query );
+			}
+
+			if ( count( $oldRows ) > 0 )
+			{
+				foreach( $oldRows as $row )
+				{
+					$this->DB->query("UPDATE tag SET workspace_gid = '{$row['workspace_gid']}', color = '{$row['color']}', created_at = '{$row['created_at']}', followers = \"{$row['followers']}\", name = \"{$row['name']}\", last_update = NOW() WHERE tag_gid = '{$row['tag_gid']}';");
+				}
+			}
+		}
 
 		$this->cache->update('tags');
 
@@ -408,46 +411,49 @@ class AsanaAPI extends Command
 						'is_organization' => ( $row['is_organization'] ? 1 : 0 )
 					);
 				}
+			}
+		} while( isset($data['next_page']) && is_array($data['next_page']) );
 
-				$this->DB->query("SELECT * FROM workspace;");
+		if ( $count > 0 )
+		{
+			$this->DB->query("SELECT * FROM workspace;");
 
-				if ( $this->DB->getTotalRows() )
+			if ( $this->DB->getTotalRows() )
+			{
+				while( $row = $this->DB->fetchRow() )
 				{
-					while( $row = $this->DB->fetchRow() )
+					$dbRows[ $row['workspace_gid'] ] = $row;
+
+					if ( isset( $row['workspace_gid'] ) && isset( $newRows[ $row['workspace_gid'] ] ) )
 					{
-						$dbRows[ $row['workspace_gid'] ] = $row;
-
-						if ( isset( $row['workspace_gid'] ) && isset( $newRows[ $row['workspace_gid'] ] ) )
-						{
-							$oldRows[ $row['workspace_gid'] ] = $newRows[ $row['workspace_gid'] ];
-							unset( $newRows[ $row['workspace_gid'] ] );
-						}
-					}
-				}
-
-				if ( count( $newRows ) > 0 )
-				{
-					$query = "INSERT INTO workspace (workspace_gid,name,is_organization) VALUES ";
-
-					foreach( $newRows as $row )
-					{
-						$query .= "('{$row['workspace_gid']}',\"{$row['name']}\",'{$row['is_organization']}'),";
-					}
-
-					$query = substr($query,0,-1) . ";";
-
-					$this->DB->query( $query );
-				}
-
-				if ( count( $oldRows ) > 0 )
-				{
-					foreach( $oldRows as $row )
-					{
-						$this->DB->query("UPDATE workspace SET name = \"{$row['name']}\", is_organization = '{$row['is_organization']}', last_update = NOW() WHERE workspace_gid = '{$row['workspace_gid']}';");
+						$oldRows[ $row['workspace_gid'] ] = $newRows[ $row['workspace_gid'] ];
+						unset( $newRows[ $row['workspace_gid'] ] );
 					}
 				}
 			}
-		} while( isset($data['next_page']) && is_array($data['next_page']) );
+
+			if ( count( $newRows ) > 0 )
+			{
+				$query = "INSERT INTO workspace (workspace_gid,name,is_organization) VALUES ";
+
+				foreach( $newRows as $row )
+				{
+					$query .= "('{$row['workspace_gid']}',\"{$row['name']}\",'{$row['is_organization']}'),";
+				}
+
+				$query = substr($query,0,-1) . ";";
+
+				$this->DB->query( $query );
+			}
+
+			if ( count( $oldRows ) > 0 )
+			{
+				foreach( $oldRows as $row )
+				{
+					$this->DB->query("UPDATE workspace SET name = \"{$row['name']}\", is_organization = '{$row['is_organization']}', last_update = NOW() WHERE workspace_gid = '{$row['workspace_gid']}';");
+				}
+			}
+		}
 
 		$this->cache->update('workspaces');
 
