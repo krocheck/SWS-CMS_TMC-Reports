@@ -56,7 +56,8 @@ class Agenda extends Page
 		while( $r = $this->DB->fetchRow() )
 		{
 			$TYPE_CLASS = $this->subpage->getClass($r['type']);
-			$ids[$r['subpage_id']] = new $TYPE_CLASS($r);
+			$ids[$r['subpage_id']] = new $TYPE_CLASS();
+			$ids[$r['subpage_id']]->execute($this->registry, $r);
 		}
 
 		$this->DB->query("SELECT * FROM metadata_subpage WHERE language_id = '{$this->lang->getLanguageID()}' AND id IN(".implode(",",array_keys($ids)).");");
