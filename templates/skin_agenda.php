@@ -143,7 +143,7 @@ if ( $r['due_on'] != '0000-00-00' )
 
 	if ( $endDate < time() )
 	{
-		$date = "<div class='pill red' style='font-size:14px;'>" . $date . "</div>";
+		$date = "<div class='pill red' style='font-size:13px;'>" . $date . "</div>";
 	}
 }
 else

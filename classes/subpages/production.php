@@ -150,10 +150,46 @@ class ProductionType extends SubpageType
 	public function adminDoSaveChecks()
 	{
 		$out = FALSE;
-		
+
 		$this->metadata['name']         = $this->registry->txtStripslashes( trim( $this->input['name'] ) );
 		$this->metadata['project']      = $this->registry->txtStripslashes( trim( $this->input['project'] ) );
-		
+
+		//-----------------------------------------
+		// Project fields
+		//-----------------------------------------
+
+		$this->project = array();
+		$this->tasks   = array();
+		$this->DB->query("SELECT project_gid,tasks FROM project WHERE project_gid = '{$meta[ $languageID ]['project']['value']}';");
+
+		while( $r = $this->DB->fetchRow() )
+		{
+			$this->project = $r;
+		}
+
+		$this->project['tasks'] = unserialize($this->project['tasks']);
+
+		$this->DB->query("SELECT task_gid,name,resource_subtype FROM task WHERE task_gid IN(" . implode(",", $this->project['tasks']) . ") AND completed = 0;");
+
+		while( $r = $this->DB->fetchRow() )
+		{
+			$this->tasks[$r['task_gid']] = $r;
+		}
+
+		if ( is_array($this->project['tasks']) && count($this->project['tasks']) > 0 )
+		{
+			foreach( $this->project['tasks'] as $r )
+			{
+				if ( isset($this->tasks[$r]) && is_array($this->tasks[$r]) )
+				{
+					if ( $this->tasks[$r]['resource_subtype'] != 'section' )
+					{
+						$this->metadata[$r] = $this->registry->txtStripslashes( trim( $this->input[$r] ) );
+					}
+				}
+			}
+		}
+
 		if ( strlen( $this->metadata['name'] ) < 3 )
 		{
 			$out = TRUE;
@@ -201,6 +237,55 @@ class ProductionType extends SubpageType
 				$ad_skin->formDropdown( 'project', $this->registry->getAPI('asana')->getProjectsDropdown(), $_POST['project'] ? $_POST['project'] : $meta[ $languageID ]['project']['value'] )
 			)
 		);
+
+		//-----------------------------------------
+		// End table and form
+		//-----------------------------------------
+
+		$out .= $ad_skin->endFieldset();
+
+		$out .= $ad_skin->startFieldset( 'Project Descriptions' );
+
+		//-----------------------------------------
+		// Project fields
+		//-----------------------------------------
+
+		$this->project = array();
+		$this->tasks   = array();
+		$this->DB->query("SELECT project_gid,tasks FROM project WHERE project_gid = '{$meta[ $languageID ]['project']['value']}';");
+
+		while( $r = $this->DB->fetchRow() )
+		{
+			$this->project = $r;
+		}
+
+		$this->project['tasks'] = unserialize($this->project['tasks']);
+
+		$this->DB->query("SELECT task_gid,name,resource_subtype FROM task WHERE task_gid IN(" . implode(",", $this->project['tasks']) . ") AND completed = 0;");
+
+		while( $r = $this->DB->fetchRow() )
+		{
+			$this->tasks[$r['task_gid']] = $r;
+		}
+
+		if ( is_array($this->project['tasks']) && count($this->project['tasks']) > 0 )
+		{
+			foreach( $this->project['tasks'] as $r )
+			{
+				if ( isset($this->tasks[$r]) && is_array($this->tasks[$r]) )
+				{
+					if ( $this->tasks[$r]['resource_subtype'] != 'section' )
+					{
+						$out .= $ad_skin->addTdRow(
+							array(
+								$this->tasks[$r]['name'],
+								$ad_skin->formRTE( $r, $_POST[$r] ? $_POST[$r] : $meta[ $languageID ][$r]['value'] )
+							)
+						);
+					}
+				}
+			}
+		}
 
 		//-----------------------------------------
 		// End table and form
