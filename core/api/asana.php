@@ -1337,8 +1337,10 @@ class AsanaAPI extends Command
 
 			if ( isset($data['data']) && is_array($data['data']) && count($data['data']) > 0 )
 			{
-				foreach( $data as $row )
+				foreach( $data['data'] as $row )
 				{
+					$count++;
+
 					$workspaceIDs[]  = $row['gid'];
 					$newRows[ $discountID ] = array(
 						'workspace_gid'   => $row['gid'],
