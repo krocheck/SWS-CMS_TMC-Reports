@@ -76,11 +76,11 @@ class Agenda extends Page
 		}
 
 
-		$out = $this->display->compiledTemplates('skin_board')->wrapper( $this->content, $this->name );
+		$out = $this->display->compiledTemplates('skin_agenda')->wrapper( $this->content, $this->name );
 
 		$this->display->addContent( $out );
 
-		$this->display->doOutput('board');
+		$this->display->doOutput();
 	}
 }
 
