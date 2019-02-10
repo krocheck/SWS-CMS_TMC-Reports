@@ -9,29 +9,24 @@ protected function doExecute( $param )
 //===========================================================================
 // Normal wrapper
 //===========================================================================
-public function wrapper( $members, $title ) {
+public function wrapper( $members ) {
 
 $ELMHTML = "";
 //--starthtml--//
 $ELMHTML .= <<<EOF
-		<div class="content">
-			<h1>{$title}</h1>
-			<table width="100%" cellpadding="0" cellspacing="0">
-
+	<div id="header"><a href="{$this->display->buildURL( array() )}"><img src="{$this->registry->getConfig('base_url')}images/admin-logo.gif" /></a></div>
+	<div class="content">
 EOF;
 foreach( $members as $v ) {
 $ELMHTML .= <<<EOF
-					<tr>
-						<td>
-							<h2>{$v['name']}</h2>
-{$v['description']}
-						</td>
-					</tr>
+		<h2>{$v->getName()}</h2>
+		<div>
+{$v->getContent()}
+		</div>
 
 EOF;
 }
 $ELMHTML .= <<<EOF
-			</table>
 		</div>
 
 EOF;

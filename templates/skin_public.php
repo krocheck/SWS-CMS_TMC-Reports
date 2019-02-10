@@ -196,8 +196,6 @@ $HTML .= <<<EOF
 </head>
 
 <body>
-{$userlinks}
-	<div id="header"><a href="{$this->display->buildURL( array() )}"><img src="{$this->registry->getConfig('base_url')}images/blank.gif" width="200" height="70" /></a></div>
 {$content}
 	<div id="footer">
 		{$this->lang->getString('copyright')}

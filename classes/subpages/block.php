@@ -39,6 +39,21 @@ class Block extends Subpage
 	{
 		$this->id            = $dbRow['subpage_id'];
 	}
+
+	public function getContent()
+	{
+		return $this->metadata['description']['value'];
+	}
+
+	public function getName()
+	{
+		return $this->metadata['name']['value'];
+	}
+
+	public function setMeta( $metadata )
+	{
+		$this->metadata = $metadata
+	}
 }
 
 /**

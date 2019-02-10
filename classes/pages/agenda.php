@@ -55,7 +55,8 @@ class Agenda extends Page
 
 		while( $r = $this->DB->fetchRow() )
 		{
-			$ids[] = $r['subpage_id'];
+			$TYPE_CLASSES = $this->subpage->getType($r['type']);
+			$ids[$r['subpage_id']] = $TYPE_CLASSES[0]($r);
 		}
 
 		$this->DB->query("SELECT * FROM metadata_subpage WHERE language_id = '{$this->lang->getLanguageID()}' AND id IN(".implode(",",$ids).");");
@@ -67,15 +68,13 @@ class Agenda extends Page
 
 		$subMeta = $this->subpage->processMetadataByID( $subMeta );
 
-		foreach( $ids as $k )
+		foreach( $ids as $k => $v )
 		{
-			$this->content[ $k ] = array();
-			$this->content[ $k ]['name'] = $subMeta[ $k ]['name']['value'];
-			$this->content[ $k ]['description'] = $this->registry->parseHTML( $subMeta[ $k ]['description']['value'] );
+			$ids[$k]->setMeta( $subMeta[ $k ] );
 		}
 
 
-		$out = $this->display->compiledTemplates('skin_agenda')->wrapper( $this->content, $this->name );
+		$out = $this->display->compiledTemplates('skin_agenda')->wrapper( $ids );
 
 		$this->display->addContent( $out );
 
