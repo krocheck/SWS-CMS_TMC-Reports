@@ -139,11 +139,16 @@ $date = "";
 if ( $r['due_on'] != '0000-00-00' )
 {
 	$endDate = strtotime($r['due_on']);
-	$date = date('F j', $endDate);
+	$date = 'Due: ' . date('F j', $endDate);
+
+	if ( $endDate < time() )
+	{
+		$date = "<div class='pill red' style='font-size:14px;'>" . $date . "</div>";
+	}
 }
 else
 {
-	$date = '?';
+	$date = 'Due: ?';
 }
 
 if ( count($r['tags']) > 0 )
@@ -159,7 +164,7 @@ $ELMHTML = "";
 //--starthtml--//
 $ELMHTML .= <<<EOF
 	<div class="production">
-		<strong>{$r['name']}</strong><br /> | Due: {$date}
+		<strong>{$r['name']}</strong> | {$date}<br />
 		{$r['custom_fields'][512408346444750]} | Producer: {$r['custom_fields'][512462680735933]} | AE: {$r['custom_fields'][512408346444708]} {$tagSep} 
 EOF;
 if (count($r['tags']) > 0) {
