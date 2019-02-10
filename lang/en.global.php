@@ -22,6 +22,7 @@ $lang['all_accounts']                  = "ALL ACCOUNTS";
 $lang['agenda']                        = "Agenda Template";
 $lang['block']                         = "Rich Text Block";
 $lang['redirect']                      = "Redirect";
+$lang['shows']                         = "Asana Shows Link";
 $lang['text']                          = "Text Area";
 
 $lang['missing_fields']                = "Please make sure all fields are filled out.";

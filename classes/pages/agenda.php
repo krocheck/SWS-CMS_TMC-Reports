@@ -72,7 +72,6 @@ class Agenda extends Page
 			$this->content[ $k ] = array();
 			$this->content[ $k ]['name'] = $subMeta[ $k ]['name']['value'];
 			$this->content[ $k ]['description'] = $this->registry->parseHTML( $subMeta[ $k ]['description']['value'] );
-			$this->content[ $k ]['image_file']  = $subMeta[ $k ]['image_file']['value'];
 		}
 
 

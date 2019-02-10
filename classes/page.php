@@ -573,7 +573,7 @@ abstract class Page extends Command
 	 */
 	public function process()
 	{
-		$meta = "";
+		$meta = array();
 		
 		$this->display->loadTemplates('skin_'.$this->type);
 		
