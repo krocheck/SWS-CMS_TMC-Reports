@@ -95,7 +95,24 @@ class AsanaAPI extends Command
 		$out = array();
 
 		$curl2 = curl_init();
-		$url = $this->apiURL . $this->endpoints[ $endpoint ] . $method;
+
+		if ( $endpoint = 'next_page' )
+		{
+			$url = $this->apiURL . $method;
+		}
+		else
+		{
+			if ( count($this->endpoints['expand']) > 0 )
+			{
+				$fields = (strlen($method) > 0 && strpos('?', $method) > 0 ? '&' : '?') . 'opt_expand=' . implode(',',$this->endpoints['expand']);
+			}
+			else
+			{
+				$fields = (strlen($method) > 0 && strpos('?', $method) > 0 ? '&' : '?') . 'opt_fields=' . implode(',',$this->endpoints['fields']);
+			}
+
+			$url = $this->apiURL . $this->endpoints['uri'][ $endpoint ] . $method . $fields;
+		}
 
 		curl_setopt($curl2, CURLOPT_URL, $url);
 		curl_setopt($curl2, CURLOPT_HTTPHEADER, array( "Content-Type: application/json", "Authorization: Bearer {$this->token}" ) );
@@ -139,7 +156,7 @@ class AsanaAPI extends Command
 		$out = array();
 
 		$curl2 = curl_init();
-		$url = $this->apiURL . $this->endpoints[ $endpoint ] . $method;
+		$url = $this->apiURL . $this->endpoints['uri'][ $endpoint ] . $method;
 		$parameters = array();
 		
 		if ( is_array( $params ) )

@@ -19,10 +19,10 @@
 require_once( '../init.php' );
 // Sets up what this application is called
 // MUST BE THE SAME NAME AS THE DIRECTORY
-define( SWS_THIS_APPLICATION, 'spooler' );
+define( 'SWS_THIS_APPLICATION', 'spooler' );
 // Overrides the user's language preference, given the
 // admin panel is only in English at the moment.
-define( SWS_THIS_LANGUAGE, 'en' );
+define( 'SWS_THIS_LANGUAGE', 'en' );
 
 // Get the main controller and launch the application
 require_once( SWS_CORE_PATH . 'controller.php' );

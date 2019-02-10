@@ -140,11 +140,13 @@ class AdminSettings extends Command
 		$settings['asana_url']              = trim( $this->input['asana_url'] );
 		$settings['asana_token']            = trim( $this->input['asana_token'] );
 		$settings['asana_tasks']            = trim( $this->input['asana_tasks'] );
-		$settings['asana_sections']            = trim( $this->input['asana_sections'] );
+		$settings['asana_sections']         = trim( $this->input['asana_sections'] );
 		$settings['asana_projects']         = trim( $this->input['asana_projects'] );
 		$settings['asana_workspaces']       = trim( $this->input['asana_workspaces'] );
 		$settings['asana_teams']            = trim( $this->input['asana_teams'] );
 		$settings['asana_users']            = trim( $this->input['asana_users'] );
+		$settings['asana_tags']             = trim( $this->input['asana_tags'] );
+		$settings['asana_custom_fields']    = trim( $this->input['asana_custom_fields'] );
 
 		//--------------------------------------------
 		// Checks...
