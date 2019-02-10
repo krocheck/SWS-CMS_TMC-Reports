@@ -96,7 +96,7 @@ class AsanaAPI extends Command
 
 		$curl2 = curl_init();
 
-		if ( $endpoint = 'next_page' )
+		if ( $endpoint == 'next_page' )
 		{
 			$url = $this->apiURL . $method;
 		}
@@ -104,7 +104,7 @@ class AsanaAPI extends Command
 		{
 			if ( count($this->endpoints[ $endpoint ]['expand']) > 0 )
 			{
-				$fields = (strlen($method) > 0 && strpos('?', $method) > 0 ? '&' : '?') . 'opt_expand=' . implode(',',$this->endpoints[ $endpoint ]['expand']);
+				$fields = (strlen($method) > 0 && ( strpos('?', $method) > 0 || substr($method,0,1) == '?' ) ? '&' : '?') . 'opt_expand=' . implode(',',$this->endpoints[ $endpoint ]['expand']);
 			}
 			else
 			{
