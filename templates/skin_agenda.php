@@ -11,11 +11,14 @@ protected function doExecute( $param )
 //===========================================================================
 public function wrapper( $members ) {
 
+$nextMonday = strtotime('next monday');
+$meetingDate = date('F j, Y', $nextMonday);
+
 $ELMHTML = "";
 //--starthtml--//
 $ELMHTML .= <<<EOF
 	<div id="header">
-		<div class="float">Staff Meeting:</div>
+		<h1 class="float">STAFF MEETING: {$meetingDate}</h1>
 		<a href="{$this->display->buildURL( array() )}"><img src="{$this->registry->getConfig('base_url')}images/admin-logo.png" /></a></div>
 	<div class="content">
 
