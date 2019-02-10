@@ -92,6 +92,7 @@ div.ui-loader
 div.show, div.production
 {
 	margin: 0 0 20px 20px !important;
+	display: table;
 }
 
 h1
