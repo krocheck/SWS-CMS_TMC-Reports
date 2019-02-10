@@ -55,11 +55,11 @@ class Agenda extends Page
 
 		while( $r = $this->DB->fetchRow() )
 		{
-			$TYPE_CLASS = $this->subpage->getType($r['type']);
-			$ids[$r['subpage_id']] = $TYPE_CLASS($r);
+			$TYPE_CLASS = $this->subpage->getClass($r['type']);
+			$ids[$r['subpage_id']] = new $TYPE_CLASS($r);
 		}
 
-		$this->DB->query("SELECT * FROM metadata_subpage WHERE language_id = '{$this->lang->getLanguageID()}' AND id IN(".implode(",",$ids).");");
+		$this->DB->query("SELECT * FROM metadata_subpage WHERE language_id = '{$this->lang->getLanguageID()}' AND id IN(".implode(",",array_keys($ids)).");");
 
 		while( $r = $this->DB->fetchRow() )
 		{

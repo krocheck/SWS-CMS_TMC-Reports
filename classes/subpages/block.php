@@ -42,7 +42,7 @@ class Block extends Subpage
 
 	public function getContent()
 	{
-		return $this->metadata['description']['value'];
+		return $this->registry->parseHTML( $this->metadata['description']['value'] );
 	}
 
 	public function getName()
@@ -52,7 +52,7 @@ class Block extends Subpage
 
 	public function setMeta( $metadata )
 	{
-		$this->metadata = $metadata
+		$this->metadata = $metadata;
 	}
 }
 

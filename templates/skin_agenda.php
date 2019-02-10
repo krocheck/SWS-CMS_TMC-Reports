@@ -14,7 +14,7 @@ public function wrapper( $members ) {
 $ELMHTML = "";
 //--starthtml--//
 $ELMHTML .= <<<EOF
-	<div id="header"><a href="{$this->display->buildURL( array() )}"><img src="{$this->registry->getConfig('base_url')}images/admin-logo.gif" /></a></div>
+	<div id="header"><a href="{$this->display->buildURL( array() )}"><img src="{$this->registry->getConfig('base_url')}images/admin-logo.png" /></a></div>
 	<div class="content">
 EOF;
 foreach( $members as $v ) {

@@ -52,7 +52,7 @@ class Shows extends Subpage
 
 	public function setMeta( $metadata )
 	{
-		$this->metadata = $metadata
+		$this->metadata = $metadata;
 	}
 }
 
