@@ -102,16 +102,16 @@ class AsanaAPI extends Command
 		}
 		else
 		{
-			if ( count($this->endpoints['expand']) > 0 )
+			if ( count($this->endpoints[ $endpoint ]['expand']) > 0 )
 			{
-				$fields = (strlen($method) > 0 && strpos('?', $method) > 0 ? '&' : '?') . 'opt_expand=' . implode(',',$this->endpoints['expand']);
+				$fields = (strlen($method) > 0 && strpos('?', $method) > 0 ? '&' : '?') . 'opt_expand=' . implode(',',$this->endpoints[ $endpoint ]['expand']);
 			}
 			else
 			{
-				$fields = (strlen($method) > 0 && strpos('?', $method) > 0 ? '&' : '?') . 'opt_fields=' . implode(',',$this->endpoints['fields']);
+				$fields = (strlen($method) > 0 && strpos('?', $method) > 0 ? '&' : '?') . 'opt_fields=' . implode(',',$this->endpoints[ $endpoint ]['fields']);
 			}
 
-			$url = $this->apiURL . $this->endpoints['uri'][ $endpoint ] . $method . $fields;
+			$url = $this->apiURL . $this->endpoints[ $endpoint ]['uri'] . $method . $fields;
 		}
 
 		curl_setopt($curl2, CURLOPT_URL, $url);
@@ -156,7 +156,7 @@ class AsanaAPI extends Command
 		$out = array();
 
 		$curl2 = curl_init();
-		$url = $this->apiURL . $this->endpoints['uri'][ $endpoint ] . $method;
+		$url = $this->apiURL . $this->endpoints[ $endpoint ]['uri'] . $method;
 		$parameters = array();
 		
 		if ( is_array( $params ) )
