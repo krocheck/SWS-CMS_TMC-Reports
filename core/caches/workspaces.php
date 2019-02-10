@@ -4,7 +4,7 @@
  * SWS-CMS System
  *  - Simna Web Services Programming Team
  *
- * Discount cache type
+ * Workspaces cache type
  * Last Updated: $Date: 2010-04-28 13:42:06 -0500 (Wed, 28 Apr 2010) $
  *
  * @author		$Author: krocheck $
@@ -16,7 +16,7 @@
  * @version		$Revision: 2 $
  */
 
-class DiscountsCache extends CacheType
+class WorkspacesCache extends CacheType
 {
 	/**
 	 * The name of the cache
@@ -25,7 +25,7 @@ class DiscountsCache extends CacheType
 	 * @var string
 	 * @since 1.0.0
 	 */
-	public $name = 'discounts';
+	public $name = 'workspaces';
 
 	/**
 	 * Gets the values from the database, calls the parent
@@ -37,13 +37,13 @@ class DiscountsCache extends CacheType
 	 */
 	public function save( $dbCheck = TRUE )
 	{
-		$this->DB->query("SELECT * FROM discount WHERE exclude = 1 ORDER BY title");
+		$this->DB->query("SELECT * FROM workspace");
 		
 		$save = array();
 		
 		while( $r = $this->DB->fetchRow() )
 		{
-			$save[ $r['toast_guid'] ] = $r;
+			$save[ $r['workspace_gid'] ] = $r;
 		}
 		
 		$this->value = $save;

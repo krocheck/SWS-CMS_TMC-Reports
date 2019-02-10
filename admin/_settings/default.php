@@ -139,6 +139,7 @@ class AdminSettings extends Command
 		$settings['ldap_base_dn']           = trim( $this->input['ldap_base_dn'] );
 		$settings['asana_url']              = trim( $this->input['asana_url'] );
 		$settings['asana_token']            = trim( $this->input['asana_token'] );
+		$settings['asana_default']          = trim( $this->input['asana_default'] );
 		$settings['asana_tasks']            = trim( $this->input['asana_tasks'] );
 		$settings['asana_sections']         = trim( $this->input['asana_sections'] );
 		$settings['asana_projects']         = trim( $this->input['asana_projects'] );
@@ -402,6 +403,13 @@ class AdminSettings extends Command
 			array(
 				$this->lang->getString('settings_asana_token'),
 				$this->html->formInput( 'asana_token', $this->registry->txtStripslashes( $_POST['asana_token'] ? $_POST['asana_token'] : $settings['asana_token'] ) )
+			)
+		);
+
+		$html .= $this->html->addTdRow(
+			array(
+				$this->lang->getString('settings_asana_default'),
+				$this->html->formDropdown('asana_default', $this->registry->getAPI('asana')->getWorkspacesDropdown(), intval( $_POST['asana_default'] ? $_POST['asana_default'] : $settings['asana_default'] ) )
 			)
 		);
 

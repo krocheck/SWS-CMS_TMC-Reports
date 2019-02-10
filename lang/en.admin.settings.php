@@ -26,6 +26,7 @@ $lang['settings_seo_url']              = "<strong>Use SEO Optimized URLs?</stron
 $lang['settings_session_timeout']      = "<strong>Session Timeout</strong><br>Minutes until a user is automatically logged out of the control panel.";
 $lang['settings_asana_url']            = "<strong>Asana API URL</strong>";
 $lang['settings_asana_token']          = "<strong>Asana Auth Token</strong>";
+$lang['settings_asana_default']        = "<strong>Asana Default Workspace</strong>";
 $lang['settings_asana_tasks']          = "<strong>Asana Tasks Endpoint</strong>";
 $lang['settings_asana_sections']       = "<strong>Asana Sections Endpoint</strong>";
 $lang['settings_asana_projects']       = "<strong>Asana Projects Endpoint</strong>";

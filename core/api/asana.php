@@ -345,6 +345,29 @@ class AsanaAPI extends Command
 	}
 
 	/**
+	 * Get an array of the workspaces to create a dropdown or multi-select
+	 *
+	 * @return array the workspaces
+	 * @access public
+	 * @since 1.0.0
+	 */
+	public function getWorkspacesDropdown()
+	{
+		$out = array();
+		$cache = $this->cache->get('workspaces');
+
+		if ( count( $cache ) > 0 )
+		{
+			foreach( $cache as $item )
+			{
+				$out[ $item['workspace_gid'] ] = array( $item['workspace_gid'], $item['name'] );
+			}
+		}
+
+		return $out;
+	}
+
+	/**
 	 * Updates/adds the passed menu items into the database
 	 *
 	 * @return int the total number of processed items
@@ -1144,170 +1167,6 @@ class AsanaAPI extends Command
 	}
 
 	/**
-	 * Poll the latest active beer items
-	 *
-	 * @return bool success
-	 * @access public
-	 * @since 1.0.0
-	*/
-	public function updateActiveMenuItems()
-	{
-		$out = 0;
-		$cats = $this->cache->getCache('categories');
-		$activeItems = array();
-
-		$this->DB->query("UPDATE menu_item SET active = 0;");
-
-		$updateSalesCategory = "UPDATE menu_item SET category_id = ";
-
-		foreach( $cats as $cat )
-		{
-			if ( isset( $cat['menu_gid'] ) && strlen( $cat['menu_gid'] ) > 0 )
-			{
-				$catItems = array();
-
-				$items = $this->getMenuGroup( $cat['menu_gid'] );
-
-				if ( is_array( $items ) && count( $items ) > 0 )
-				{
-					foreach( $items as $item )
-					{
-						$activeItems[] = $item['gid'];
-						$catItems[] = $item['gid'];
-						$out++;
-					}
-				}
-
-				if ( count( $catItems ) > 0 )
-				{
-					$this->DB->query( $updateSalesCategory . $cat['category_id'] . " WHERE asana_gid IN('".implode("','",$catItems)."');");
-				}
-			}
-		}
-
-		if ( count( $activeItems ) > 0 )
-		{
-			$this->DB->query("UPDATE menu_item SET active = 1 WHERE asana_gid IN('".implode("','",$activeItems)."');");
-		}
-
-		if ( $out > 0 )
-		{
-			$this->DB->query("INSERT INTO logs (type,total,result,date_time) VALUES ('prices',{$out},1,'".date("Y-m-d H:i:s")."');");
-		}
-
-		return $out;
-	}
-
-	/**
-	 * Call the Asana API to retrieve the Sales Categories
-	 *
-	 * @return bool success
-	 * @access public
-	 * @since 1.0.0
-	*/
-	public function updateCategories()
-	{
-		$categoryIDs = array();
-		$newRows = array();
-		$oldRows = array();
-		$dbRows = array();
-
-		$data = $this->callGet('config','/salesCategories?pageSize=50');
-
-		$count = count( $data );
-
-		if ( is_array( $data ) && $count > 0 )
-		{
-			foreach( $data as $row )
-			{
-				$categoryID = $row['gid'];
-				$categoryText = $row['name'];
-
-				$categoryIDs[]  = $categoryID;
-				$newRows[ $categoryID ] = array('gid' => $categoryID, 'name' => $categoryText);
-			}
-
-			$this->DB->query("SELECT * FROM menu_category;");
-
-			if ( $this->DB->getTotalRows() )
-			{
-				while( $row = $this->DB->fetchRow() )
-				{
-					$dbRows[ $row['category_id'] ] = $row;
-					
-					if ( isset( $row['category_id'] ) && isset( $newRows[ $row['asana_gid'] ] ) )
-					{
-						$oldRows[ $row['asana_gid'] ] = $newRows[ $row['asana_gid'] ];
-						$oldRows[ $row['asana_gid'] ]['category_id'] = $row['category_id'];
-						unset( $newRows[ $row['asana_gid'] ] );
-					}
-				}
-			}
-
-			if ( count( $newRows ) > 0 )
-			{
-				$this->DB->query(
-					"SELECT IF( MAX(position), MAX(position) + 1, 1 ) as new_position FROM menu_category;"
-				);
-
-				$position = $this->DB->fetchRow();
-
-				$this->DB->query(
-					"SELECT IF( MAX(category_id), MAX(category_id) + 1, 1 ) as new_category_id FROM menu_category;"
-				);
-
-				$categoryID = $this->DB->fetchRow();
-
-				$queryInsert = "INSERT INTO menu_category (category_id,title,asana_gid,active,type,position) VALUES ";
-				$queryUpdate = "UPDATE menu_category SET asana_gid = ";
-				
-				foreach( $newRows as $row )
-				{
-					$check = false;
-					
-					foreach( $dbRows as $test )
-					{
-						if ( $test['asana_gid'] == '' && $test['title'] == $row['name'] )
-						{
-							$this->DB->query( $queryUpdate . "'{$row['gid']}' WHERE category_id={$test['category_id']};" );
-							$check = true;
-						}
-					}
-
-					if ( $check == false )
-					{
-						$queryInsert .= "('{$categoryID['new_category_id']}','{$row['name']}','{$row['gid']}',1,'na',{$position['new_position']}),";
-						$categoryID['new_category_id'] += 1;
-						$position['new_position'] += 1;
-					}
-				}
-				
-				$queryInsert = substr($queryInsert,0,-1) . ";";
-				
-				$this->DB->query( $queryInsert );
-			}
-
-			if ( count( $oldRows ) > 0 )
-			{
-				foreach( $oldRows as $row )
-				{
-					if ( $dbRows[ $row['category_id'] ]['title'] <> $row['name'] )
-					{
-						$this->DB->query("UPDATE menu_category SET title = '{$row['name']}' WHERE asana_gid = '{$row['gid']}';");
-					}
-				}
-			}
-
-			$this->DB->query("UPDATE menu_category SET active = 0;");
-			$this->DB->query("UPDATE menu_category SET active = 1 WHERE asana_gid IN('". implode("','", $categoryIDs) ."');");
-
-			$this->cache->update('categories');
-		}
-
-		return $count;
-	}
-
-	/**
 	 * Call the Asana API to retrieve the Workspaces
 	 *
 	 * @return int count of retrieved items
@@ -1389,6 +1248,8 @@ class AsanaAPI extends Command
 				}
 			}
 		} while( isset($data['next_page']) && is_array($data['next_page']) );
+
+		$this->cache->update('workspaces');
 
 		return $count;
 	}
