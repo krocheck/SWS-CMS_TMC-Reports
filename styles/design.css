@@ -32,7 +32,7 @@ body
 {
 	color:#000000;
 	font-family:Century Gothic, Verdana, Georgia, Times, serif;
-	font-size:13px;
+	font-size:14px;
 	margin:0;
 	padding:0;
 	vertical-align:top;
@@ -99,7 +99,7 @@ h2
 
 h3
 {
-	font-size:14px;
+	font-size:16px;
 	font-weight:700;
 	margin:0 0 14px;
 	padding:0;
@@ -122,11 +122,13 @@ ol li
 {
 	font-weight: 700;
 	padding: 0 0 2px 0;
+	line-height: 20px;
 }
 
 ol li ul li
 {
 	font-weight: normal;
+	line-height: normal;
 }
 
 p
@@ -135,7 +137,12 @@ p
 	padding:0;
 }
 
+table
+{
+	margin: 3px;
+}
+
 ul
 {
-	padding: 0 0 4px 0;
+	padding: 4px 0 4px 20px;
 }
