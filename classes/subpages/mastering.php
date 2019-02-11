@@ -58,18 +58,13 @@ class Mastering extends Subpage
 		$this->project['custom_field_settings'] = unserialize($this->project['custom_field_settings']);
 		$this->project['tasks'] = unserialize($this->project['tasks']);
 
-		$this->DB->query("SELECT task_gid,name,completed,custom_fields,due_on,resource_subtype,start_on,tags FROM task WHERE task_gid IN(" . implode(",", $this->project['tasks']) . ") AND completed = 0;");
+		$this->DB->query("SELECT task_gid,assignee_gid,name,custom_fields,resource_subtype,modified_at FROM task WHERE task_gid IN(" . implode(",", $this->project['tasks']) . ") AND completed = 0;");
 
 		while( $r = $this->DB->fetchRow() )
 		{
 			$this->tasks[$r['task_gid']] = $r;
 			$this->tasks[$r['task_gid']]['custom_fields'] = unserialize($r['custom_fields']);
 			$this->tasks[$r['task_gid']]['tags'] = unserialize($r['tags']);
-
-			if ( isset($this->metadata[$r['task_gid']]) )
-			{
-				$this->tasks[$r['task_gid']]['description'] = $this->registry->parseHTML( $this->metadata[$r['task_gid']]['value'] );
-			}
 		}
 
 		if ( is_array($this->project['tasks']) && count($this->project['tasks']) > 0 )
@@ -78,22 +73,22 @@ class Mastering extends Subpage
 			{
 				if ( isset($this->tasks[$r]) && is_array($this->tasks[$r]) )
 				{
-					if ( ($this->filter[0] == 0 && $this->filter[1] == 0 ) || intval($this->tasks['custom_fields'][ $this->filter[0] ]) == $this->filter[1] )
+					if ( ($this->filter[0] == 0 && $this->filter[1] == 0 ) || intval($this->tasks[$r]['custom_fields'][ $this->filter[0] ]) == $this->filter[1] )
 					{
 						$assigned = "";
 
 						if ( isset( $this->users[$this->tasks[$r]['assignee_gid']]) )
 						{
-							$assigned = " (" . substr($this->users[$this->tasks[$r]['assignee_gid']],0,strpos($this->users[$this->tasks[$r]['assignee_gid']]," ")) . ")"
+							$assigned = " (" . substr($this->users[$this->tasks[$r]['assignee_gid']]['name'],0,strpos($this->users[$this->tasks[$r]['assignee_gid']]['name']," ")) . ")";
 						}
 
-						$out .= "<li>{$this->tasks[$r]['name']}{$assigned}</li>";
+						$out .= "<p>{$this->tasks[$r]['name']}{$assigned} - Last modified: ".date("n-d-Y",strtotime($this->tasks[$r]['modified_at']))."</p>";
 					}
 				}
 			}
 		}
 
-		return "<ul>".$out."</ul>";
+		return $out;
 	}
 
 	public function getID()
@@ -118,18 +113,10 @@ class Mastering extends Subpage
 			{
 				$this->filter[0] = 0;
 			}
-			else
-			{
-				$this->filter[0] = intval($this->filter[0]);
-			}
 
 			if ( ! isset($this->filter[1]) )
 			{
 				$this->filter[1] = 0;
-			}
-			else
-			{
-				$this->filter[1] = intval($this->filter[1]);
 			}
 		}
 		else
