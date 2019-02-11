@@ -475,7 +475,7 @@ class Display
 			$this->title = substr( $this->title, 0, -3 );
 		}
 
-		if ( $this->registry->getInput('do') == 'pdf' )
+		if ( $css == 'pdf' )
 		{
 			require_once(SWS_VENDOR_PATH . 'autoload.php');
 			$mpdf = new \Mpdf\Mpdf(['tempDir' => '/tmp']);

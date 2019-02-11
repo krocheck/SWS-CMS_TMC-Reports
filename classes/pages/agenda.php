@@ -79,7 +79,7 @@ class Agenda extends Page
 
 		$this->display->addContent( $out );
 
-		$this->display->doOutput();
+		$this->display->doOutput('pdf');
 	}
 }
 

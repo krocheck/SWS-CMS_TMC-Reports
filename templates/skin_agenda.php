@@ -2,7 +2,7 @@
 
 class skin_agenda extends Command {
 
-$check = 0;
+protected $check = 0;
 
 protected function doExecute( $param )
 {
@@ -20,7 +20,6 @@ $ELMHTML = "";
 //--starthtml--//
 $ELMHTML .= <<<EOF
 
-	<div id="print-link"><a href="{$this->display->buildURL( array('do' => "pdf") )}">Generate PDF</a>&nbsp;&nbsp;&nbsp;</div>
 	<htmlpageheader name="myHeader" style="margin:0; padding:0;">
 		<table width="100%" style="margin:0; padding:0;">
 			<tr>
