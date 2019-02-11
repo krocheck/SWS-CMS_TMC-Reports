@@ -436,7 +436,7 @@ class Display
 	 * @access public
 	 * @since 1.0.0
 	 */
-	public function doOutput( $css = '' )
+	public function doOutput( $css = '', $file = 'file.pdf' )
 	{
 		$navigation = "";
 		$breadcrumb = "";
@@ -482,7 +482,7 @@ class Display
 			$style = file_get_contents(SWS_STYLE_PATH.'design.css');
 			$mpdf->WriteHTML( $style, \Mpdf\HTMLParserMode::HEADER_CSS );
 			$mpdf->WriteHTML( $this->content, \Mpdf\HTMLParserMode::HTML_BODY );
-			$mpdf->Output();
+			$mpdf->Output($file, \Mpdf\Output\Destination::INLINE);
 		}
 		else
 		{

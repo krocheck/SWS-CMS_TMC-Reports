@@ -79,7 +79,10 @@ class Agenda extends Page
 
 		$this->display->addContent( $out );
 
-		$this->display->doOutput('pdf');
+		$nextMonday = strtotime('next monday');
+		$meetingDate = (date('D') == 'Mon' ? date('F_d_Y') : date('F_d_Y', $nextMonday));
+
+		$this->display->doOutput('pdf', "StaffMeeting_{$meetingDate}_Agenda.pdf");
 	}
 }
 

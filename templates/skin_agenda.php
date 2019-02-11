@@ -36,7 +36,7 @@ foreach( $members as $v ) {
 $ELMHTML .= <<<EOF
 		<div class="group"{$v->getID()}>
 			<h2>{$v->getName()}</h2>
-			<div>
+			<div class="item">
 {$v->getContent()}
 			</div>
 			<hr />
