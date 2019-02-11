@@ -19,7 +19,6 @@
 class AsanaAPI extends Command
 {
 	protected $apiURL = "";
-	protected $client;
 	protected $endpoints = array();
 	protected $httpCode;
 	protected $token = "";
@@ -82,8 +81,7 @@ class AsanaAPI extends Command
 			)
 		);
 
-		$this->token  = $this->registry->getSetting('asana_token');
-		$this->client = Asana\Client::accessToken($this->token);
+		$this->token = $this->registry->getSetting('asana_token');
 	}
 
 	/**
@@ -1051,20 +1049,18 @@ class AsanaAPI extends Command
 
 		do
 		{
-			/*if ( isset($data['next_page']) && is_array($data['next_page']) )
+			if ( isset($data['next_page']) && is_array($data['next_page']) )
 			{
 				$data = $this->callGet('next_page', $data['next_page']['path']);
 			}
 			else
 			{
 				$data = $this->callGet('workspaces','?limit=50');
-			}*/
+			}
 
-			$data = $client->workspaces->findAll();
-$this->display->addDebug($data);
-			if ( isset($data) && is_array($data) && count($data) > 0 )
+			if ( isset($data['data']) && is_array($data['data']) && count($data['data']) > 0 )
 			{
-				foreach( $data as $row )
+				foreach( $data['data'] as $row )
 				{
 					$count++;
 					$workspaceID = $row['gid'];
