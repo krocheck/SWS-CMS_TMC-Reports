@@ -45,6 +45,8 @@ class Mastering extends Subpage
 		$out = "";
 		$this->project = array();
 		$this->tasks   = array();
+		$this->users   = $this->cache->getCache('users');
+
 		$this->DB->query("SELECT project_gid,custom_fields,custom_field_settings,tasks FROM project WHERE project_gid = '{$this->metadata['project']['value']}';");
 
 		while( $r = $this->DB->fetchRow() )
@@ -76,9 +78,16 @@ class Mastering extends Subpage
 			{
 				if ( isset($this->tasks[$r]) && is_array($this->tasks[$r]) )
 				{
-					if ( ($this->metadata['filter']['value'][0] == 0 && $this->metadata['filter']['value'][1] == 0 ) || $this->tasks['custom_fields'][ $this->metadata['filter']['value'][0] ] == $this->metadata['filter']['value'][1] )
+					if ( ($this->filter[0] == 0 && $this->filter[1] == 0 ) || intval($this->tasks['custom_fields'][ $this->filter[0] ]) == $this->filter[1] )
 					{
-						$out .= "<li>{$this->tasks[$r]['name']}</li>";
+						$assigned = "";
+
+						if ( isset( $this->users[$this->tasks[$r]['assignee_gid']]) )
+						{
+							$assigned = " (" . substr($this->users[$this->tasks[$r]['assignee_gid']],0,strpos($this->users[$this->tasks[$r]['assignee_gid']]," ")) . ")"
+						}
+
+						$out .= "<li>{$this->tasks[$r]['name']}{$assigned}</li>";
 					}
 				}
 			}
@@ -103,29 +112,29 @@ class Mastering extends Subpage
 
 		if ( isset($this->metadata['filter']) && isset($this->metadata['filter']['value']) )
 		{
-			$this->metadata['filter']['value'] = explode(":",$this->metadata['filter']['value']);
+			$this->filter = explode(":",$this->metadata['filter']['value']);
 
-			if ( ! isset($this->metadata['filter']['value'][0]) )
+			if ( ! isset($this->filter[0]) )
 			{
-				$this->metadata['filter']['value'][0] = 0;
+				$this->filter[0] = 0;
 			}
 			else
 			{
-				$this->metadata['filter']['value'][0] = intval($this->metadata['filter']['value'][0]);
+				$this->filter[0] = intval($this->filter[0]);
 			}
 
-			if ( ! isset($this->metadata['filter']['value'][1]) )
+			if ( ! isset($this->filter[1]) )
 			{
-				$this->metadata['filter']['value'][1] = 0;
+				$this->filter[1] = 0;
 			}
 			else
 			{
-				$this->metadata['filter']['value'][1] = intval($this->metadata['filter']['value'][1]);
+				$this->filter[1] = intval($this->filter[1]);
 			}
 		}
 		else
 		{
-			$this->metadata['filter']['value'] = array(0,0);
+			$this->filter = array(0,0);
 		}
 	}
 }

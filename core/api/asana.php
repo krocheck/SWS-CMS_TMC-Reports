@@ -702,7 +702,15 @@ class AsanaAPI extends Command
 					{
 						foreach( $row['custom_fields'] as $r )
 						{
-							$fields[$r['gid']] = (isset($r['enum_value']) ? $r['enum_value']['name'] : $r['text_value']);
+							switch($r['resource_subtype'])
+							{
+								case 'number': $fields[$r['gid']] = $r['number_value'];
+									break;
+								case 'text': $fields[$r['gid']] = $r['text_value'];
+									break;
+								case 'enum': $fields[$r['gid']] = $r['enum_value']['gid'];
+									break;
+							}
 						}
 					}
 
@@ -1026,6 +1034,8 @@ class AsanaAPI extends Command
 				}
 			}
 		}
+
+		$this->cache->update('users');
 
 		return $count;
 	}
