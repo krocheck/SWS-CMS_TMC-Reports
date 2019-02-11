@@ -28,7 +28,7 @@
 {
 	header: html_myHeader;
 	footer: html_myFooter;
-	margin-top: 1.25in;
+	margin-top: 1.3in;
 }
 
 #debug
@@ -88,8 +88,9 @@ div.no-break
 
 div.show, div.production
 {
-	margin: 0 0 14px 20px !important;
+	margin: 0 0 0 20px !important;
 	display: table;
+	padding-bottom: 24px;
 }
 
 h1
