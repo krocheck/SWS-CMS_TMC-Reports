@@ -115,7 +115,7 @@ EOF;
 if (count($r['tags']) > 0) {
 foreach( $r['tags'] as $v ) {
 $ELMHTML .= <<<EOF
-<div class="pill {$tags[$v]['color']}">{$tags[$v]['name']}</div>
+<span class="pill {$tags[$v]['color']}">{$tags[$v]['name']}</span>
 EOF;
 } }
 $ELMHTML .= <<<EOF
@@ -143,7 +143,7 @@ if ( $r['due_on'] != '0000-00-00' )
 
 	if ( $endDate < time() )
 	{
-		$date = "<div class='pill red' style='font-size:13px;'>" . $date . "</div>";
+		$date = "<span class='pill red' style='font-size:13px;'>" . $date . "</span>";
 	}
 }
 else
@@ -170,7 +170,7 @@ EOF;
 if (count($r['tags']) > 0) {
 foreach( $r['tags'] as $v ) {
 $ELMHTML .= <<<EOF
-<div class="pill {$tags[$v]['color']}">{$tags[$v]['name']}</div>
+<span class="pill {$tags[$v]['color']}">{$tags[$v]['name']}</span>
 EOF;
 } }
 $ELMHTML .= <<<EOF

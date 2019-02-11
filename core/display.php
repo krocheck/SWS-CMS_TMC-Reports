@@ -475,11 +475,20 @@ class Display
 			$this->title = substr( $this->title, 0, -3 );
 		}
 
-		$this->html = $this->compiledTemplates('skin_'.SWS_THIS_APPLICATION)->wrapper( $this->title, $navigation, $breadcrumb, $userlinks, $loggedIn, $this->content, $css, $errors, $debug, $this->js );
-
-		print( $this->html );
-
-		exit;
+		if ( $this->registry->getInput('do') == 'pdf' )
+		{
+			require_once(SWS_VENDOR_PATH . 'autoload.php');
+			$mpdf = new \Mpdf\Mpdf();
+			$style = file_get_contents(SWS_STYLE_PATH.'design.css');
+			$mpdf->WriteHTML( $style, \Mpdf\HTMLParserMode::HEADER_CSS );
+			$mpdf->WriteHTML( $this->content, \Mpdf\HTMLParserMode::HTML_BODY );
+			$mpdf->Output();
+		}
+		else
+		{
+			$this->html = $this->compiledTemplates('skin_'.SWS_THIS_APPLICATION)->wrapper( $this->title, $navigation, $breadcrumb, $userlinks, $loggedIn, $this->content, $css, $errors, $debug, $this->js );
+			print( $this->html );
+		}
 	}
 
 	/**
