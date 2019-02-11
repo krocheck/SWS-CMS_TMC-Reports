@@ -475,34 +475,18 @@ class Display
 			$this->title = substr( $this->title, 0, -3 );
 		}
 
-		$this->html = $this->compiledTemplates('skin_'.SWS_THIS_APPLICATION)->wrapper( $this->title, $navigation, $breadcrumb, $userlinks, $loggedIn, $this->content, $css, $errors, $debug, $this->js );
-
-		print( $this->html );
-
-		exit;
-	}
-
-	/**
-	 * Compiles the print page, prints, and exits
-	 *
-	 * @return void
-	 * @access public
-	 * @since 1.0.0
-	 */
-	public function doPrint()
-	{
-		$debug = "";
-
-		if ( DEBUG )
+		if ( $this->registry->getInput('do') == 'pdf' )
 		{
-			$debug = $this->getDebugOutput();
+			require_once(SWS_VENDOR_PATH . 'autoload.php');
+			$mpdf = new \Mpdf\Mpdf();
+			$mpdf->WriteHTML( $this->compiledTemplates('skin_'.SWS_THIS_APPLICATION)->pdfWrapper($this->content));
+			$mpdf->Output();
 		}
-
-		$this->html = $this->compiledTemplates('skin_global')->printWrapper( $this->title, $this->content, $debug );
-
-		print( $this->html );
-
-		$this->registry->cleanUp();
+		else
+		{
+			$this->html = $this->compiledTemplates('skin_'.SWS_THIS_APPLICATION)->wrapper( $this->title, $navigation, $breadcrumb, $userlinks, $loggedIn, $this->content, $css, $errors, $debug, $this->js );
+			print( $this->html );
+		}
 
 		exit;
 	}

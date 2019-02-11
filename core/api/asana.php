@@ -232,7 +232,7 @@ class AsanaAPI extends Command
 			}
 			else
 			{
-				$data = $this->callGet('custom_fields',"/{$workspace}/custom_fields?limit=50");
+				$data = $this->callGet('custom_fields',"/{$workspace}/custom_fields?limit=100");
 			}
 
 			if ( isset($data['data']) && is_array($data['data']) && count($data['data']) > 0 )
@@ -338,7 +338,7 @@ class AsanaAPI extends Command
 			}
 			else
 			{
-				$data = $this->callGet('projects',"?limit=50&workspace={$workspace}");
+				$data = $this->callGet('projects',"?limit=100&workspace={$workspace}");
 			}
 
 			if ( isset($data['data']) && is_array($data['data']) && count($data['data']) > 0 )
@@ -485,7 +485,7 @@ class AsanaAPI extends Command
 			}
 			else
 			{
-				$data = $this->callGet('sections',"/{$project}/sections?limit=50");
+				$data = $this->callGet('sections',"/{$project}/sections?limit=100");
 			}
 
 			if ( isset($data['data']) && is_array($data['data']) && count($data['data']) > 0 )
@@ -576,7 +576,7 @@ class AsanaAPI extends Command
 			}
 			else
 			{
-				$data = $this->callGet('tags',"?limit=50&workspace={$workspace}");
+				$data = $this->callGet('tags',"?limit=100&workspace={$workspace}");
 			}
 
 			if ( isset($data['data']) && is_array($data['data']) && count($data['data']) > 0 )
@@ -681,7 +681,7 @@ class AsanaAPI extends Command
 			}
 			else
 			{
-				$data = $this->callGet('tasks',"/{$project}/tasks?limit=50");
+				$data = $this->callGet('tasks',"/{$project}/tasks?limit=100");
 			}
 
 			if ( isset($data['data']) && is_array($data['data']) && count($data['data']) > 0 )
@@ -864,7 +864,7 @@ class AsanaAPI extends Command
 			}
 			else
 			{
-				$data = $this->callGet('teams',"/{$workspace}/teams?limit=50");
+				$data = $this->callGet('teams',"/{$workspace}/teams?limit=100");
 			}
 
 			if ( isset($data['data']) && is_array($data['data']) && count($data['data']) > 0 )
@@ -956,7 +956,7 @@ class AsanaAPI extends Command
 			}
 			else
 			{
-				$data = $this->callGet('users',"?limit=50&workspace={$workspace}");
+				$data = $this->callGet('users',"?limit=100&workspace={$workspace}");
 			}
 
 			if ( isset($data['data']) && is_array($data['data']) && count($data['data']) > 0 )
@@ -1055,7 +1055,7 @@ class AsanaAPI extends Command
 			}
 			else
 			{
-				$data = $this->callGet('workspaces','?limit=50');
+				$data = $this->callGet('workspaces','?limit=100');
 			}
 
 			if ( isset($data['data']) && is_array($data['data']) && count($data['data']) > 0 )

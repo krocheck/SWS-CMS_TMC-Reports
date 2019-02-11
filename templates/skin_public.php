@@ -178,6 +178,24 @@ return $HTML;
 }
 
 //===========================================================================
+// Print wrapper
+//===========================================================================
+public function pdfWrapper( $content )
+{
+$HTML = "";
+//--starthtml--//
+
+$HTML .= <<<EOF
+<link rel="stylesheet" type="text/css" href="{$this->registry->getConfig('base_url')}styles/design.css" media="all" />
+{$content}
+
+EOF;
+
+//--endhtml--//
+return $HTML;
+}
+
+//===========================================================================
 // Normal wrapper
 //===========================================================================
 public function wrapper( $title, $navigation, $breadcrumb, $userlinks, $loggedin, $content, $bodyCss, $errors = "", $debug = "", $js = "" )
