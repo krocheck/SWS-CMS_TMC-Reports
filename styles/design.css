@@ -12,7 +12,7 @@
 		page-break-inside: auto;
 	}
 
-	div.group
+	div.group, div.no-break
 	{
 		page-break-inside: avoid;
 	}
@@ -22,12 +22,18 @@
 		page-break-inside: avoid !important;
 		padding-bottom: 20px;
 	}
+
+	span#print-link
+	{
+		visibility: hidden;
+	}
 }
 
 @page
 {
 	header: html_myHeader;
 	footer: html_myFooter;
+	margin-top:1.25in;
 }
 
 #debug
@@ -101,6 +107,12 @@ div.ui-loader
 	display: none;
 }
 
+div.no-break
+{
+	padding:0;
+	margin:0;
+}
+
 div.show, div.production
 {
 	margin: 0 0 20px 20px !important;
@@ -144,8 +156,8 @@ hr
 {
 	background-color:#000000;
 	border:0;
-	color:#000000;
-	height:2px;
+	color:#d25c30;
+	height:4px;
 	margin: 14px 0 0 0;
 }
 

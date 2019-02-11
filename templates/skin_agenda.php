@@ -2,6 +2,8 @@
 
 class skin_agenda extends Command {
 
+$check = 0;
+
 protected function doExecute( $param )
 {
 }
@@ -17,14 +19,14 @@ $meetingDate = (date('D') == 'Mon' ? date('F j, Y') : date('F j, Y', $nextMonday
 $ELMHTML = "";
 //--starthtml--//
 $ELMHTML .= <<<EOF
-	<htmlpageheader name="myHeader">
-		<table width="100%">
+	<htmlpageheader name="myHeader" style="margin:0; padding:0;">
+		<table width="100%" style="margin:0; padding:0;">
 			<tr>
 				<td width="50%"><a href="{$this->display->buildURL( array() )}"><img src="{$this->registry->getConfig('base_url')}images/admin-logo.png" /></a></td>
-				<td width="50%" style="text-align: right;"><h1>STAFF MEETING: {$meetingDate}</h1></td>
+				<td width="50%" style="text-align: right;"><span id="print-link"><a href="{$this->display->buildURL( array('do' => "pdf") )}">Generate PDF</a>&nbsp;&nbsp;&nbsp;</span><h1>STAFF MEETING: {$meetingDate}</h1></td>
 			</tr>
 		</table>
-		<hr />
+		<hr style="margin:0; color:#fdb514;" />
 	</htmlpageheader>
 	<div class="content">
 
@@ -63,10 +65,12 @@ return $ELMHTML;
 public function section( $r ) {
 
 $name = substr($r['name'],0,strlen($r['name'])-1);
+$this->check = 1;
 
 $ELMHTML = "";
 //--starthtml--//
 $ELMHTML .= <<<EOF
+	<div class='no-break'>
 	<h4>{$name}</h4>
 
 EOF;
@@ -138,6 +142,16 @@ $ELMHTML .= <<<EOF
 	</div>
 
 EOF;
+
+if ( $this->check == 1 ) {
+$ELMHTML .= <<<EOF
+	</div>
+
+EOF;
+
+$this->check = 0;
+}
+
 //--endhtml--//
 return $ELMHTML;
 }
@@ -193,6 +207,16 @@ $ELMHTML .= <<<EOF
 	</div>
 
 EOF;
+
+if ( $this->check == 1 ) {
+$ELMHTML .= <<<EOF
+	</div>
+
+EOF;
+
+$this->check = 0;
+}
+
 //--endhtml--//
 return $ELMHTML;
 }
