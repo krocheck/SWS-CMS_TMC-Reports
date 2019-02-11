@@ -236,6 +236,7 @@ class AdminSubpages extends Command
 				'app'         => 'admin',
 				'module'      => 'subpages',
 				'page_id'     => $this->page['page_id'],
+				'language_id' => $languageID,
 				'id'          => $subpageID,
 				'do'          => $formcode
 			)

@@ -82,7 +82,7 @@ class Mastering extends Subpage
 							$assigned = " (" . substr($this->users[$this->tasks[$r]['assignee_gid']]['name'],0,strpos($this->users[$this->tasks[$r]['assignee_gid']]['name']," ")) . ")";
 						}
 
-						$out .= "<p>{$this->tasks[$r]['name']}{$assigned} - Last modified: ".date("n-d-Y",strtotime($this->tasks[$r]['modified_at']))."</p>";
+						$out .= "<p>{$this->tasks[$r]['name']} - Last modified: ".date("M j, Y",strtotime($this->tasks[$r]['modified_at']))."{$assigned}</p>";
 					}
 				}
 			}
