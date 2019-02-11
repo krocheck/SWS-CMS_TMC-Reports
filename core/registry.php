@@ -399,7 +399,7 @@ class Registry
 			}
 			else if ( $className == 'AdldapAPI' )
 			{
-				$filePath = SWS_CORE_PATH . 'adldap/adldap.php';
+				$filePath = SWS_CORE_PATH . 'api/adldap.php';
 			}
 			else
 			{

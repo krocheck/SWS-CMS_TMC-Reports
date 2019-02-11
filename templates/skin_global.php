@@ -125,7 +125,7 @@ $HTML = "";
 //--starthtml--//
 
 $HTML .= <<<EOF
-<script type="text/javascript" src="{$this->registry->getConfig('base_url')}js/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="{$this->registry->getConfig('base_url')}vendor/ckeditor/ckeditor/ckeditor.js"></script>
 
 EOF;
 
