@@ -15,9 +15,11 @@
  * @since		1.0.0
  * @version		$Revision: 27 $
  */
+
 class AsanaAPI extends Command
 {
 	protected $apiURL = "";
+	protected $client;
 	protected $endpoints = array();
 	protected $httpCode;
 	protected $token = "";
@@ -33,6 +35,8 @@ class AsanaAPI extends Command
 	 */
 	protected function doExecute( $params )
 	{
+		require_once( SWS_VENDOR_PATH . 'autoload.php' );
+
 		$this->apiURL = $this->registry->getSetting('asana_url');
 
 		$this->endpoints = array(
@@ -78,7 +82,8 @@ class AsanaAPI extends Command
 			)
 		);
 
-		$this->token = $this->registry->getSetting('asana_token');
+		$this->token  = $this->registry->getSetting('asana_token');
+		$this->client = Asana\Client::accessToken($this->token);
 	}
 
 	/**
@@ -1046,18 +1051,20 @@ class AsanaAPI extends Command
 
 		do
 		{
-			if ( isset($data['next_page']) && is_array($data['next_page']) )
+			/*if ( isset($data['next_page']) && is_array($data['next_page']) )
 			{
 				$data = $this->callGet('next_page', $data['next_page']['path']);
 			}
 			else
 			{
 				$data = $this->callGet('workspaces','?limit=50');
-			}
+			}*/
 
-			if ( isset($data['data']) && is_array($data['data']) && count($data['data']) > 0 )
+			$data = $client->workspaces->findAll();
+$this->display->addDebug($data);
+			if ( isset($data) && is_array($data) && count($data) > 0 )
 			{
-				foreach( $data['data'] as $row )
+				foreach( $data as $row )
 				{
 					$count++;
 					$workspaceID = $row['gid'];

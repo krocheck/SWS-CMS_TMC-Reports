@@ -23,5 +23,6 @@ define( 'SWS_JS_PATH',      SWS_ROOT_PATH . 'js/' );
 define( 'SWS_LANG_PATH',    SWS_ROOT_PATH . 'lang/' );
 define( 'SWS_SKIN_PATH',    SWS_ROOT_PATH . 'templates/' );
 define( 'SWS_STYLE_PATH',   SWS_ROOT_PATH . 'styles/' );
+define( 'SWS_VENDOR_PATH',  SWS_ROOT_PATH . 'vendor/' );
 
 ?>
