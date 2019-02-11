@@ -37,6 +37,15 @@ EOF;
 }
 $ELMHTML .= <<<EOF
 		</div>
+		<htmlpagefooter name="myFooter">
+			<table width="100%">
+				<tr>
+					<td width="33%">Tri-Marq Reports | Weekly Staff Meeting Agenda</td>
+					<td width="33%" align="center"></td>
+					<td width="33%" style="text-align: right;">Page: {PAGENO} of {nbpg}</td>
+				</tr>
+			</table>
+		</htmlpagefooter>
 
 EOF;
 //--endhtml--//
@@ -115,7 +124,7 @@ EOF;
 if (count($r['tags']) > 0) {
 foreach( $r['tags'] as $v ) {
 $ELMHTML .= <<<EOF
-<span class="pill {$tags[$v]['color']}">{$tags[$v]['name']}</span>
+<span class="pill {$tags[$v]['color']}">&nbsp;{$tags[$v]['name']}&nbsp;</span>&nbsp;
 EOF;
 } }
 $ELMHTML .= <<<EOF
@@ -143,7 +152,7 @@ if ( $r['due_on'] != '0000-00-00' )
 
 	if ( $endDate < time() )
 	{
-		$date = "<span class='pill red' style='font-size:13px;'>" . $date . "</span>";
+		$date = "<span class='pill red' style='font-size:13px;'>&nbsp;" . $date . "&nbsp;</span>";
 	}
 }
 else
@@ -170,7 +179,7 @@ EOF;
 if (count($r['tags']) > 0) {
 foreach( $r['tags'] as $v ) {
 $ELMHTML .= <<<EOF
-<span class="pill {$tags[$v]['color']}">{$tags[$v]['name']}</span>
+<span class="pill {$tags[$v]['color']}">&nbsp;{$tags[$v]['name']}&nbsp;</span>&nbsp;
 EOF;
 } }
 $ELMHTML .= <<<EOF
