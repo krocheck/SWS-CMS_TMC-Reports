@@ -478,7 +478,7 @@ class Display
 		if ( $this->registry->getInput('do') == 'pdf' )
 		{
 			require_once(SWS_VENDOR_PATH . 'autoload.php');
-			$mpdf = new \Mpdf\Mpdf();
+			$mpdf = new \Mpdf\Mpdf(['tempDir' => '/tmp']);
 			$style = file_get_contents(SWS_STYLE_PATH.'design.css');
 			$mpdf->WriteHTML( $style, \Mpdf\HTMLParserMode::HEADER_CSS );
 			$mpdf->WriteHTML( $this->content, \Mpdf\HTMLParserMode::HTML_BODY );

@@ -26,7 +26,8 @@
 
 @page
 {
-	footer-name: html_myFooter;
+	header: html_myHeader;
+	footer: html_myFooter;
 }
 
 #debug

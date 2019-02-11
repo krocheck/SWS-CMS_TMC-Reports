@@ -17,20 +17,26 @@ $meetingDate = (date('D') == 'Mon' ? date('F j, Y') : date('F j, Y', $nextMonday
 $ELMHTML = "";
 //--starthtml--//
 $ELMHTML .= <<<EOF
-	<div id="header">
-		<h1 class="float">STAFF MEETING: {$meetingDate}</h1>
-		<a href="{$this->display->buildURL( array() )}"><img src="{$this->registry->getConfig('base_url')}images/admin-logo.png" /></a></div>
+	<htmlpageheader name="myHeader">
+		<table width="100%">
+			<tr>
+				<td width="50%"><a href="{$this->display->buildURL( array() )}"><img src="{$this->registry->getConfig('base_url')}images/admin-logo.png" /></a></td>
+				<td width="50%" style="text-align: right;"><h1>STAFF MEETING: {$meetingDate}</h1></td>
+			</tr>
+		</table>
+		<hr />
+	</htmlpageheader>
 	<div class="content">
 
 EOF;
 foreach( $members as $v ) {
 $ELMHTML .= <<<EOF
 		<div class="group"{$v->getID()}>
-			<hr />
 			<h2>{$v->getName()}</h2>
 			<div>
 {$v->getContent()}
 			</div>
+			<hr />
 		</div>
 
 EOF;
@@ -40,9 +46,8 @@ $ELMHTML .= <<<EOF
 		<htmlpagefooter name="myFooter">
 			<table width="100%">
 				<tr>
-					<td width="33%">Tri-Marq Reports | Weekly Staff Meeting Agenda</td>
-					<td width="33%" align="center"></td>
-					<td width="33%" style="text-align: right;">Page: {PAGENO} of {nbpg}</td>
+					<td width="50%">Tri-Marq Reports | Weekly Staff Meeting Agenda</td>
+					<td width="50%" style="text-align: right;">Page: {PAGENO} of {nbpg}</td>
 				</tr>
 			</table>
 		</htmlpagefooter>
