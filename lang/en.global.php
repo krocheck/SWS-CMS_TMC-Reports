@@ -22,6 +22,7 @@ $lang['all_accounts']                  = "ALL ACCOUNTS";
 $lang['agenda']                        = "Agenda Template";
 $lang['block']                         = "Rich Text Block";
 $lang['redirect']                      = "Redirect";
+$lang['mastering']                     = "Asana Mastering Link";
 $lang['production']                    = "Asana Media Production Link";
 $lang['shows']                         = "Asana Shows Link";
 $lang['text']                          = "Text Area";
