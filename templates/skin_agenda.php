@@ -19,11 +19,13 @@ $meetingDate = (date('D') == 'Mon' ? date('F j, Y') : date('F j, Y', $nextMonday
 $ELMHTML = "";
 //--starthtml--//
 $ELMHTML .= <<<EOF
+
+	<div id="print-link"><a href="{$this->display->buildURL( array('do' => "pdf") )}">Generate PDF</a>&nbsp;&nbsp;&nbsp;</div>
 	<htmlpageheader name="myHeader" style="margin:0; padding:0;">
 		<table width="100%" style="margin:0; padding:0;">
 			<tr>
 				<td width="50%"><a href="{$this->display->buildURL( array() )}"><img src="{$this->registry->getConfig('base_url')}images/admin-logo.png" /></a></td>
-				<td width="50%" style="text-align: right;"><span id="print-link"><a href="{$this->display->buildURL( array('do' => "pdf") )}">Generate PDF</a>&nbsp;&nbsp;&nbsp;</span><h1>STAFF MEETING: {$meetingDate}</h1></td>
+				<td width="50%" style="text-align: right;"><h1>STAFF MEETING: {$meetingDate}</h1></td>
 			</tr>
 		</table>
 		<hr style="margin:0; color:#fdb514;" />

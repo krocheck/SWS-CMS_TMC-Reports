@@ -23,7 +23,7 @@
 		padding-bottom: 20px;
 	}
 
-	span#print-link
+	div#print-link
 	{
 		visibility: hidden;
 	}
@@ -110,7 +110,14 @@ div.ui-loader
 div.no-break
 {
 	padding:0;
-	margin:0;
+	margin:0 !important;
+}
+
+div#print-link
+{
+	float:right;
+	margin:0 0 5px 0;
+	padding:0;
 }
 
 div.show, div.production
