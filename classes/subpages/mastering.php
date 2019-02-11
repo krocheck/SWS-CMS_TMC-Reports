@@ -76,7 +76,7 @@ class Mastering extends Subpage
 			{
 				if ( isset($this->tasks[$r]) && is_array($this->tasks[$r]) )
 				{
-					if ( ($this->metadata['filter'][0] == 0 && $this->metadata['filter'][1] == 0 ) || $this->tasks['custom_fields'][ $this->metadata['filter'][0] ] == $this->metadata['filter'][1] )
+					if ( ($this->metadata['filter']['value'][0] == 0 && $this->metadata['filter']['value'][1] == 0 ) || $this->tasks['custom_fields'][ $this->metadata['filter']['value'][0] ] == $this->metadata['filter']['value'][1] )
 					{
 						$out .= "<li>{$this->tasks[$r]['name']}</li>";
 					}
@@ -101,31 +101,31 @@ class Mastering extends Subpage
 	{
 		$this->metadata = $metadata;
 
-		if ( isset($this->metadata['filter']) )
+		if ( isset($this->metadata['filter']) && isset($this->metadata['filter']['value']) )
 		{
-			$this->metadata['filter'] = explode(":",$this->metadata['filter']);
+			$this->metadata['filter']['value'] = explode(":",$this->metadata['filter']['value']);
 
-			if ( ! isset($this->metadata['filter'][0]) )
+			if ( ! isset($this->metadata['filter']['value'][0]) )
 			{
-				$this->metadata['filter'][0] = 0;
+				$this->metadata['filter']['value'][0] = 0;
 			}
 			else
 			{
-				$this->metadata['filter'][0] = intval($this->metadata['filter'][0]);
+				$this->metadata['filter']['value'][0] = intval($this->metadata['filter']['value'][0]);
 			}
 
-			if ( ! isset($this->metadata['filter'][1]) )
+			if ( ! isset($this->metadata['filter']['value'][1]) )
 			{
-				$this->metadata['filter'][1] = 0;
+				$this->metadata['filter']['value'][1] = 0;
 			}
 			else
 			{
-				$this->metadata['filter'][1] = intval($this->metadata['filter'][1]);
+				$this->metadata['filter']['value'][1] = intval($this->metadata['filter']['value'][1]);
 			}
 		}
 		else
 		{
-			$this->metadata['filter'] = array(0,0);
+			$this->metadata['filter']['value'] = array(0,0);
 		}
 	}
 }
