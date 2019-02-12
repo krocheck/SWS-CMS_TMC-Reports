@@ -43,6 +43,8 @@ class TagsCache extends CacheType
 		
 		while( $r = $this->DB->fetchRow() )
 		{
+			$r['followers'] = unserialize( $r['followers'] );
+
 			$save[ $r['tag_gid'] ] = $r;
 		}
 		

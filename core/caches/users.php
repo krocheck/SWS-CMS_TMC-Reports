@@ -43,6 +43,8 @@ class UsersCache extends CacheType
 		
 		while( $r = $this->DB->fetchRow() )
 		{
+			$r['workspaces'] = unserialize( $r['workspaces'] );
+
 			$save[ $r['user_gid'] ] = $r;
 		}
 		

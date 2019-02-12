@@ -43,6 +43,12 @@ class ProjectsCache extends CacheType
 		
 		while( $r = $this->DB->fetchRow() )
 		{
+			$r['current_status'] = unserialize( $r['current_status'] );
+			$r['members'] = unserialize( $r['members'] );
+			$r['followers'] = unserialize( $r['followers'] );
+			$r['custom_fields'] = unserialize( $r['custom_fields'] );
+			$r['custom_field_settings'] = unserialize( $r['custom_field_settings'] );
+
 			$save[ $r['project_gid'] ] = $r;
 		}
 		

@@ -43,6 +43,8 @@ class FieldsCache extends CacheType
 		
 		while( $r = $this->DB->fetchRow() )
 		{
+			$r['enum_options'] = unserialize( $r['enum_options'] );
+
 			$save[ $r['field_gid'] ] = $r;
 		}
 		
