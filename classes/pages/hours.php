@@ -58,13 +58,16 @@ class Hours extends Page
 			$this->display->addJavascript( $js );
 		}
 
+		// Add a breadcrumb for this module
+		$this->display->addBreadcrumb( $this->display->buildURL( array( 'page_id' => $this->id ) ), $this->name );
+
 		// Load the language
 		$this->lang->loadStrings('hours');
 
 		// Get and load the table/form factory
 		$this->html = $this->registry->getClass('AdminSkin');
 
-		if ( count( $this->input['extra'] ) == 1 )
+		if ( is_array( $this->input['extra'] ) && count( $this->input['extra'] ) == 1 )
 		{
 			$this->input['do'] = 'view';
 		}
@@ -112,17 +115,17 @@ class Hours extends Page
 		$this->html->td_header[] = array( $this->lang->getString('hours_head_name')          , "30%" );
 		$this->html->td_header[] = array( $this->lang->getString('hours_head_owner')         , "20%" );
 		$this->html->td_header[] = array( $this->lang->getString('hours_head_created')       , "20%" );
-		$this->html->td_header[] = array( $this->lang->getString('hours_head_hours')         , "20%" );
-		$this->html->td_header[] = array( $this->lang->getString('hours_head_asana')         , "5%" );
-		$this->html->td_header[] = array( $this->lang->getString('hours_head_view')          , "5%" );
+		$this->html->td_header[] = array( $this->lang->getString('hours_head_hours')         , "10%" );
+		$this->html->td_header[] = array( $this->lang->getString('hours_head_asana')         , "10%" );
+		$this->html->td_header[] = array( $this->lang->getString('hours_head_view')          , "10%" );
 
 		//-----------------------------------------
 
 		// Create account link
-		$html = "<div style='float:right;'><form method='post' action='{$this->display->buildURL( array( 'page_id' => $this->id ) )}'>". $this->html->formDropdown('status',array( array( 0 => 0, 1 => "Active" ), array( 0 => 1, 1 => "Archived" ) ), $status ) ." <input type='submit' value='{$this->lang->getString('go')}' /></form></div>";
+		$html = "<div style='float:right;'><form method='post' action='{$this->display->buildURL( array( 'page_id' => $this->id ) )}'>". $this->html->formDropdown('archived',array( array( 0 => 0, 1 => "Active" ), array( 0 => 1, 1 => "Archived" ) ), $status ) ." <input type='submit' value='{$this->lang->getString('go')}' /></form></div>";
 
 		// Begin table
-		$html .= $this->html->startTable( $this->lang->getString('hours_list_table'), 'admin' );
+		$html .= $this->html->startTable( $this->name, 'admin' );
 
 		if ( strlen($this->exclude) > 0 )
 		{
@@ -144,11 +147,11 @@ class Hours extends Page
 			$html .= $this->html->addTdRow(
 				array(
 					"<a href='".$this->display->buildURL( array( 'page_id' => $this->id, 'extra' => array($r['project_gid']) ) )."'>{$r['name']}</a>",
-					$this->users[$r['owner_id']]['name'],
-					date('m-d-Y', strtotime($r['created_at'])),
+					$this->users[$r['owner_gid']]['name'],
+					"<center>".date('m-d-Y', strtotime($r['created_at']))."</center>",
 					'0',
-					"<a href='https://app.asana.com/0/{$r['project_gid']}'>Asana</a>",
-					"<a href='".$this->display->buildURL( array( 'page_id' => $this->id, 'extra' => array($r['project_gid']) ) )."'>Hours</a>",
+					"<center><a href='https://app.asana.com/0/{$r['project_gid']}'>Asana</a></center>",
+					"<center><a href='".$this->display->buildURL( array( 'page_id' => $this->id, 'extra' => array($r['project_gid']) ) )."'>Hours</a></center>",
 				)
 			);
 		}

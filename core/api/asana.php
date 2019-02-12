@@ -397,6 +397,9 @@ class AsanaAPI extends Command
 					$this->DB->query("UPDATE custom_field SET resource_subtype = '{$row['resource_subtype']}', enum_options = \"{$row['enum_options']}\", name = \"{$row['name']}\", last_update = NOW() WHERE field_gid = '{$row['field_gid']}';");
 				}
 			}
+
+			// Cleanup orphans
+			$this->DB->query("DELETE FROM custom_field WHERE field_gid NOT IN(".explode(',',$fieldIDs).");");
 		}
 
 		$this->cache->update('fields');
@@ -543,6 +546,9 @@ class AsanaAPI extends Command
 					$this->DB->query("UPDATE project SET project_gid = '{$row['project_gid']}', owner_gid = '{$row['owner_gid']}', workspace_gid = '{$row['workspace_gid']}', team_gid = '{$row['team_gid']}', name = \"{$row['name']}\", current_status = \"{$row['current_status']}\", due_date = '{$row['due_date']}', start_on = '{$row['start_on']}', created_at = '{$row['created_at']}', modified_at = '{$row['modified_at']}', archived = '{$row['archived']}', public = '{$row['public']}', members = \"{$row['members']}\", followers = \"{$row['followers']}\", custom_fields = \"{$row['custom_fields']}\", custom_field_settings = \"{$row['custom_field_settings']}\", color = '{$row['color']}', html_notes = \"{$row['html_notes']}\", sections = \"{$row['sections']}\", tasks = \"{$row['tasks']}\", last_update = NOW() WHERE project_gid = '{$row['project_gid']}';");
 				}
 			}
+
+			// Cleanup orphans
+			$this->DB->query("DELETE FROM project WHERE project_gid NOT IN(".explode(',',$projectIDs).");");
 		}
 
 		$this->cache->update('projects');
@@ -739,6 +745,9 @@ class AsanaAPI extends Command
 					$this->DB->query("UPDATE tag SET workspace_gid = '{$row['workspace_gid']}', color = '{$row['color']}', created_at = '{$row['created_at']}', followers = \"{$row['followers']}\", name = \"{$row['name']}\", last_update = NOW() WHERE tag_gid = '{$row['tag_gid']}';");
 				}
 			}
+
+			// Cleanup orphans
+			$this->DB->query("DELETE FROM tag WHERE tag_gid NOT IN(".explode(',',$tagIDs).");");
 		}
 
 		$this->cache->update('tags');
@@ -1023,6 +1032,9 @@ class AsanaAPI extends Command
 					$this->DB->query("UPDATE team SET html_description = \"{$row['html_description']}\", name = \"{$row['name']}\", last_update = NOW() WHERE team_gid = '{$row['team_gid']}';");
 				}
 			}
+
+			// Cleanup orphans
+			$this->DB->query("DELETE FROM team WHERE team_gid NOT IN(".explode(',',$teamIDs).");");
 		}
 
 		$this->cache->update('teams');
@@ -1216,6 +1228,9 @@ class AsanaAPI extends Command
 					$this->DB->query("UPDATE workspace SET name = \"{$row['name']}\", is_organization = '{$row['is_organization']}', last_update = NOW() WHERE workspace_gid = '{$row['workspace_gid']}';");
 				}
 			}
+
+			// Cleanup orphans
+			$this->DB->query("DELETE FROM workspace WHERE workspace_gid NOT IN(".explode(',',$workspaceIDs).");");
 		}
 
 		$this->cache->update('workspaces');
