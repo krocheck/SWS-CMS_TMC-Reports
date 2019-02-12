@@ -472,7 +472,7 @@ class AsanaAPI extends Command
 					{
 						foreach( $row['custom_field_settings'] as $field )
 						{
-							$fields[] = $field['gid'];
+							$fields[] = $field['gid']['custom_field']['gid'];
 						}
 					}
 
