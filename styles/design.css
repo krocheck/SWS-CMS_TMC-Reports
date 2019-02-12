@@ -28,7 +28,7 @@
 {
 	header: html_myHeader;
 	footer: html_myFooter;
-	margin-top: 1.3in;
+	margin-top: 1.2in;
 }
 
 #debug
@@ -84,6 +84,13 @@ div.no-break
 {
 	padding: 0 !important;
 	margin: 0 !important;
+}
+
+div.mastering
+{
+	margin: 0 0 0 20px !important;
+	display: table;
+	padding-bottom: 12px;
 }
 
 div.show, div.production
@@ -147,12 +154,14 @@ ol li
 {
 	font-weight: bold;
 	line-height: 20px;
+	margin-bottom: 8px;
 }
 
 ol li ul li
 {
 	font-weight: normal;
 	line-height: normal;
+	margin-bottom: normal;
 }
 
 table

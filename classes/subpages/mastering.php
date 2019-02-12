@@ -88,7 +88,12 @@ class Mastering extends Subpage
 			}
 		}
 
-		return $out . $this->registry->parseHTML( $this->metadata['description']['value'] );
+		if ( strlen( $out ) == 0 )
+		{
+			$out .= "<p>(<em>none</em>)</p>";
+		}
+
+		return "<h4>EVO Workspaces</h4><div class='mastering'>".$out."</div><h4>Other Mastering</h4><div class='mastering'>".$this->registry->parseHTML( $this->metadata['description']['value'] )."</div>";
 	}
 
 	public function getID()
