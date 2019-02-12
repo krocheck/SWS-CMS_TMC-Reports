@@ -178,24 +178,6 @@ return $HTML;
 }
 
 //===========================================================================
-// Print wrapper
-//===========================================================================
-public function pdfWrapper( $content )
-{
-$HTML = "";
-//--starthtml--//
-
-$HTML .= <<<EOF
-<link rel="stylesheet" type="text/css" href="{$this->registry->getConfig('base_url')}styles/design.css" media="all" />
-{$content}
-
-EOF;
-
-//--endhtml--//
-return $HTML;
-}
-
-//===========================================================================
 // Normal wrapper
 //===========================================================================
 public function wrapper( $title, $navigation, $breadcrumb, $userlinks, $loggedin, $content, $bodyCss, $errors = "", $debug = "", $js = "" )
@@ -204,18 +186,39 @@ $HTML = "";
 //--starthtml--//
 
 $HTML .= <<<EOF
-<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link rel="stylesheet" type="text/css" href="{$this->registry->getConfig('base_url')}styles/design.css" media="all" />
-{$js}
+<link rel="stylesheet" type="text/css" href="{$this->registry->getConfig('base_url')}styles/admin-design.css" media="all" />
 <title>{$title}</title>
+{$js}
 </head>
 
 <body>
-{$content}
+<div class="admin-main">
+	<div class="topbanner">
+		{$userlinks}
+		<div class="title"><h1>{$this->lang->getString('program_title')}</h1></div>
+		<a href='{$this->registry->getConfig('base_url')}admin/'><img src="{$this->registry->getConfig('base_url')}images/admin-logo.png" alt="Tri-Marq Logo" /></a>
+	</div>
+	<div id="navigation"> 
+{$loggedin}
+{$navigation}
+	</div>
+	<div class='content'>
+{$breadcrumb}
+EOF;
+if ( strlen( $errors ) > 0 ) {
+$HTML .= <<<EOF
+<ul class="error" style="color:red;">{$errors}</ul>
 
+EOF;
+}
+$HTML .= <<<EOF
+{$content}
+	</div>
+</div>
 {$debug}
 </body>
 </html>

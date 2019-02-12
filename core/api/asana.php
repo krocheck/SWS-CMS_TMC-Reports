@@ -146,6 +146,29 @@ class AsanaAPI extends Command
 	}
 
 	/**
+	 * Get an array of the custom fields to create a dropdown or multi-select
+	 *
+	 * @return array the custom fields
+	 * @access public
+	 * @since 1.0.0
+	 */
+	public function getFieldsDropdown()
+	{
+		$out = array();
+		$cache = $this->cache->getCache('fields');
+
+		if ( count( $cache ) > 0 )
+		{
+			foreach( $cache as $item )
+			{
+				$out[ $item['field_gid'] ] = array( $item['field_gid'], $item['name'] );
+			}
+		}
+
+		return $out;
+	}
+
+	/**
 	 * Get an array of the projects to create a dropdown or multi-select
 	 *
 	 * @return array the workspaces
@@ -169,6 +192,52 @@ class AsanaAPI extends Command
 	}
 
 	/**
+	 * Get an array of the tags to create a dropdown or multi-select
+	 *
+	 * @return array the tags
+	 * @access public
+	 * @since 1.0.0
+	 */
+	public function getTagsDropdown()
+	{
+		$out = array();
+		$cache = $this->cache->getCache('tags');
+
+		if ( count( $cache ) > 0 )
+		{
+			foreach( $cache as $item )
+			{
+				$out[ $item['tag_gid'] ] = array( $item['tag_gid'], $item['name'] );
+			}
+		}
+
+		return $out;
+	}
+
+	/**
+	 * Get an array of the teams to create a dropdown or multi-select
+	 *
+	 * @return array the teams
+	 * @access public
+	 * @since 1.0.0
+	 */
+	public function getTeamsDropdown()
+	{
+		$out = array();
+		$cache = $this->cache->getCache('teams');
+
+		if ( count( $cache ) > 0 )
+		{
+			foreach( $cache as $item )
+			{
+				$out[ $item['team_gid'] ] = array( $item['team_gid'], $item['name'] );
+			}
+		}
+
+		return $out;
+	}
+
+	/**
 	 * Get an array of the workspaces to create a dropdown or multi-select
 	 *
 	 * @return array the workspaces
@@ -185,6 +254,29 @@ class AsanaAPI extends Command
 			foreach( $cache as $item )
 			{
 				$out[ $item['workspace_gid'] ] = array( $item['workspace_gid'], $item['name'] );
+			}
+		}
+
+		return $out;
+	}
+
+	/**
+	 * Get an array of the users to create a dropdown or multi-select
+	 *
+	 * @return array the users
+	 * @access public
+	 * @since 1.0.0
+	 */
+	public function getUsersDropdown()
+	{
+		$out = array();
+		$cache = $this->cache->getCache('users');
+
+		if ( count( $cache ) > 0 )
+		{
+			foreach( $cache as $item )
+			{
+				$out[ $item['user_gid'] ] = array( $item['user_gid'], $item['name'] );
 			}
 		}
 

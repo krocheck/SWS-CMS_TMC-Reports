@@ -489,6 +489,8 @@ class Display
 			$this->html = $this->compiledTemplates('skin_'.SWS_THIS_APPLICATION)->wrapper( $this->title, $navigation, $breadcrumb, $userlinks, $loggedIn, $this->content, $css, $errors, $debug, $this->js );
 			print( $this->html );
 		}
+
+		exit;
 	}
 
 	/**
