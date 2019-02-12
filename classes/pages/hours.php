@@ -122,7 +122,7 @@ class Hours extends Page
 		//-----------------------------------------
 
 		// Create account link
-		$html = "<div style='float:right;'><form method='post' action='{$this->display->buildURL( array( 'page_id' => $this->id ) )}'>". $this->html->formDropdown('archived',array( array( 0 => 0, 1 => "Active" ), array( 0 => 1, 1 => "Archived" ) ), $status ) ." <input type='submit' value='{$this->lang->getString('go')}' /></form></div>";
+		$html = "<div style='float:right;'>{$this->lang->getString('hours_form_status')}<form method='post' action='{$this->display->buildURL( array( 'page_id' => $this->id ) )}'>". $this->html->formDropdown('archived',array( array( 0 => 0, 1 => "Active" ), array( 0 => 1, 1 => "Archived" ) ), $status ) ." <input type='submit' value='{$this->lang->getString('go')}' /></form></div>";
 
 		// Begin table
 		$html .= $this->html->startTable( $this->name, 'admin' );
@@ -136,24 +136,76 @@ class Hours extends Page
 			$exclude = '';
 		}
 
-		// Query accounts for this page
+		// Query projects for this page
 		$this->DB->query(
 			"SELECT * FROM project WHERE team_gid = '{$this->team}' AND archived='{$status}'{$exclude} ORDER BY name;"
 		);
 
+		$projects = array();
+		$tasks = array();
+
 		// Loop through the results and add a row for each
 		while( $r = $this->DB->fetchRow() )
 		{
-			$html .= $this->html->addTdRow(
-				array(
-					"<a href='".$this->display->buildURL( array( 'page_id' => $this->id, 'extra' => array($r['project_gid']) ) )."'>{$r['name']}</a>",
-					$this->users[$r['owner_gid']]['name'],
-					"<center>".date('m-d-Y', strtotime($r['created_at']))."</center>",
-					'0',
-					"<center><a href='https://app.asana.com/0/{$r['project_gid']}'>Asana</a></center>",
-					"<center><a href='".$this->display->buildURL( array( 'page_id' => $this->id, 'extra' => array($r['project_gid']) ) )."'>Hours</a></center>",
-				)
-			);
+			$r['tasks'] = unserialize($r['tasks']);
+			$r['custom_field_settings'] = unserialize($r['custom_field_settings']);
+
+			if ( is_array($r['custom_field_settings']) && isset($r['custom_field_settings'][$this->billingCat]) && isset($r['custom_field_settings'][$this->billingHrs]) )
+			{
+				if ( is_array( $r['tasks'] ) && count( $r['tasks'] ) > 0 )
+				{
+					foreach( $r['tasks'] as $tid )
+					{
+						$tasks[] = $tid;
+					}
+				}
+
+				$projects[$r['project_gid']] = $r;
+			}
+		}
+
+		// Query accounts for this page
+		$this->DB->query(
+			"SELECT task_gid,name,custom_fields FROM task WHERE task_gid IN(".implode(',',$tasks).");"
+		);
+
+		$tasks = array();
+
+		// Loop through the results and add a row for each
+		while( $r = $this->DB->fetchRow() )
+		{
+			$r['custom_fields'] = unserialize($r['custom_fields']);
+			$tasks[$r['task_gid']] = $r;
+		}
+
+		if ( count($projects) > 0 )
+		{
+			foreach( $projects as $id => $r )
+			{
+				$totalHours = 0;
+
+				if ( count($tasks) > 0 && is_array($r['tasks']) && count($r['tasks']) > 0 )
+				{
+					foreach ($r['tasks'] as $tid)
+					{
+						if ( isset($tasks[$tid]) && isset($tasks[$tid]['custom_fields']) && isset($tasks[$tid]['custom_fields'][$this->billingHrs]) )
+						{
+							$totalHours += $tasks[$tid]['custom_fields'][$this->billingHrs];
+						}
+					}
+				}
+
+				$html .= $this->html->addTdRow(
+					array(
+						"<a href='".$this->display->buildURL( array( 'page_id' => $this->id, 'extra' => array($r['project_gid']) ) )."'>{$r['name']}</a>",
+						$this->users[$r['owner_gid']]['name'],
+						"<center>".date('M j, Y', strtotime($r['created_at']))."</center>",
+						"<span style='float:right;'>{$totalHours}&nbsp;</span>",
+						"<center><a href='https://app.asana.com/0/{$r['project_gid']}' target='_blank'>Asana</a></center>",
+						"<center><a href='".$this->display->buildURL( array( 'page_id' => $this->id, 'extra' => array($r['project_gid']) ) )."'>Hours</a></center>",
+					)
+				);
+			}
 		}
 
 		// End table
