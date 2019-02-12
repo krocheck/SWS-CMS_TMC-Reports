@@ -249,7 +249,7 @@ class ProductionType extends SubpageType
 
 		$out .= $ad_skin->endFieldset();
 
-		$out .= $ad_skin->startFieldset( 'Project Descriptions' );
+		$out .= $ad_skin->startFieldset( 'subpages_'.$type.'_fieldset_descriptions' );
 
 		//-----------------------------------------
 		// Project fields
