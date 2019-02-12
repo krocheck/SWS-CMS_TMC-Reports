@@ -150,7 +150,7 @@ class Hours extends Page
 			$r['tasks'] = unserialize($r['tasks']);
 			$r['custom_field_settings'] = unserialize($r['custom_field_settings']);
 
-			if ( is_array($r['custom_field_settings']) && isset($r['custom_field_settings'][$this->billingCat]) && isset($r['custom_field_settings'][$this->billingHrs]) )
+			if ( is_array($r['custom_field_settings']) && in_array($this->billingCat, $r['custom_field_settings']) && in_array($this->billingHrs, $r['custom_field_settings']) )
 			{
 				if ( is_array( $r['tasks'] ) && count( $r['tasks'] ) > 0 )
 				{
@@ -164,18 +164,21 @@ class Hours extends Page
 			}
 		}
 
-		// Query accounts for this page
-		$this->DB->query(
-			"SELECT task_gid,name,custom_fields FROM task WHERE task_gid IN(".implode(',',$tasks).");"
-		);
-
-		$tasks = array();
-
-		// Loop through the results and add a row for each
-		while( $r = $this->DB->fetchRow() )
+		// Query tasks for this page
+		if ( count($tasks) > 0 )
 		{
-			$r['custom_fields'] = unserialize($r['custom_fields']);
-			$tasks[$r['task_gid']] = $r;
+			$this->DB->query(
+				"SELECT task_gid,name,custom_fields FROM task WHERE task_gid IN(".implode(',',$tasks).");"
+			);
+
+			$tasks = array();
+
+			// Loop through the results and add a row for each
+			while( $r = $this->DB->fetchRow() )
+			{
+				$r['custom_fields'] = unserialize($r['custom_fields']);
+				$tasks[$r['task_gid']] = $r;
+			}
 		}
 
 		if ( count($projects) > 0 )
