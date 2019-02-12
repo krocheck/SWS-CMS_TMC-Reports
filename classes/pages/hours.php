@@ -40,22 +40,126 @@ class Hours extends Page
 
 		$out     = "";
 		$ids     = array();
-		$subMeta = array();
 
-		$this->subpage = $this->registry->getClass('SubpageController');
+		$this->metadata   = $meta;
+		$this->team       = $this->metadata['team']['meta_value'];
+		$this->billingCat = $this->metadata['billing_cat']['meta_value'];
+		$this->billingHrs = $this->metadata['billing_hrs']['meta_value'];
+		$this->exclude    = $this->metadata['exclude']['meta_value'];
 
-		$js = $this->registry->parseHTML( $meta['js']['meta_value'] );
+		$this->fields   = $this->cache->getCache('fields');
+		$this->projects = $this->cache->getCache('projects');
+		$this->users    = $this->cache->getCache('users');
+
+		$js = $this->registry->parseHTML( $this->metadata['js']['meta_value'] );
 
 		if ( strlen( $js ) > 0 )
 		{
 			$this->display->addJavascript( $js );
 		}
 
-		//$out = $this->display->compiledTemplates('skin_agenda')->wrapper( $ids );
+		// Load the language
+		$this->lang->loadStrings('hours');
 
-		$this->display->addContent( 'test' );
+		// Get and load the table/form factory
+		$this->html = $this->registry->getClass('AdminSkin');
 
+		if ( count( $this->input['extra'] ) == 1 )
+		{
+			$this->input['do'] = 'view';
+		}
+
+		// What are we doing?
+		switch( $this->input['do'] )
+		{
+			case 'view':
+				$this->view();
+				break;
+			default:
+				$this->listProjects();
+				break;
+		}
+
+		// Send the final output
 		$this->display->doOutput();
+	}
+
+	/**
+	 * Lists out the proejcts in the team.
+	 *
+	 * @return void
+	 * @access protected
+	 * @since 1.0.0
+	 */
+	protected function listProjects()
+	{
+		//-----------------------------------------
+		// INIT
+		//-----------------------------------------
+
+		$count      = array();
+		$pageWhere  = '';
+		$queryWhere = '';
+		$status = ( isset( $this->input['archived'] ) ? intval($this->input['archived']) : 0);
+
+		// Page title
+		$this->display->setTitle( $this->lang->getString('hours_list_title') );
+
+		//-----------------------------------------
+		// Table Headers
+		//-----------------------------------------
+
+		$this->html->td_header[] = array( $this->lang->getString('hours_head_name')          , "30%" );
+		$this->html->td_header[] = array( $this->lang->getString('hours_head_owner')         , "20%" );
+		$this->html->td_header[] = array( $this->lang->getString('hours_head_created')       , "20%" );
+		$this->html->td_header[] = array( $this->lang->getString('hours_head_hours')         , "20%" );
+		$this->html->td_header[] = array( $this->lang->getString('hours_head_asana')         , "5%" );
+		$this->html->td_header[] = array( $this->lang->getString('hours_head_view')          , "5%" );
+
+		//-----------------------------------------
+
+		// Create account link
+		$html = "<div style='float:right;'><form method='post' action='{$this->display->buildURL( array( 'page_id' => $this->id ) )}'>". $this->html->formDropdown('status',array( array( 0 => 0, 1 => "Active" ), array( 0 => 1, 1 => "Archived" ) ), $status ) ." <input type='submit' value='{$this->lang->getString('go')}' /></form></div>";
+
+		// Begin table
+		$html .= $this->html->startTable( $this->lang->getString('hours_list_table'), 'admin' );
+
+		if ( strlen($this->exclude) > 0 )
+		{
+			$exclude = " AND project_gid NOT IN({$this->exclude})";
+		}
+		else
+		{
+			$exclude = '';
+		}
+
+		// Query accounts for this page
+		$this->DB->query(
+			"SELECT * FROM project WHERE team_gid = '{$this->team}' AND archived='{$status}'{$exclude} ORDER BY name;"
+		);
+
+		// Loop through the results and add a row for each
+		while( $r = $this->DB->fetchRow() )
+		{
+			$html .= $this->html->addTdRow(
+				array(
+					"<a href='".$this->display->buildURL( array( 'page_id' => $this->id, 'extra' => array($r['project_gid']) ) )."'>{$r['name']}</a>",
+					$this->users[$r['owner_id']]['name'],
+					date('m-d-Y', strtotime($r['created_at'])),
+					'0',
+					"<a href='https://app.asana.com/0/{$r['project_gid']}'>Asana</a>",
+					"<a href='".$this->display->buildURL( array( 'page_id' => $this->id, 'extra' => array($r['project_gid']) ) )."'>Hours</a>",
+				)
+			);
+		}
+
+		// End table
+		$html .= $this->html->endTable();
+
+		//--------------------------------------
+
+		// Send the html to the display handler
+		$this->display->addContent( $html );
 	}
 }
 
@@ -134,7 +238,7 @@ class HoursType extends PageType
 
 		$out .= $html->endFieldset();
 
-		$out .= $html->startFieldset($this->lang->getString('pages_form_asana'));
+		$out .= $html->startFieldset($this->lang->getString('pages_fieldset_asana'));
 
 		//-----------------------------------------
 		// Form elements
