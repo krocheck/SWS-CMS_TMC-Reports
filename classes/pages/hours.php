@@ -134,7 +134,7 @@ class HoursType extends PageType
 
 		$out .= $html->endFieldset();
 
-		$out .= $html->startFieldset( 'pages_form_asana' );
+		$out .= $html->startFieldset($this->lang->getString('pages_form_asana'));
 
 		//-----------------------------------------
 		// Form elements
@@ -143,24 +143,24 @@ class HoursType extends PageType
 		$out .= $html->addTdRow(
 			array(
 				$this->lang->getString('pages_form_asana_team'),
-				($compareID > 0 ? "<div class='compare'>".$meta[ $compareID ]['team']['value'] . "</div>" : "") .
-				$html->formDropdown( 'team', $this->registry->getAPI('asana')->getTeamsDropdown(), $_POST['team'] ? $_POST['team'] : $meta[ $languageID ]['team']['value'] )
+				($compareID > 0 ? "<div class='compare'>".$metadata[ $compareID ]['team']['value'] . "</div>" : "") .
+				$html->formDropdown( 'team', $this->registry->getAPI('asana')->getTeamsDropdown(), $_POST['team'] ? $_POST['team'] : $metadata[ $languageID ]['team']['value'] )
 			)
 		);
 
 		$out .= $html->addTdRow(
 			array(
 				$this->lang->getString('pages_form_asana_billing_cat'),
-				($compareID > 0 ? "<div class='compare'>".$meta[ $compareID ]['billing_cat']['value'] . "</div>" : "") .
-				$html->formDropdown( 'billing_cat', $this->registry->getAPI('asana')->getFieldsDropdown(), $_POST['billing_cat'] ? $_POST['billing_cat'] : $meta[ $languageID ]['billing_cat']['value'] )
+				($compareID > 0 ? "<div class='compare'>".$metadata[ $compareID ]['billing_cat']['value'] . "</div>" : "") .
+				$html->formDropdown( 'billing_cat', $this->registry->getAPI('asana')->getFieldsDropdown(), $_POST['billing_cat'] ? $_POST['billing_cat'] : $metadata[ $languageID ]['billing_cat']['value'] )
 			)
 		);
 
 		$out .= $html->addTdRow(
 			array(
 				$this->lang->getString('pages_form_asana_billing_hrs'),
-				($compareID > 0 ? "<div class='compare'>".$meta[ $compareID ]['billing_hrs']['value'] . "</div>" : "") .
-				$html->formDropdown( 'billing_hrs', $this->registry->getAPI('asana')->getFieldsDropdown(), $_POST['billing_hrs'] ? $_POST['billing_hrs'] : $meta[ $languageID ]['billing_hrs']['value'] )
+				($compareID > 0 ? "<div class='compare'>".$metadata[ $compareID ]['billing_hrs']['value'] . "</div>" : "") .
+				$html->formDropdown( 'billing_hrs', $this->registry->getAPI('asana')->getFieldsDropdown(), $_POST['billing_hrs'] ? $_POST['billing_hrs'] : $metadata[ $languageID ]['billing_hrs']['value'] )
 			)
 		);
 

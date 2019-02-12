@@ -232,7 +232,7 @@ class MasteringType extends SubpageType
 			array(
 				$this->lang->getString('subpages_'.$type.'_form_filter'),
 				($compareID > 0 ? $meta[ $compareID ]['filter']['value'] . "<br><br>" : "") .
-				$ad_skin->formInput( 'filter', $this->registry->txtStripslashes( $_POST['filter'] ? $_POST['filter'] : $meta[ $languageID ]['filter']['value'] ) )
+				$ad_skin->formTextarea( 'filter', $this->registry->txtStripslashes( $_POST['filter'] ? $_POST['filter'] : $meta[ $languageID ]['filter']['value'] ) )
 			)
 		);
 
