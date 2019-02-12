@@ -81,7 +81,7 @@ class PublicApp extends Application
 		$links = array();
 		$out   = '';
 
-		if ( is_object( $user ) )
+		/*if ( is_object( $user ) )
 		{
 			$links[]  = array( 'url' => $this->display->buildURL( array_merge( $this->registry->filterInputsToKeep(), array('logout' => "true") ) ), 'text' => 'LOG OUT' );
 		}
@@ -91,7 +91,9 @@ class PublicApp extends Application
 			{
 				$links[]  = array( 'url' => $this->display->buildURL( array_merge( $this->registry->filterInputsToKeep(), array('login' => "false") ) ), 'text' => 'LOG IN' );
 			}
-		}
+		}*/
+
+		$links[]  = array( 'url' => $this->display->buildURL(array(), 'admin'), 'text' => $this->lang->getString('admin') );
 
 		$out   = $this->display->compiledTemplates('skin_public')->userLinks( $links );
 

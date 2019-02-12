@@ -149,7 +149,7 @@ $HTML = "";
 //--starthtml--//
 
 $HTML .= <<<EOF
-	<div id="control-panel">
+	<div class="control-panel">
 
 EOF;
 
