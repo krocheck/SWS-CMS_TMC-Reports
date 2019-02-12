@@ -51,8 +51,8 @@ class AsanaAPI extends Command
 			),
 			'projects' => array(
 				'uri'    => $this->registry->getSetting('asana_projects'),
-				'fields' => array('gid', 'owner', 'workspace', 'team', 'name', 'current_status', 'due_date', 'start_on', 'created_at', 'modified_at', 'archived', 'public', 'members', 'followers', 'custom_fields', 'custom_field_settings', 'color', 'html_notes', 'layout'),
-				'expand' => array()
+				'fields' => array(),
+				'expand' => array('gid', 'owner', 'workspace', 'team', 'name', 'current_status', 'due_date', 'start_on', 'created_at', 'modified_at', 'archived', 'public', 'members', 'followers', 'custom_fields', 'custom_field_settings', 'color', 'html_notes', 'layout')
 			),
 			'workspaces' => array(
 				'uri'    => $this->registry->getSetting('asana_workspaces'),
@@ -399,7 +399,7 @@ class AsanaAPI extends Command
 			}
 
 			// Cleanup orphans
-			$this->DB->query("DELETE FROM custom_field WHERE field_gid NOT IN(".explode(',',$fieldIDs).");");
+			$this->DB->query("DELETE FROM custom_field WHERE field_gid NOT IN(".implode(',',$fieldIDs).");");
 		}
 
 		$this->cache->update('fields');
@@ -472,7 +472,7 @@ class AsanaAPI extends Command
 					{
 						foreach( $row['custom_field_settings'] as $field )
 						{
-							$fields[] = $field['gid']['custom_field']['gid'];
+							$fields[] = $field['custom_field']['gid'];
 						}
 					}
 
@@ -548,7 +548,7 @@ class AsanaAPI extends Command
 			}
 
 			// Cleanup orphans
-			$this->DB->query("DELETE FROM project WHERE project_gid NOT IN(".explode(',',$projectIDs).");");
+			$this->DB->query("DELETE FROM project WHERE project_gid NOT IN(".implode(',',$projectIDs).");");
 		}
 
 		$this->cache->update('projects');
@@ -747,7 +747,7 @@ class AsanaAPI extends Command
 			}
 
 			// Cleanup orphans
-			$this->DB->query("DELETE FROM tag WHERE tag_gid NOT IN(".explode(',',$tagIDs).");");
+			$this->DB->query("DELETE FROM tag WHERE tag_gid NOT IN(".implode(',',$tagIDs).");");
 		}
 
 		$this->cache->update('tags');
@@ -1034,7 +1034,7 @@ class AsanaAPI extends Command
 			}
 
 			// Cleanup orphans
-			$this->DB->query("DELETE FROM team WHERE team_gid NOT IN(".explode(',',$teamIDs).");");
+			$this->DB->query("DELETE FROM team WHERE team_gid NOT IN(".implode(',',$teamIDs).");");
 		}
 
 		$this->cache->update('teams');
@@ -1230,7 +1230,7 @@ class AsanaAPI extends Command
 			}
 
 			// Cleanup orphans
-			$this->DB->query("DELETE FROM workspace WHERE workspace_gid NOT IN(".explode(',',$workspaceIDs).");");
+			$this->DB->query("DELETE FROM workspace WHERE workspace_gid NOT IN(".implode(',',$workspaceIDs).");");
 		}
 
 		$this->cache->update('workspaces');
