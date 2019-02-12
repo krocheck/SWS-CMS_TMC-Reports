@@ -84,6 +84,8 @@ return $ELMHTML;
 public function show( $r ) {
 
 $tags = $this->cache->getCache('tags');
+$fields = $this->cache->getCache('fields');
+$users = $this->cache->getCache('users');
 $date = "";
 
 if ( $r['start_on'] != '0000-00-00' )
@@ -129,7 +131,7 @@ $ELMHTML = "";
 $ELMHTML .= <<<EOF
 	<div class="show">
 		<strong>{$r['name']}</strong> | {$location} | {$date}<br />
-		{$r['custom_fields'][512408346444750]} | Producer: {$r['custom_fields'][512462680735933]} | AE: {$r['custom_fields'][512408346444708]} {$tagSep} 
+		{$r['custom_fields'][512408346444750]} | Producer: <span class="pill {$fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['color']}">&nbsp;{$fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name']}&nbsp;</span> | AE: <span class="pill {$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['color']}">&nbsp;{$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name']}&nbsp;</span> {$tagSep} 
 EOF;
 if (count($r['tags']) > 0) {
 foreach( $r['tags'] as $v ) {
@@ -163,6 +165,8 @@ return $ELMHTML;
 public function production( $r ) {
 
 $tags = $this->cache->getCache('tags');
+$fields = $this->cache->getCache('fields');
+$users = $this->cache->getCache('users');
 $date = "";
 
 if ( $r['due_on'] != '0000-00-00' )
@@ -194,7 +198,7 @@ $ELMHTML = "";
 $ELMHTML .= <<<EOF
 	<div class="production">
 		<strong>{$r['name']}</strong> | {$date}<br />
-		{$r['custom_fields'][512408346444750]} | Producer: {$r['custom_fields'][512462680735933]} | AE: {$r['custom_fields'][512408346444708]} {$tagSep} 
+		{$r['custom_fields'][512408346444750]} | Producer: <span class="pill {$fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['color']}">&nbsp;{$fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name']}&nbsp;</span> | AE: <span class="pill {$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['color']}">&nbsp;{$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name']}&nbsp;</span> {$tagSep} 
 EOF;
 if (count($r['tags']) > 0) {
 foreach( $r['tags'] as $v ) {
