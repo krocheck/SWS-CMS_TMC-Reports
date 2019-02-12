@@ -257,13 +257,15 @@ abstract class CacheType extends Command
 			}
 		}
 
+		$value = mysqli_real_escape_string( $this->DB->getConnection(), serialize($this->value) );
+
 		if ( $this->id == 0 )
 		{
-			$this->DB->query("INSERT INTO caches (name, value) VALUES ('{$this->name}', '".serialize($this->value)."');");
+			$this->DB->query("INSERT INTO caches (name, value) VALUES ('{$this->name}', '{$this->value}');");
 		}
 		else
 		{
-			$this->DB->query("UPDATE caches SET value = '".serialize($this->value)."' WHERE cache_id = '{$this->id}';");
+			$this->DB->query("UPDATE caches SET value = '{$this->value}' WHERE cache_id = '{$this->id}';");
 		}
 	}
 
