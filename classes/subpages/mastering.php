@@ -88,7 +88,7 @@ class Mastering extends Subpage
 			}
 		}
 
-		return $out;
+		return $out . $this->registry->parseHTML( $this->metadata['description']['value'] );
 	}
 
 	public function getID()
@@ -148,7 +148,7 @@ class MasteringType extends SubpageType
 	 * @var array
 	 * @since 1.0.0
 	 */
-	protected $metadata = array( 'name' => '', 'project' => '' );
+	protected $metadata = array( 'name' => '', 'project' => '', 'description' => '' );
 	/**
 	 * The name of the type
 	 *
@@ -173,6 +173,7 @@ class MasteringType extends SubpageType
 		$this->metadata['name']         = $this->registry->txtStripslashes( trim( $this->input['name'] ) );
 		$this->metadata['project']      = $this->registry->txtStripslashes( trim( $this->input['project'] ) );
 		$this->metadata['filter']       = $this->registry->txtStripslashes( trim( $this->input['filter'] ) );
+		$this->metadata['description']  = $this->registry->txtStripslashes( trim( $this->input['description'] ) );
 
 		if ( strlen( $this->metadata['name'] ) < 3 )
 		{
@@ -227,6 +228,14 @@ class MasteringType extends SubpageType
 				$this->lang->getString('subpages_'.$type.'_form_filter'),
 				($compareID > 0 ? $meta[ $compareID ]['filter']['value'] . "<br><br>" : "") .
 				$ad_skin->formInput( 'filter', $this->registry->txtStripslashes( $_POST['filter'] ? $_POST['filter'] : $meta[ $languageID ]['filter']['value'] ) )
+			)
+		);
+
+		$out .= $ad_skin->addTdRow(
+			array(
+				$this->lang->getString('subpages_'.$type.'_form_description'),
+				($compareID > 0 ? $meta[ $compareID ]['description']['value'] . "<br><br>" : "") .
+				$ad_skin->formRTE( 'description', $_POST['description'] ? $_POST['description'] : $meta[ $languageID ]['description']['value'] )
 			)
 		);
 

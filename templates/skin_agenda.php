@@ -23,7 +23,7 @@ $ELMHTML .= <<<EOF
 	<htmlpageheader name="myHeader" style="margin:0; padding:0;">
 		<table width="100%" style="margin:0; padding:0;">
 			<tr>
-				<td width="50%"><a href="{$this->display->buildURL( array() )}"><img src="{$this->registry->getConfig('base_url')}images/admin-logo.png" /></a></td>
+				<td width="50%"><a href="{$this->display->buildURL( array() )}"><img src="{$this->registry->getConfig('base_url')}images/print-logo.png" style="width:240px; height:63px;" /></a></td>
 				<td width="50%" style="text-align: right;"><h1>STAFF MEETING: {$meetingDate}</h1></td>
 			</tr>
 		</table>
