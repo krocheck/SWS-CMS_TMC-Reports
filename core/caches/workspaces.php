@@ -37,7 +37,7 @@ class WorkspacesCache extends CacheType
 	 */
 	public function save( $dbCheck = TRUE )
 	{
-		$this->DB->query("SELECT * FROM workspace");
+		$this->DB->query("SELECT * FROM workspace ORDER BY name;");
 		
 		$save = array();
 		

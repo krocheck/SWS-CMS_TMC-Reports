@@ -37,7 +37,7 @@ class TagsCache extends CacheType
 	 */
 	public function save( $dbCheck = TRUE )
 	{
-		$this->DB->query("SELECT * FROM tag");
+		$this->DB->query("SELECT * FROM tag ORDER BY name;");
 		
 		$save = array();
 		

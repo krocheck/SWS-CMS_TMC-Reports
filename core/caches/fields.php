@@ -37,7 +37,7 @@ class FieldsCache extends CacheType
 	 */
 	public function save( $dbCheck = TRUE )
 	{
-		$this->DB->query("SELECT * FROM custom_field");
+		$this->DB->query("SELECT * FROM custom_field ORDER BY name;");
 		
 		$save = array();
 		

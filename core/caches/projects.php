@@ -37,7 +37,7 @@ class ProjectsCache extends CacheType
 	 */
 	public function save( $dbCheck = TRUE )
 	{
-		$this->DB->query("SELECT * FROM project WHERE archived = 0;");
+		$this->DB->query("SELECT * FROM project WHERE archived = 0 ORDER BY name;");
 		
 		$save = array();
 		

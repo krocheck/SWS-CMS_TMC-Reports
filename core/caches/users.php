@@ -37,7 +37,7 @@ class UsersCache extends CacheType
 	 */
 	public function save( $dbCheck = TRUE )
 	{
-		$this->DB->query("SELECT * FROM asana_user");
+		$this->DB->query("SELECT * FROM asana_user ORDER BY name;");
 		
 		$save = array();
 		
