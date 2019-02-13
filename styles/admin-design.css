@@ -39,6 +39,14 @@ div.date_picker
 	display: inline-block;
 }
 
+div.hours-inline
+{
+	display: inline-block;
+	margin: 0;
+	padding: 0;
+	width: 20%;
+}
+
 div.pagelinks
 {
 	border:#cccccc 1px solid;

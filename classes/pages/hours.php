@@ -348,9 +348,9 @@ class Hours extends Page
 				{
 					$totalHours += $tasks[$tid]['custom_fields'][$this->billingHrs];
 
-					if ( isset($users[$tasks[$tid]['assignee_id']]) )
+					if ( isset($users[$tasks[$tid]['assignee_gid']]) )
 					{
-						$users[$tasks[$tid]['assignee_id']] += $tasks[$tid]['custom_fields'][$this->billingHrs];
+						$users[$tasks[$tid]['assignee_gid']] += $tasks[$tid]['custom_fields'][$this->billingHrs];
 					}
 					else
 					{
@@ -378,7 +378,10 @@ class Hours extends Page
 		{
 			foreach( $cats as $id => $r )
 			{
-				$html .= "\n\t<li>{$this->categories[$id]}: {$r} hours</li>";
+				if ( $r > 0 )
+				{
+					$html .= "\n\t<li><div class='hours-inline'>{$this->categories[$id]}:</div>{$r} hours</li>";
+				}
 			}
 		}
 
@@ -389,13 +392,16 @@ class Hours extends Page
 		{
 			foreach( $users as $id => $r )
 			{
-				if ( isset( $this->users[$id] ) )
+				if ( $r > 0 )
 				{
-					$html .= "\n\t<li>{$this->users[$id]['name']}: {$r} hours</li>";
-				}
-				else
-				{
-					$html .= "\n\t<li>Unassigned: {$r} hours</li>";
+					if ( isset( $this->users[$id] ) )
+					{
+						$html .= "\n\t<li><div class='hours-inline'>{$this->users[$id]['name']}:</div>{$r} hours</li>";
+					}
+					else
+					{
+						$html .= "\n\t<li><div class='hours-inline'>Unassigned:</div>{$r} hours</li>";
+					}
 				}
 			}
 		}
