@@ -330,20 +330,23 @@ class Hours extends Page
 		// Table Headers
 		//-----------------------------------------
 
-		//$this->html->td_header[] = array( $this->lang->getString('hours_head_name')          , "50%" );
-		//$this->html->td_header[] = array( $this->lang->getString('hours_head_owner')         , "50%" );
+		$this->html->td_header[] = array( $this->lang->getString('tasks_head_name')          , "30%" );
+		$this->html->td_header[] = array( $this->lang->getString('tasks_head_owner')         , "30%" );
+		$this->html->td_header[] = array( $this->lang->getString('tasks_head_completed')     , "20%" );
+		$this->html->td_header[] = array( $this->lang->getString('tasks_head_category')      , "10%" );
+		$this->html->td_header[] = array( $this->lang->getString('tasks_head_hours')         , "10%" );
 
 		//-----------------------------------------
 
 		// Begin table
-		//$html .= $this->html->startTable( $this->name, 'admin' );
+		$taskTable = $this->html->startTable();
+
+		$totalHours = 0;
 
 		if ( count($project['tasks']) > 0 )
 		{
 			foreach( $project['tasks'] as $tid )
 			{
-				$totalHours = 0;
-
 				if ( isset($tasks[$tid]) && isset($tasks[$tid]['custom_fields']) && isset($tasks[$tid]['custom_fields'][$this->billingHrs]) )
 				{
 					$totalHours += $tasks[$tid]['custom_fields'][$this->billingHrs];
@@ -365,9 +368,21 @@ class Hours extends Page
 					{
 						$cats[0] += $tasks[$tid]['custom_fields'][$this->billingHrs];
 					}
+
+					$taskTable .= $this->html->addTdRow(
+						array(
+							"<a href='https://app.asana.com/0/{$projectID}/{$tid}'>{$tasks[$tid]['name']}</a>",
+							$this->users[$tasks[$tid]['assignee_gid']]['name'],
+							"<center>".($tasks[$tid]['completed'] == 1 ? date('M j, Y', strtotime($tasks[$tid]['completed_at'])) : '')."</center>",
+							$tasks[$tid]['custom_fields'][$this->billingCat],
+							$tasks[$tid]['custom_fields'][$this->billingHrs],
+						)
+					);
 				}
 			}
 		}
+
+		$taskTable = $this->html->endTable();
 
 		$html = "<h2>{$project['name']}</h2>";
 		$html .= "\n<h3>Total Hours: {$totalHours}</h3>";
@@ -378,7 +393,7 @@ class Hours extends Page
 		{
 			foreach( $cats as $id => $r )
 			{
-				if ( $r > 0 )
+				if ( $r <> 0 )
 				{
 					$html .= "\n\t<li><div class='hours-inline'>{$this->categories[$id]}:</div>{$r} hours</li>";
 				}
@@ -392,7 +407,7 @@ class Hours extends Page
 		{
 			foreach( $users as $id => $r )
 			{
-				if ( $r > 0 )
+				if ( $r <> 0 )
 				{
 					if ( isset( $this->users[$id] ) )
 					{
@@ -407,9 +422,8 @@ class Hours extends Page
 		}
 
 		$html .= "\n</ul>";
-
-		// End table
-		//$html .= $this->html->endTable();
+		$html .= "\n<h4>Tasks</h4>\n<ul>";
+		$html .= $taskTable;
 
 		//--------------------------------------
 
