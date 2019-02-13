@@ -371,10 +371,10 @@ class Hours extends Page
 
 					$taskTable .= $this->html->addTdRow(
 						array(
-							"<a href='https://app.asana.com/0/{$projectID}/{$tid}'>{$tasks[$tid]['name']}</a>",
+							"<a href='https://app.asana.com/0/{$projectID}/{$tid}' target='_blank'>{$tasks[$tid]['name']}</a>",
 							$this->users[$tasks[$tid]['assignee_gid']]['name'],
 							"<center>".($tasks[$tid]['completed'] == 1 ? date('M j, Y', strtotime($tasks[$tid]['completed_at'])) : '')."</center>",
-							$tasks[$tid]['custom_fields'][$this->billingCat],
+							$this->categories[$tasks[$tid]['custom_fields'][$this->billingCat]],
 							$tasks[$tid]['custom_fields'][$this->billingHrs],
 						)
 					);
@@ -382,7 +382,7 @@ class Hours extends Page
 			}
 		}
 
-		$taskTable = $this->html->endTable();
+		$taskTable .= $this->html->endTable();
 
 		$html = "<h2>{$project['name']}</h2>";
 		$html .= "\n<h3>Total Hours: {$totalHours}</h3>";
@@ -422,7 +422,7 @@ class Hours extends Page
 		}
 
 		$html .= "\n</ul>";
-		$html .= "\n<h4>Tasks</h4>\n<ul>";
+		$html .= "\n<h4>Tasks</h4>";
 		$html .= $taskTable;
 
 		//--------------------------------------
