@@ -250,7 +250,7 @@ class Hours extends Page
 
 		// Query projects for this page
 		$this->DB->query(
-			"SELECT * FROM project WHERE project_gid = '{$projectID};"
+			"SELECT * FROM project WHERE project_gid = '{$projectID}';"
 		);
 
 		$project = array();
@@ -310,7 +310,7 @@ class Hours extends Page
 		if ( count($tasks) > 0 )
 		{
 			$this->DB->query(
-				"SELECT task_gid,name,custom_fields FROM task WHERE task_gid IN(".implode(',',$tasks).");"
+				"SELECT task_gid,assignee_gid,name,custom_fields FROM task WHERE task_gid IN(".implode(',',$tasks).");"
 			);
 
 			$tasks = array();
@@ -340,67 +340,62 @@ class Hours extends Page
 
 		if ( count($project['tasks']) > 0 )
 		{
-			foreach( $project['tasks'] as $id => $r )
+			foreach( $project['tasks'] as $tid )
 			{
 				$totalHours = 0;
 
-				if ( count($tasks) > 0 && is_array($r['tasks']) && count($r['tasks']) > 0 )
+				if ( isset($tasks[$tid]) && isset($tasks[$tid]['custom_fields']) && isset($tasks[$tid]['custom_fields'][$this->billingHrs]) )
 				{
-					foreach ($r['tasks'] as $tid)
+					$totalHours += $tasks[$tid]['custom_fields'][$this->billingHrs];
+
+					if ( isset($users[$tasks[$tid]['assignee_id']]) )
 					{
-						if ( isset($tasks[$tid]) && isset($tasks[$tid]['custom_fields']) && isset($tasks[$tid]['custom_fields'][$this->billingHrs]) )
-						{
-							$totalHours += $tasks[$tid]['custom_fields'][$this->billingHrs];
+						$users[$tasks[$tid]['assignee_id']] += $tasks[$tid]['custom_fields'][$this->billingHrs];
+					}
+					else
+					{
+						$users[0] += $tasks[$tid]['custom_fields'][$this->billingHrs];
+					}
 
-							if ( isset($users[$tasks[$tid]['assignee_id']]) )
-							{
-								$users[$tasks[$tid]['assignee_id']] += $tasks[$tid]['custom_fields'][$this->billingHrs];
-							}
-							else
-							{
-								$users[0] += $tasks[$tid]['custom_fields'][$this->billingHrs];
-							}
-
-							if ( isset($cats[$tasks[$tid]['custom_fields'][$this->billingCat]]) )
-							{
-								$cats[$tasks[$tid]['custom_fields'][$this->billingCat]] += $tasks[$tid]['custom_fields'][$this->billingHrs];
-							}
-							else
-							{
-								$cats[0] += $tasks[$tid]['custom_fields'][$this->billingHrs];
-							}
-						}
+					if ( isset($cats[$tasks[$tid]['custom_fields'][$this->billingCat]]) )
+					{
+						$cats[$tasks[$tid]['custom_fields'][$this->billingCat]] += $tasks[$tid]['custom_fields'][$this->billingHrs];
+					}
+					else
+					{
+						$cats[0] += $tasks[$tid]['custom_fields'][$this->billingHrs];
 					}
 				}
 			}
 		}
 
 		$html = "<h2>{$project['name']}</h2>";
-		$html .= "\n<h3>Total Hours: {$totalHours}</h3><br />";
+		$html .= "\n<h3>Total Hours: {$totalHours}</h3>";
 
 		$html .= "\n<h4>Breakdown by Category:</h4>\n<ul>";
 
-		if ( count($this->categories) > 0 )
+		if ( count($cats) > 0 )
 		{
-			foreach( $this->categories as $id => $r )
+			foreach( $cats as $id => $r )
 			{
-				if ( isset( $cats[$id] ) && $cats[$id] > 0 )
-				{
-					$html .= "\n\t<li>{$r}: {$cats[$id]} hours</li>";
-				}
+				$html .= "\n\t<li>{$this->categories[$id]}: {$r} hours</li>";
 			}
 		}
 
 		$html .= "\n</ul>";
 		$html .= "\n<h4>Breakdown by Person:</h4>\n<ul>";
 
-		if ( count($this->users) > 0 )
+		if ( count($users) > 0 )
 		{
-			foreach( $this->users as $id => $r )
+			foreach( $users as $id => $r )
 			{
-				if ( isset( $users[$id] ) && $users[$id] > 0 )
+				if ( isset( $this->users[$id] ) )
 				{
-					$html .= "\n\t<li>{$r}: {$cats[$id]} hours</li>";
+					$html .= "\n\t<li>{$this->users[$id]['name']}: {$r} hours</li>";
+				}
+				else
+				{
+					$html .= "\n\t<li>Unassigned: {$r} hours</li>";
 				}
 			}
 		}
