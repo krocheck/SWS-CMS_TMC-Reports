@@ -261,11 +261,11 @@ abstract class CacheType extends Command
 
 		if ( $this->id == 0 )
 		{
-			$this->DB->query("INSERT INTO caches (name, value) VALUES ('{$this->name}', '{$this->value}');");
+			$this->DB->query("INSERT INTO caches (name, value) VALUES ('{$this->name}', '{$value}');");
 		}
 		else
 		{
-			$this->DB->query("UPDATE caches SET value = '{$this->value}' WHERE cache_id = '{$this->id}';");
+			$this->DB->query("UPDATE caches SET value = '{$value}' WHERE cache_id = '{$this->id}';");
 		}
 	}
 

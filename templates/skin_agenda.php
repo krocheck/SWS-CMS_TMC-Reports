@@ -131,7 +131,7 @@ $ELMHTML = "";
 $ELMHTML .= <<<EOF
 	<div class="show">
 		<strong>{$r['name']}</strong> | {$location} | {$date}<br />
-		{$r['custom_fields'][512408346444750]} | Producer: <span class="pill {$fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['color']}">&nbsp;{$fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name']}&nbsp;</span> | AE: <span class="pill {$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['color']}">&nbsp;{$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name']}&nbsp;</span> {$tagSep} 
+		{$r['custom_fields'][512408346444750]} | Producer: <!--<span class="pill {$fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['color']}">&nbsp;-->{$fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name']}<!--&nbsp;</span>--> | AE: <!--<span class="pill {$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['color']}">&nbsp;-->{$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name']}<!--&nbsp;</span>--> {$tagSep} 
 EOF;
 if (count($r['tags']) > 0) {
 foreach( $r['tags'] as $v ) {
@@ -198,7 +198,7 @@ $ELMHTML = "";
 $ELMHTML .= <<<EOF
 	<div class="production">
 		<strong>{$r['name']}</strong> | {$date}<br />
-		{$r['custom_fields'][512408346444750]} | Producer: <span class="pill {$fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['color']}">&nbsp;{$fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name']}&nbsp;</span> | AE: <span class="pill {$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['color']}">&nbsp;{$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name']}&nbsp;</span> {$tagSep} 
+		{$r['custom_fields'][512408346444750]} | Producer: <!--<span class="pill {$fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['color']}">&nbsp;-->{$fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name']}<!--&nbsp;</span>--> | AE: <!--<span class="pill {$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['color']}">&nbsp;-->{$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name']}<!--&nbsp;</span>--> {$tagSep} 
 EOF;
 if (count($r['tags']) > 0) {
 foreach( $r['tags'] as $v ) {

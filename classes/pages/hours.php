@@ -47,9 +47,18 @@ class Hours extends Page
 		$this->billingHrs = $this->metadata['billing_hrs']['meta_value'];
 		$this->exclude    = $this->metadata['exclude']['meta_value'];
 
-		$this->fields   = $this->cache->getCache('fields');
-		$this->projects = $this->cache->getCache('projects');
-		$this->users    = $this->cache->getCache('users');
+		$this->fields     = $this->cache->getCache('fields');
+		$this->projects   = $this->cache->getCache('projects');
+		$this->users      = $this->cache->getCache('users');
+		$this->categories = array('0' => 'None');
+
+		if ( isset($this->fields[ $this->billingCat ]) && $this->fields[ $this->billingCat ]['resource_subtype'] == 'enum' && is_array($this->fields[ $this->billingCat ]['enum_options']) )
+		{
+			foreach( $this->fields[ $this->billingCat ]['enum_options'] as $id => $r )
+			{
+				$this->categories[$id] = $r['name'];
+			}
+		}
 
 		$js = $this->registry->parseHTML( $this->metadata['js']['meta_value'] );
 
@@ -100,9 +109,6 @@ class Hours extends Page
 		// INIT
 		//-----------------------------------------
 
-		$count      = array();
-		$pageWhere  = '';
-		$queryWhere = '';
 		$status = ( isset( $this->input['archived'] ) ? intval($this->input['archived']) : 0);
 
 		// Page title
@@ -122,7 +128,7 @@ class Hours extends Page
 		//-----------------------------------------
 
 		// Create account link
-		$html = "<div style='float:right;'>{$this->lang->getString('hours_form_status')}<form method='post' action='{$this->display->buildURL( array( 'page_id' => $this->id ) )}'>". $this->html->formDropdown('archived',array( array( 0 => 0, 1 => "Active" ), array( 0 => 1, 1 => "Archived" ) ), $status ) ." <input type='submit' value='{$this->lang->getString('go')}' /></form></div>";
+		$html = "<div style='float:right;'>{$this->lang->getString('hours_form_status')}&nbsp;<form method='post' action='{$this->display->buildURL( array( 'page_id' => $this->id ) )}'>". $this->html->formDropdown('archived',array( array( 0 => 0, 1 => "Active" ), array( 0 => 1, 1 => "Archived" ) ), $status ) ." <input type='submit' value='{$this->lang->getString('go')}' /></form></div>";
 
 		// Begin table
 		$html .= $this->html->startTable( $this->name, 'admin' );
@@ -213,6 +219,196 @@ class Hours extends Page
 
 		// End table
 		$html .= $this->html->endTable();
+
+		//--------------------------------------
+
+		// Send the html to the display handler
+		$this->display->addContent( $html );
+	}
+
+	/**
+	 * View a specific project.
+	 *
+	 * @return void
+	 * @access protected
+	 * @since 1.0.0
+	 */
+	protected function view()
+	{
+		//-----------------------------------------
+		// INIT
+		//-----------------------------------------
+
+		$projectID = intval($this->input['extra'][0]);
+
+		if ( $projectID == 0 )
+		{
+			$this->error->logError( 'invalid_id', FALSE );
+			$this->listProjects();
+			return;
+		}
+
+		// Query projects for this page
+		$this->DB->query(
+			"SELECT * FROM project WHERE project_gid = '{$projectID};"
+		);
+
+		$project = array();
+		$tasks = array();
+
+		$users = array(0=>0);
+
+		if ( count($this->users) > 0 )
+		{
+			foreach( $this->users as $id => $r )
+			{
+				$users[$id] = 0;
+			}
+		}
+
+		$cats = array();
+
+		if ( count($this->categories) > 0 )
+		{
+			foreach( $this->categories as $id => $r )
+			{
+				$cats[$id] = 0;
+			}
+		}
+
+		// Loop through the results and add a row for each
+		while( $r = $this->DB->fetchRow() )
+		{
+			$r['tasks'] = unserialize($r['tasks']);
+			$r['custom_field_settings'] = unserialize($r['custom_field_settings']);
+
+			if ( is_array($r['custom_field_settings']) && in_array($this->billingCat, $r['custom_field_settings']) && in_array($this->billingHrs, $r['custom_field_settings']) )
+			{
+				if ( is_array( $r['tasks'] ) && count( $r['tasks'] ) > 0 )
+				{
+					foreach( $r['tasks'] as $tid )
+					{
+						$tasks[] = $tid;
+					}
+				}
+
+				$project = $r;
+			}
+		}
+
+		if ( count($project) == 0 )
+		{
+			$this->error->logError( 'invalid_id', FALSE );
+			$this->listProjects();
+			return;
+		}
+
+		// Add a breadcrumb for this project
+		$this->display->addBreadcrumb( $this->display->buildURL( array( 'page_id' => $this->id, 'extra' => array($projectID) ) ), $project['name'] );
+
+		// Query tasks for this page
+		if ( count($tasks) > 0 )
+		{
+			$this->DB->query(
+				"SELECT task_gid,name,custom_fields FROM task WHERE task_gid IN(".implode(',',$tasks).");"
+			);
+
+			$tasks = array();
+
+			// Loop through the results and add a row for each
+			while( $r = $this->DB->fetchRow() )
+			{
+				$r['custom_fields'] = unserialize($r['custom_fields']);
+				$tasks[$r['task_gid']] = $r;
+			}
+		}
+
+		// Page title
+		$this->display->setTitle( $this->lang->getString('hours_view_title') );
+
+		//-----------------------------------------
+		// Table Headers
+		//-----------------------------------------
+
+		//$this->html->td_header[] = array( $this->lang->getString('hours_head_name')          , "50%" );
+		//$this->html->td_header[] = array( $this->lang->getString('hours_head_owner')         , "50%" );
+
+		//-----------------------------------------
+
+		// Begin table
+		//$html .= $this->html->startTable( $this->name, 'admin' );
+
+		if ( count($project['tasks']) > 0 )
+		{
+			foreach( $project['tasks'] as $id => $r )
+			{
+				$totalHours = 0;
+
+				if ( count($tasks) > 0 && is_array($r['tasks']) && count($r['tasks']) > 0 )
+				{
+					foreach ($r['tasks'] as $tid)
+					{
+						if ( isset($tasks[$tid]) && isset($tasks[$tid]['custom_fields']) && isset($tasks[$tid]['custom_fields'][$this->billingHrs]) )
+						{
+							$totalHours += $tasks[$tid]['custom_fields'][$this->billingHrs];
+
+							if ( isset($users[$tasks[$tid]['assignee_id']]) )
+							{
+								$users[$tasks[$tid]['assignee_id']] += $tasks[$tid]['custom_fields'][$this->billingHrs];
+							}
+							else
+							{
+								$users[0] += $tasks[$tid]['custom_fields'][$this->billingHrs];
+							}
+
+							if ( isset($cats[$tasks[$tid]['custom_fields'][$this->billingCat]]) )
+							{
+								$cats[$tasks[$tid]['custom_fields'][$this->billingCat]] += $tasks[$tid]['custom_fields'][$this->billingHrs];
+							}
+							else
+							{
+								$cats[0] += $tasks[$tid]['custom_fields'][$this->billingHrs];
+							}
+						}
+					}
+				}
+			}
+		}
+
+		$html = "<h2>{$project['name']}</h2>";
+		$html .= "\n<h3>Total Hours: {$totalHours}</h3><br />";
+
+		$html .= "\n<h4>Breakdown by Category:</h4>\n<ul>";
+
+		if ( count($this->categories) > 0 )
+		{
+			foreach( $this->categories as $id => $r )
+			{
+				if ( isset( $cats[$id] ) && $cats[$id] > 0 )
+				{
+					$html .= "\n\t<li>{$r}: {$cats[$id]} hours</li>";
+				}
+			}
+		}
+
+		$html .= "\n</ul>";
+		$html .= "\n<h4>Breakdown by Person:</h4>\n<ul>";
+
+		if ( count($this->users) > 0 )
+		{
+			foreach( $this->users as $id => $r )
+			{
+				if ( isset( $users[$id] ) && $users[$id] > 0 )
+				{
+					$html .= "\n\t<li>{$r}: {$cats[$id]} hours</li>";
+				}
+			}
+		}
+
+		$html .= "\n</ul>";
+
+		// End table
+		//$html .= $this->html->endTable();
 
 		//--------------------------------------
 
