@@ -18,14 +18,14 @@ $ELMHTML = "";
 $ELMHTML .= <<<EOF
 
 	<htmlpageheader name="myHeader" style="margin:0; padding:0;">
-		<table width="100%" style="margin:0; padding:0;" id="header">
+		<table width="100%" style="margin:0; padding:0; border-spacing: 0; border-collapse: collapse;" id="header">
 			<tr>
 				<td width="20%"></td>
 				<td width="80%" style="text-align: right;"><img src="{$this->registry->getConfig('base_url')}images/print-logo.png" style="width:144px; height:38px;" /></td>
 			</tr>
 			<tr>
-				<td width="22%" style="font-weight: bold; text-align: center; background-color:#fdb514;">{$date}</td>
-				<td width="78%" style="font-weight: bold; border-bottom: 1px solid #fdb514;">{$name} - Production Schedule</td>
+				<td width="22%" style="font-weight: bold; text-align: center; color:#ffffff; background-color:#d25c3; border-bottom: 1px solid #d25c3;">{$date}</td>
+				<td width="78%" style="font-weight: bold; border-bottom: 1px solid #d25c3;">{$name} - Production Schedule</td>
 			</tr>
 		</table>
 	</htmlpageheader>

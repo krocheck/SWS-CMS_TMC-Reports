@@ -288,6 +288,12 @@ class Team extends Page
 			$r['tasks'] = unserialize($r['tasks']);
 			$r['custom_field_settings'] = unserialize($r['custom_field_settings']);
 
+			if ( substr($r['name'],0,3) == '201' )
+			{
+				$v['name'] = substr( $r['name'], 8 );
+				$v['name'] = trim( $v['name'] );
+			}
+
 			if ( is_array( $r['tasks'] ) && count( $r['tasks'] ) > 0 )
 			{
 				foreach( $r['tasks'] as $tid )
