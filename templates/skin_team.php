@@ -39,6 +39,10 @@ $ELMHTML .= <<<EOF
 		</tr>
 EOF;
 foreach( $tasks as $v ) {
+	if ( strpos($v['name'],':') > 0 )
+	{
+		$v['name'] = substr($v['name'], strpos($v['name'],':')+1);
+	}
 $ELMHTML .= <<<EOF
 		<tr>
 			<td class='name'>{$v['name']}</td>

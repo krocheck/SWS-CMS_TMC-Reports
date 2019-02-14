@@ -191,7 +191,7 @@ table.schedule th
 	color: #ffffff;
 	font-weight: bold;
 	vertical-align: middle;
-	height: 60px;
+	height: 40px;
 }
 
 table.schedule td,
@@ -200,12 +200,18 @@ table.schedule th
 	border: 1px solid #000000;
 }
 
+table.schedule td
+{
+	height: 25px;
+}
+
 table.schedule .name,
 table.schedule .span
 {
 	font-weight: bold;
 }
 
+table.schedule .party,
 table.schedule .date,
 table.schedule .span
 {
