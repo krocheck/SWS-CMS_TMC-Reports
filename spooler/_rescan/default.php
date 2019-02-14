@@ -16,7 +16,7 @@
  * @version		$Revision: 27 $
  */
 
-class SpoolerAuto extends Command
+class SpoolerRescan extends Command
 {
 	/**
 	 * The main execute function
@@ -28,9 +28,12 @@ class SpoolerAuto extends Command
 	 */
 	protected function doExecute( $params )
 	{
+		$this->registry->getAPI('asana')->updateWorkspaces();
+		$this->registry->getAPI('asana')->updateTeams();
+		$this->registry->getAPI('asana')->updateUsers();
 		$this->registry->getAPI('asana')->updateTags();
 		$this->registry->getAPI('asana')->updateFields();
-		$this->registry->getAPI('asana')->updateProjects();
+		$this->registry->getAPI('asana')->updateProjects(false);
 
 		$this->display->addJSON( 'status', 'complete' );
 		$this->display->doJSON();

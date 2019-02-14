@@ -122,6 +122,10 @@ class SpoolerApp extends Application
 				require_once( SWS_ROOT_PATH . 'spooler/_projects/default.php' );
 				$module = new SpoolerProjects();
 				break;
+			case 'rescan':
+				require_once( SWS_ROOT_PATH . 'spooler/_rescan/default.php' );
+				$module = new SpoolerRescan();
+				break;
 			case 'sections':
 				require_once( SWS_ROOT_PATH . 'spooler/_sections/default.php' );
 				$module = new SpoolerSections();

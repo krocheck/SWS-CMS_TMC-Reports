@@ -410,11 +410,137 @@ class AsanaAPI extends Command
 	/**
 	 * Call the Asana API to retrieve the Projects
 	 *
+	 * @param bool $quick true if to not sync existing project tasks
 	 * @return int count of retrieved items
 	 * @access public
 	 * @since 1.0.0
 	*/
-	public function updateProjects()
+	public function updateProject( $projectID )
+	{
+		$newRows = array();
+		$oldRows = array();
+		$dbRows = array();
+		$count = 0;
+		$workspace = $this->registry->getSetting('asana_default');
+
+		$data = $this->callGet('projects',"/{$projectID}");
+
+		if ( isset($data['data']) && is_array($data['data']) && count($data['data']) > 0 )
+		{
+			$projectID = $row['gid'];
+			$currentStatus = array();
+			$followers = array();
+			$members = array();
+			$fields = array();
+
+			if ( is_array($row['current_status']) && count($row['current_status']) > 0 )
+			{
+				$currentStatus = $row['current_status'];
+			}
+
+			if ( is_array($row['followers']) && count($row['followers']) > 0 )
+			{
+				foreach( $row['followers'] as $follower )
+				{
+					$followers[] = $follower['gid'];
+				}
+			}
+
+			if ( is_array($row['members']) && count($row['members']) > 0 )
+			{
+				foreach( $row['members'] as $member )
+				{
+					$members[] = $member['gid'];
+				}
+			}
+
+			if ( is_array($row['custom_field_settings']) && count($row['custom_field_settings']) > 0 )
+			{
+				foreach( $row['custom_field_settings'] as $field )
+				{
+					$fields[] = $field['custom_field']['gid'];
+				}
+			}
+
+			$projectIDs[]  = $projectID;
+			$newRows[ $projectID ] = array(
+				'project_gid'           => $projectID,
+				'owner_gid'             => $row['owner']['gid'],
+				'workspace_gid'         => $workspace,
+				'team_gid'              => $row['team']['gid'],
+				'name'                  => $row['name'],
+				'current_status'        => mysqli_real_escape_string( $this->DB->getConnection(), serialize($currentStatus) ),
+				'due_date'              => $row['due_date'],
+				'start_on'              => $row['start_on'],
+				'created_at'            => $this->parseDate( $row['created_at'] ),
+				'modified_at'           => $this->parseDate( $row['modified_at'] ),
+				'archived'              => ( $row['archived'] ? 1 : 0 ),
+				'public'                => ( $row['public'] ? 1 : 0 ),
+				'members'               => mysqli_real_escape_string( $this->DB->getConnection(), serialize($members) ),
+				'followers'             => mysqli_real_escape_string( $this->DB->getConnection(), serialize($followers) ),
+				'custom_fields'         => mysqli_real_escape_string( $this->DB->getConnection(), serialize($row['custom_fields']) ),
+				'custom_field_settings' => mysqli_real_escape_string( $this->DB->getConnection(), serialize($fields) ),
+				'color'                 => $row['color'],
+				'html_notes'            => mysqli_real_escape_string( $this->DB->getConnection(), substr($row['html_notes'],6,strlen($row['html_notes'])-13))
+			);
+
+			$newRows[ $projectID ]['sections'] = mysqli_real_escape_string( $this->DB->getConnection(), serialize($this->updateSections($projectID)));
+			$count = $newRows[ $projectID ]['tasks']    = mysqli_real_escape_string( $this->DB->getConnection(), serialize($this->updateTasks($projectID)));
+
+
+			$this->DB->query("SELECT * FROM project WHERE project_gid = '{$projectID}';");
+
+			if ( $this->DB->getTotalRows() )
+			{
+				while( $row = $this->DB->fetchRow() )
+				{
+					$dbRows[ $row['project_gid'] ] = $row;
+
+					if ( isset( $row['project_gid'] ) && isset( $newRows[ $row['project_gid'] ] ) )
+					{
+						$oldRows[ $row['project_gid'] ] = $newRows[ $row['project_gid'] ];
+						unset( $newRows[ $row['project_gid'] ] );
+					}
+				}
+			}
+
+			if ( count( $newRows ) > 0 )
+			{
+				$query = "INSERT INTO project (project_gid,owner_gid,workspace_gid,team_gid,name,current_status,due_date,start_on,created_at,modified_at,archived,public,members,followers,custom_fields,custom_field_settings,color,html_notes,sections,tasks) VALUES ";
+
+				foreach( $newRows as $row )
+				{
+					$query .= "('{$row['project_gid']}','{$row['owner_gid']}','{$row['workspace_gid']}','{$row['team_gid']}',\"{$row['name']}\",\"{$row['current_status']}\",'{$row['due_date']}','{$row['start_on']}','{$row['created_at']}','{$row['modified_at']}','{$row['archived']}','{$row['public']}',\"{$row['members']}\",\"{$row['followers']}\",\"{$row['custom_fields']}\",\"{$row['custom_field_settings']}\",'{$row['color']}',\"{$row['html_notes']}\",\"{$row['sections']}\",\"{$row['tasks']}\"),";
+				}
+
+				$query = substr($query,0,-1) . ";";
+
+				$this->DB->query( $query );
+			}
+
+			if ( count( $oldRows ) > 0 )
+			{
+				foreach( $oldRows as $row )
+				{
+					$this->DB->query("UPDATE project SET project_gid = '{$row['project_gid']}', owner_gid = '{$row['owner_gid']}', workspace_gid = '{$row['workspace_gid']}', team_gid = '{$row['team_gid']}', name = \"{$row['name']}\", current_status = \"{$row['current_status']}\", due_date = '{$row['due_date']}', start_on = '{$row['start_on']}', created_at = '{$row['created_at']}', modified_at = '{$row['modified_at']}', archived = '{$row['archived']}', public = '{$row['public']}', members = \"{$row['members']}\", followers = \"{$row['followers']}\", custom_fields = \"{$row['custom_fields']}\", custom_field_settings = \"{$row['custom_field_settings']}\", color = '{$row['color']}', html_notes = \"{$row['html_notes']}\", sections = \"{$row['sections']}\", tasks = \"{$row['tasks']}\", last_update = NOW() WHERE project_gid = '{$row['project_gid']}';");
+				}
+			}
+		}
+
+		$this->cache->update('projects');
+
+		return $count;
+	}
+
+	/**
+	 * Call the Asana API to retrieve the Projects
+	 *
+	 * @param bool $quick true if to not sync existing project tasks
+	 * @return int count of retrieved items
+	 * @access public
+	 * @since 1.0.0
+	*/
+	public function updateProjects( $quick = true )
 	{
 		$projectIDs = array();
 		$newRows = array();
@@ -503,10 +629,13 @@ class AsanaAPI extends Command
 
 		if ( $count > 0 )
 		{
-			foreach( $projectIDs as $projectID )
+			if ( $quick == true )
 			{
-				$newRows[ $projectID ]['sections'] = mysqli_real_escape_string( $this->DB->getConnection(), serialize($this->updateSections($projectID)));
-				$newRows[ $projectID ]['tasks']    = mysqli_real_escape_string( $this->DB->getConnection(), serialize($this->updateTasks($projectID)));
+				foreach( $projectIDs as $projectID )
+				{
+					$newRows[ $projectID ]['sections'] = mysqli_real_escape_string( $this->DB->getConnection(), serialize($this->updateSections($projectID)));
+					$newRows[ $projectID ]['tasks']    = mysqli_real_escape_string( $this->DB->getConnection(), serialize($this->updateTasks($projectID)));
+				}
 			}
 
 			$this->DB->query("SELECT * FROM project;");
@@ -532,6 +661,12 @@ class AsanaAPI extends Command
 				foreach( $newRows as $row )
 				{
 					$query .= "('{$row['project_gid']}','{$row['owner_gid']}','{$row['workspace_gid']}','{$row['team_gid']}',\"{$row['name']}\",\"{$row['current_status']}\",'{$row['due_date']}','{$row['start_on']}','{$row['created_at']}','{$row['modified_at']}','{$row['archived']}','{$row['public']}',\"{$row['members']}\",\"{$row['followers']}\",\"{$row['custom_fields']}\",\"{$row['custom_field_settings']}\",'{$row['color']}',\"{$row['html_notes']}\",\"{$row['sections']}\",\"{$row['tasks']}\"),";
+	
+					if ( $quick == false )
+					{
+						$newRows[ $row['project_gid'] ]['sections'] = mysqli_real_escape_string( $this->DB->getConnection(), serialize($this->updateSections($row['project_gid'])));
+						$newRows[ $row['project_gid'] ]['tasks']    = mysqli_real_escape_string( $this->DB->getConnection(), serialize($this->updateTasks($row['project_gid'])));
+					}
 				}
 
 				$query = substr($query,0,-1) . ";";
