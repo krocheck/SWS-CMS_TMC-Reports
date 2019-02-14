@@ -290,8 +290,8 @@ class Team extends Page
 
 			if ( substr($r['name'],0,3) == '201' )
 			{
-				$v['name'] = substr( $r['name'], 8 );
-				$v['name'] = trim( $v['name'] );
+				$r['name'] = substr( $r['name'], 8 );
+				$r['name'] = trim( $r['name'] );
 			}
 
 			if ( is_array( $r['tasks'] ) && count( $r['tasks'] ) > 0 )
@@ -316,7 +316,7 @@ class Team extends Page
 		if ( count($tasks) > 0 )
 		{
 			$this->DB->query(
-				"SELECT task_gid,assignee_gid,name,custom_fields,due_on,start_on FROM task WHERE task_gid IN(".implode(',',$tasks).");"
+				"SELECT task_gid,assignee_gid,name,custom_fields,due_on,start_on,html_description FROM task WHERE task_gid IN(".implode(',',$tasks).");"
 			);
 
 			$tasks = array();
@@ -341,6 +341,11 @@ class Team extends Page
 				{
 					if ( $tasks[$tid]['custom_fields'][$this->scheduleEnable] <> null )
 					{
+						if ( strlen($tasks[$tid]['html_notes']) > 0 )
+						{
+							$tasks[$tid]['name'] .= "<br /><span class='desc'>{$tasks[$tid]['html_notes']}</span>";
+						}
+
 						$scheduleTasks[] = array(
 							'name' => $tasks[$tid]['name'],
 							'responsible_party' => $tasks[$tid]['custom_fields'][$this->respParty],

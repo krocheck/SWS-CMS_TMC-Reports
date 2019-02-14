@@ -170,6 +170,12 @@ ol li ul li
 	margin-bottom: normal;
 }
 
+span.desc
+{
+	font-size: 12px;
+	font-weight: normal;
+}
+
 table
 {
 	margin: 3px;
