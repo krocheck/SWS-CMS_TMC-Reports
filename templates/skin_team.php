@@ -23,9 +23,9 @@ $ELMHTML .= <<<EOF
 				<td width="20%"></td>
 				<td width="80%" style="text-align: right;"><img src="{$this->registry->getConfig('base_url')}images/print-logo.png" style="width:144px; height:38px;" /></td>
 			</tr>
-			<tr style="border-bottom: 1px solid #fdb514;">
-				<td width="20%" style="text-align: center; background-color:#fdb514;">{$date}</td>
-				<td width="80%">{$name} - Production Schedule</td>
+			<tr>
+				<td width="22%" style="font-weight: bold; text-align: center; background-color:#fdb514;">{$date}</td>
+				<td width="78%" style="font-weight: bold; border-bottom: 1px solid #fdb514;"">{$name} - Production Schedule</td>
 			</tr>
 		</table>
 	</htmlpageheader>
@@ -41,15 +41,15 @@ EOF;
 foreach( $tasks as $v ) {
 $ELMHTML .= <<<EOF
 		<tr>
-			<td>{$v['name']}</td>
-			<td>{$v['responible_party']}</td>
+			<td class='name'>{$v['name']}</td>
+			<td class='party'>{$v['responible_party']}</td>
 
 EOF;
 
 if ( strlen($v['start']) > 0 && strlen($v['end']) > 0 )
 {
 $ELMHTML .= <<<EOF
-			<td>{$v['start']}</td>
+			<td class='date'>{$v['start']}</td>
 			<td>{$v['end']}</td>
 		</tr>
 
@@ -58,7 +58,7 @@ EOF;
 else if ( strlen($v['end']) > 0 )
 {
 $ELMHTML .= <<<EOF
-			<td colspan='2'>{$v['end']}</td>
+			<td class='span' colspan='2'>{$v['end']}</td>
 		</tr>
 
 EOF;
@@ -66,7 +66,7 @@ EOF;
 else
 {
 $ELMHTML .= <<<EOF
-			<td colspan='2'>TBD</td>
+			<td class='span' colspan='2'>TBD</td>
 		</tr>
 
 EOF;

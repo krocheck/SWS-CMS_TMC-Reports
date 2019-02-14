@@ -41,11 +41,13 @@ class Team extends Page
 		$out     = "";
 		$ids     = array();
 
-		$this->metadata   = $meta;
-		$this->team       = $this->metadata['team']['meta_value'];
-		$this->billingCat = $this->metadata['billing_cat']['meta_value'];
-		$this->billingHrs = $this->metadata['billing_hrs']['meta_value'];
-		$this->exclude    = $this->metadata['exclude']['meta_value'];
+		$this->metadata       = $meta;
+		$this->team           = $this->metadata['team']['meta_value'];
+		$this->billingCat     = $this->metadata['billing_cat']['meta_value'];
+		$this->billingHrs     = $this->metadata['billing_hrs']['meta_value'];
+		$this->scheduleEnable = $this->metadata['schedule_enable']['meta_value'];
+		$this->respParty      = $this->metadata['responsible_party']['meta_value'];
+		$this->exclude        = $this->metadata['exclude']['meta_value'];
 
 		$this->fields     = $this->cache->getCache('fields');
 		$this->projects   = $this->cache->getCache('projects');
@@ -163,18 +165,15 @@ class Team extends Page
 			$r['tasks'] = unserialize($r['tasks']);
 			$r['custom_field_settings'] = unserialize($r['custom_field_settings']);
 
-			if ( is_array($r['custom_field_settings']) && in_array($this->billingCat, $r['custom_field_settings']) && in_array($this->billingHrs, $r['custom_field_settings']) )
+			if ( is_array( $r['tasks'] ) && count( $r['tasks'] ) > 0 )
 			{
-				if ( is_array( $r['tasks'] ) && count( $r['tasks'] ) > 0 )
+				foreach( $r['tasks'] as $tid )
 				{
-					foreach( $r['tasks'] as $tid )
-					{
-						$tasks[] = $tid;
-					}
+					$tasks[] = $tid;
 				}
-
-				$projects[$r['project_gid']] = $r;
 			}
+
+			$projects[$r['project_gid']] = $r;
 		}
 
 		// Query tasks for this page
@@ -289,18 +288,15 @@ class Team extends Page
 			$r['tasks'] = unserialize($r['tasks']);
 			$r['custom_field_settings'] = unserialize($r['custom_field_settings']);
 
-			if ( is_array($r['custom_field_settings']) && in_array($this->billingCat, $r['custom_field_settings']) && in_array($this->billingHrs, $r['custom_field_settings']) )
+			if ( is_array( $r['tasks'] ) && count( $r['tasks'] ) > 0 )
 			{
-				if ( is_array( $r['tasks'] ) && count( $r['tasks'] ) > 0 )
+				foreach( $r['tasks'] as $tid )
 				{
-					foreach( $r['tasks'] as $tid )
-					{
-						$tasks[] = $tid;
-					}
+					$tasks[] = $tid;
 				}
-
-				$project = $r;
 			}
+
+			$project = $r;
 		}
 
 		if ( count($project) == 0 )
@@ -329,32 +325,22 @@ class Team extends Page
 
 		//-----------------------------------------
 
-		$totalHours = 0;
+		$scheduleTasks = array();
 
 		if ( count($project['tasks']) > 0 )
 		{
 			foreach( $project['tasks'] as $tid )
 			{
-				if ( isset($tasks[$tid]) && isset($tasks[$tid]['custom_fields']) && isset($tasks[$tid]['custom_fields'][$this->billingHrs]) )
+				if ( isset($tasks[$tid]) && isset($tasks[$tid]['custom_fields']) && isset($tasks[$tid]['custom_fields'][$this->scheduleEnable]) )
 				{
-					$totalHours += $tasks[$tid]['custom_fields'][$this->billingHrs];
-
-					if ( isset($users[$tasks[$tid]['assignee_gid']]) )
+					if ( $tasks[$tid]['custom_fields'][$this->scheduleEnable] <> null )
 					{
-						$users[$tasks[$tid]['assignee_gid']] += $tasks[$tid]['custom_fields'][$this->billingHrs];
-					}
-					else
-					{
-						$users[0] += $tasks[$tid]['custom_fields'][$this->billingHrs];
-					}
-
-					if ( isset($cats[$tasks[$tid]['custom_fields'][$this->billingCat]]) )
-					{
-						$cats[$tasks[$tid]['custom_fields'][$this->billingCat]] += $tasks[$tid]['custom_fields'][$this->billingHrs];
-					}
-					else
-					{
-						$cats[0] += $tasks[$tid]['custom_fields'][$this->billingHrs];
+						$scheduleTasks[] = array(
+							'name' => $tasks[$tid]['name'],
+							'responsible_party' => $tasks[$tid]['custom_fields'][$this->respParty],
+							'start' => ($tasks[$tid]['start_on'] <> '0000-00-00' ? date('M. jS',strtotime($tasks[$tid]['start_on'])) : ''),
+							'end' => ($tasks[$tid]['due_on'] <> '0000-00-00' ? date('M. jS',strtotime($tasks[$tid]['due_on'])) : '')
+						);
 					}
 				}
 			}
@@ -362,7 +348,7 @@ class Team extends Page
 
 		//--------------------------------------
 
-		$out = $this->display->compiledTemplates('skin_team')->schedulePDF( $project['name'], $project['html_notes'], $tasks );
+		$out = $this->display->compiledTemplates('skin_team')->schedulePDF( $project['name'], $project['html_notes'], $scheduleTasks );
 
 		$this->display->addContent( $out );
 
@@ -427,18 +413,15 @@ class Team extends Page
 			$r['tasks'] = unserialize($r['tasks']);
 			$r['custom_field_settings'] = unserialize($r['custom_field_settings']);
 
-			if ( is_array($r['custom_field_settings']) && in_array($this->billingCat, $r['custom_field_settings']) && in_array($this->billingHrs, $r['custom_field_settings']) )
+			if ( is_array( $r['tasks'] ) && count( $r['tasks'] ) > 0 )
 			{
-				if ( is_array( $r['tasks'] ) && count( $r['tasks'] ) > 0 )
+				foreach( $r['tasks'] as $tid )
 				{
-					foreach( $r['tasks'] as $tid )
-					{
-						$tasks[] = $tid;
-					}
+					$tasks[] = $tid;
 				}
-
-				$project = $r;
 			}
+
+			$project = $r;
 		}
 
 		if ( count($project) == 0 )
@@ -475,10 +458,10 @@ class Team extends Page
 		// Table Headers
 		//-----------------------------------------
 
-		$this->html->td_header[] = array( $this->lang->getString('tasks_head_name')          , "30%" );
-		$this->html->td_header[] = array( $this->lang->getString('tasks_head_owner')         , "30%" );
+		$this->html->td_header[] = array( $this->lang->getString('tasks_head_name')          , "25%" );
+		$this->html->td_header[] = array( $this->lang->getString('tasks_head_owner')         , "20%" );
 		$this->html->td_header[] = array( $this->lang->getString('tasks_head_completed')     , "20%" );
-		$this->html->td_header[] = array( $this->lang->getString('tasks_head_category')      , "10%" );
+		$this->html->td_header[] = array( $this->lang->getString('tasks_head_category')      , "25%" );
 		$this->html->td_header[] = array( $this->lang->getString('tasks_head_hours')         , "10%" );
 
 		//-----------------------------------------

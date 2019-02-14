@@ -169,6 +169,32 @@ table
 	margin: 3px;
 }
 
+table.schedule
+{
+	border: none;
+	margin: 0;
+	padding: 0;
+}
+
+table.schedule th
+{
+	background-color: #d25c30;
+	color: #ffffff;
+	font-weight: bold;
+}
+
+table.schedule td,
+table.schedule th
+{
+	border: 1px solid #000000;
+}
+
+table.schedule .name,
+table.schedule .span
+{
+	font-weight: bold;
+}
+
 td
 {
 	padding: 4px;
