@@ -71,12 +71,16 @@ class Team extends Page
 		$this->display->addBreadcrumb( $this->display->buildURL( array( 'page_id' => $this->id ) ), $this->name );
 
 		// Load the language
-		$this->lang->loadStrings('hours');
+		$this->lang->loadStrings('team');
 
 		// Get and load the table/form factory
 		$this->html = $this->registry->getClass('AdminSkin');
 
-		if ( is_array( $this->input['extra'] ) && count( $this->input['extra'] ) == 1 )
+		if ( is_array( $this->input['extra'] ) && count( $this->input['extra'] ) == 2 && $this->input['extra'][1] == 'pdf' )
+		{
+			$this->input['do'] = 'pdf';
+		}
+		else if ( is_array( $this->input['extra'] ) && count( $this->input['extra'] ) == 1 )
 		{
 			$this->input['do'] = 'view';
 		}
@@ -86,6 +90,9 @@ class Team extends Page
 		{
 			case 'view':
 				$this->view();
+				break;
+			case 'pdf':
+				$this->pdf();
 				break;
 			default:
 				$this->listProjects();
@@ -224,6 +231,144 @@ class Team extends Page
 
 		// Send the html to the display handler
 		$this->display->addContent( $html );
+	}
+
+	/**
+	 * Processes the production schedule and output PDF
+	 *
+	 * @return void
+	 * @access protected
+	 * @since 1.0.0
+	 */
+	protected function pdf()
+	{
+		//-----------------------------------------
+		// INIT
+		//-----------------------------------------
+
+		$projectID = intval($this->input['extra'][0]);
+
+		if ( $projectID == 0 )
+		{
+			$this->error->logError( 'invalid_id', FALSE );
+			$this->listProjects();
+			return;
+		}
+
+		// Query projects for this page
+		$this->DB->query(
+			"SELECT * FROM project WHERE project_gid = '{$projectID}';"
+		);
+
+		$project = array();
+		$tasks = array();
+
+		$users = array(0=>0);
+
+		if ( count($this->users) > 0 )
+		{
+			foreach( $this->users as $id => $r )
+			{
+				$users[$id] = 0;
+			}
+		}
+
+		$cats = array();
+
+		if ( count($this->categories) > 0 )
+		{
+			foreach( $this->categories as $id => $r )
+			{
+				$cats[$id] = 0;
+			}
+		}
+
+		// Loop through the results and add a row for each
+		while( $r = $this->DB->fetchRow() )
+		{
+			$r['tasks'] = unserialize($r['tasks']);
+			$r['custom_field_settings'] = unserialize($r['custom_field_settings']);
+
+			if ( is_array($r['custom_field_settings']) && in_array($this->billingCat, $r['custom_field_settings']) && in_array($this->billingHrs, $r['custom_field_settings']) )
+			{
+				if ( is_array( $r['tasks'] ) && count( $r['tasks'] ) > 0 )
+				{
+					foreach( $r['tasks'] as $tid )
+					{
+						$tasks[] = $tid;
+					}
+				}
+
+				$project = $r;
+			}
+		}
+
+		if ( count($project) == 0 )
+		{
+			$this->error->logError( 'invalid_id', FALSE );
+			$this->listProjects();
+			return;
+		}
+
+		// Query tasks for this page
+		if ( count($tasks) > 0 )
+		{
+			$this->DB->query(
+				"SELECT task_gid,assignee_gid,name,custom_fields FROM task WHERE task_gid IN(".implode(',',$tasks).");"
+			);
+
+			$tasks = array();
+
+			// Loop through the results and add a row for each
+			while( $r = $this->DB->fetchRow() )
+			{
+				$r['custom_fields'] = unserialize($r['custom_fields']);
+				$tasks[$r['task_gid']] = $r;
+			}
+		}
+
+		//-----------------------------------------
+
+		$totalHours = 0;
+
+		if ( count($project['tasks']) > 0 )
+		{
+			foreach( $project['tasks'] as $tid )
+			{
+				if ( isset($tasks[$tid]) && isset($tasks[$tid]['custom_fields']) && isset($tasks[$tid]['custom_fields'][$this->billingHrs]) )
+				{
+					$totalHours += $tasks[$tid]['custom_fields'][$this->billingHrs];
+
+					if ( isset($users[$tasks[$tid]['assignee_gid']]) )
+					{
+						$users[$tasks[$tid]['assignee_gid']] += $tasks[$tid]['custom_fields'][$this->billingHrs];
+					}
+					else
+					{
+						$users[0] += $tasks[$tid]['custom_fields'][$this->billingHrs];
+					}
+
+					if ( isset($cats[$tasks[$tid]['custom_fields'][$this->billingCat]]) )
+					{
+						$cats[$tasks[$tid]['custom_fields'][$this->billingCat]] += $tasks[$tid]['custom_fields'][$this->billingHrs];
+					}
+					else
+					{
+						$cats[0] += $tasks[$tid]['custom_fields'][$this->billingHrs];
+					}
+				}
+			}
+		}
+
+		//--------------------------------------
+
+		$out = $this->display->compiledTemplates('skin_team')->schedulePDF( $project['name'], $project['html_notes'], $tasks );
+
+		$this->display->addContent( $out );
+
+		$date = date('Y-m-d');
+
+		$this->display->doOutput('pdf', "{$project['name']}_Production Schedule_{$date}.pdf");
 	}
 
 	/**
@@ -472,6 +617,8 @@ class TeamType extends PageType
 		$this->metadata['team']                 = $this->registry->txtStripslashes( trim( $this->input['team'] ) );
 		$this->metadata['billing_cat']          = $this->registry->txtStripslashes( trim( $this->input['billing_cat'] ) );
 		$this->metadata['billing_hrs']          = $this->registry->txtStripslashes( trim( $this->input['billing_hrs'] ) );
+		$this->metadata['schedule_enable']      = $this->registry->txtStripslashes( trim( $this->input['schedule_enable'] ) );
+		$this->metadata['responsible_party']    = $this->registry->txtStripslashes( trim( $this->input['responsible_party'] ) );
 		$this->metadata['exclude']              = $this->registry->txtStripslashes( trim( $this->input['exclude'] ) );
 
 		return $out;
@@ -534,6 +681,22 @@ class TeamType extends PageType
 				$this->lang->getString('pages_form_asana_billing_hrs'),
 				($compareID > 0 ? "<div class='compare'>".$metadata[ $compareID ]['billing_hrs']['value'] . "</div>" : "") .
 				$html->formDropdown( 'billing_hrs', $this->registry->getAPI('asana')->getFieldsDropdown(), $_POST['billing_hrs'] ? $_POST['billing_hrs'] : $metadata[ $languageID ]['billing_hrs']['value'] )
+			)
+		);
+
+		$out .= $html->addTdRow(
+			array(
+				$this->lang->getString('pages_form_asana_schedule_enable'),
+				($compareID > 0 ? "<div class='compare'>".$metadata[ $compareID ]['schedule_enable']['value'] . "</div>" : "") .
+				$html->formDropdown( 'schedule_enable', $this->registry->getAPI('asana')->getFieldsDropdown(), $_POST['schedule_enable'] ? $_POST['schedule_enable'] : $metadata[ $languageID ]['schedule_enable']['value'] )
+			)
+		);
+
+		$out .= $html->addTdRow(
+			array(
+				$this->lang->getString('pages_form_asana_responsible_party'),
+				($compareID > 0 ? "<div class='compare'>".$metadata[ $compareID ]['responsible_party']['value'] . "</div>" : "") .
+				$html->formDropdown( 'responsible_party', $this->registry->getAPI('asana')->getFieldsDropdown(), $_POST['responsible_party'] ? $_POST['responsible_party'] : $metadata[ $languageID ]['responsible_party']['value'] )
 			)
 		);
 

@@ -44,17 +44,18 @@ $ELMHTML .= <<<EOF
 
 EOF;
 }
-$date = date('F j, Y');
+$date = date('F j, Y g:i A');
 $ELMHTML .= <<<EOF
-		</div>
-		<htmlpagefooter name="myFooter">
-			<table width="100%">
-				<tr>
-					<td width="50%">Generated: {$date}</td>
-					<td width="50%" style="text-align: right;">Page: {PAGENO} of {nbpg}</td>
-				</tr>
-			</table>
-		</htmlpagefooter>
+	</div>
+	<htmlpagefooter name="myFooter">
+		<table width="100%">
+			<tr>
+				<td width="50%">Generated: {$date}</td>
+				<td width="50%" style="text-align: right;">Page {PAGENO} of {nbpg}</td>
+			</tr>
+		</table>
+		<br />
+	</htmlpagefooter>
 
 EOF;
 //--endhtml--//
