@@ -310,7 +310,7 @@ class Team extends Page
 		if ( count($tasks) > 0 )
 		{
 			$this->DB->query(
-				"SELECT task_gid,assignee_gid,name,custom_fields FROM task WHERE task_gid IN(".implode(',',$tasks).");"
+				"SELECT task_gid,assignee_gid,name,custom_fields,due_on,start_on FROM task WHERE task_gid IN(".implode(',',$tasks).");"
 			);
 
 			$tasks = array();

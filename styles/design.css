@@ -182,6 +182,7 @@ table.schedule
 	border-collapse: collapse;
 	margin: 0;
 	padding: 0;
+	width: 100%;
 }
 
 table.schedule th
@@ -203,6 +204,12 @@ table.schedule .name,
 table.schedule .span
 {
 	font-weight: bold;
+}
+
+table.schedule .date,
+table.schedule .span
+{
+	text-align: center;
 }
 
 td
