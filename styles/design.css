@@ -150,6 +150,12 @@ p
 	padding: 0;
 }
 
+p.description
+{
+	padding: 0px;
+	margin: 16px 0;
+}
+
 ol li
 {
 	font-weight: bold;
@@ -172,6 +178,8 @@ table
 table.schedule
 {
 	border: none;
+	border-spacing: 0;
+	border-collapse: collapse;
 	margin: 0;
 	padding: 0;
 }
@@ -181,6 +189,8 @@ table.schedule th
 	background-color: #d25c30;
 	color: #ffffff;
 	font-weight: bold;
+	vertical-align: middle;
+	height: 60px;
 }
 
 table.schedule td,

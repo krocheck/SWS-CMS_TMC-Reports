@@ -25,24 +25,24 @@ $ELMHTML .= <<<EOF
 			</tr>
 			<tr>
 				<td width="22%" style="font-weight: bold; text-align: center; background-color:#fdb514;">{$date}</td>
-				<td width="78%" style="font-weight: bold; border-bottom: 1px solid #fdb514;"">{$name} - Production Schedule</td>
+				<td width="78%" style="font-weight: bold; border-bottom: 1px solid #fdb514;">{$name} - Production Schedule</td>
 			</tr>
 		</table>
 	</htmlpageheader>
-	<p>{$description}</p>
+	<p class='description'>{$description}</p>
 	<table class="schedule">
 		<tr>
-			<th width="35%">Description of Task</th>
-			<th width="25%">Reponsible Party</th>
-			<th width="20%">START</th>
-			<th width="20%">END</th>
+			<th width="40%">Description of Task</th>
+			<th width="30%">Reponsible Party</th>
+			<th width="15%">START</th>
+			<th width="15%">END</th>
 		</tr>
 EOF;
 foreach( $tasks as $v ) {
 $ELMHTML .= <<<EOF
 		<tr>
 			<td class='name'>{$v['name']}</td>
-			<td class='party'>{$v['responible_party']}</td>
+			<td class='party'>{$v['responsible_party']}</td>
 
 EOF;
 
