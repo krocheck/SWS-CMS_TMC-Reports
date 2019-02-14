@@ -16,7 +16,7 @@
  * @version		$Revision: 32 $
  */
 
-class Hours extends Page
+class Team extends Page
 {
 	/**
 	 * The type name that is stored in the database and used as a key for skinning
@@ -25,7 +25,7 @@ class Hours extends Page
 	 * @var string
 	 * @since 1.0.0
 	 */
-	protected $type = 'hours';
+	protected $type = 'team';
 
 	/**
 	 * Processes the page contents and print
@@ -445,7 +445,7 @@ class Hours extends Page
  * @since		1.0.0
  */
 
-class HoursType extends PageType
+class TeamType extends PageType
 {
 	/**
 	 * The name of the type
@@ -454,7 +454,7 @@ class HoursType extends PageType
 	 * @var string
 	 * @since 1.0.0
 	 */
-	protected $name = 'hours';
+	protected $name = 'team';
 
 	/**
 	 * MUST BE OVERRIDEN: parses the input and returns true

@@ -1,6 +1,6 @@
 <?php
 
-class skin_hours extends Command {
+class skin_team extends Command {
 
 protected function doExecute( $param )
 {

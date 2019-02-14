@@ -20,7 +20,7 @@
  * $TYPE_KEY is the string that defines the page type
  * as well as the name of the module php file
  */ 
-$TYPE_KEY     = 'hours';
+$TYPE_KEY     = 'team';
 
 /**
  * $TYPE_CLASSES is an array that contains both processing
@@ -30,6 +30,6 @@ $TYPE_KEY     = 'hours';
  *     1 => 'ADMIN CLASSNAME'
  * )
  */
-$TYPE_CLASSES = array( 'Hours', 'HoursType' );
+$TYPE_CLASSES = array( 'Team', 'TeamType' );
 
 ?>
