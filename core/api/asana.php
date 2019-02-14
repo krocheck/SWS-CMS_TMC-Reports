@@ -495,7 +495,7 @@ class AsanaAPI extends Command
 						'custom_fields'         => mysqli_real_escape_string( $this->DB->getConnection(), serialize($row['custom_fields']) ),
 						'custom_field_settings' => mysqli_real_escape_string( $this->DB->getConnection(), serialize($fields) ),
 						'color'                 => $row['color'],
-						'html_notes'            => mysqli_real_escape_string( $this->DB->getConnection(), substr($row['html_notes'],6,strlen($row['html_notes'])-7))
+						'html_notes'            => mysqli_real_escape_string( $this->DB->getConnection(), substr($row['html_notes'],6,strlen($row['html_notes'])-13))
 					);
 				}
 			}
@@ -892,7 +892,7 @@ class AsanaAPI extends Command
 						'likes'            => mysqli_real_escape_string( $this->DB->getConnection(), serialize($likes) ),
 						'modified_at'      => $this->parseDate( $row['modified_at'] ),
 						'name'             => $row['name'],
-						'html_notes'       => mysqli_real_escape_string( $this->DB->getConnection(), substr($row['html_notes'],6,strlen($row['html_notes'])-7) ),
+						'html_notes'       => mysqli_real_escape_string( $this->DB->getConnection(), substr($row['html_notes'],6,strlen($row['html_notes'])-13) ),
 						'num_likes'        => $row['num_likes'],
 						'projects'         => mysqli_real_escape_string( $this->DB->getConnection(), serialize($projects) ),
 						'start_on'         => $row['start_on'],
@@ -986,7 +986,7 @@ class AsanaAPI extends Command
 					$teamIDs[]  = $teamID;
 					$newRows[ $teamID ] = array(
 						'team_gid'          => $teamID,
-						'html_description' => mysqli_real_escape_string( $this->DB->getConnection(), substr($row['html_description'],6,strlen($row['html_description'])-7) ),
+						'html_description' => mysqli_real_escape_string( $this->DB->getConnection(), substr($row['html_description'],6,strlen($row['html_description'])-13) ),
 						'name'             => $row['name']
 					);
 				}
