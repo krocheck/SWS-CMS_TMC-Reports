@@ -629,7 +629,7 @@ class AsanaAPI extends Command
 
 		if ( $count > 0 )
 		{
-			if ( $quick == true )
+			if ( $quick == false )
 			{
 				foreach( $projectIDs as $projectID )
 				{
@@ -662,7 +662,7 @@ class AsanaAPI extends Command
 				{
 					$query .= "('{$row['project_gid']}','{$row['owner_gid']}','{$row['workspace_gid']}','{$row['team_gid']}',\"{$row['name']}\",\"{$row['current_status']}\",'{$row['due_date']}','{$row['start_on']}','{$row['created_at']}','{$row['modified_at']}','{$row['archived']}','{$row['public']}',\"{$row['members']}\",\"{$row['followers']}\",\"{$row['custom_fields']}\",\"{$row['custom_field_settings']}\",'{$row['color']}',\"{$row['html_notes']}\",\"{$row['sections']}\",\"{$row['tasks']}\"),";
 	
-					if ( $quick == false )
+					if ( $quick == true )
 					{
 						$newRows[ $row['project_gid'] ]['sections'] = mysqli_real_escape_string( $this->DB->getConnection(), serialize($this->updateSections($row['project_gid'])));
 						$newRows[ $row['project_gid'] ]['tasks']    = mysqli_real_escape_string( $this->DB->getConnection(), serialize($this->updateTasks($row['project_gid'])));
