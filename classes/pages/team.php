@@ -93,8 +93,8 @@ class Team extends Page
 			case 'hours':
 				$this->hours();
 				break;
-			case 'pdf':
-				$this->pdf();
+			case 'schedule':
+				$this->schedule();
 				break;
 			case 'refresh':
 				$this->refreshSingle();
@@ -242,7 +242,7 @@ class Team extends Page
 	 * @access protected
 	 * @since 1.0.0
 	 */
-	protected function pdf()
+	protected function schedule()
 	{
 		//-----------------------------------------
 		// INIT
