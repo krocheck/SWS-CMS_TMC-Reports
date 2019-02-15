@@ -78,23 +78,26 @@ class Team extends Page
 		// Get and load the table/form factory
 		$this->html = $this->registry->getClass('AdminSkin');
 
-		if ( is_array( $this->input['extra'] ) && count( $this->input['extra'] ) == 2 && $this->input['extra'][1] == 'pdf' )
+		if ( is_array( $this->input['extra'] ) && count( $this->input['extra'] ) == 2 )
 		{
-			$this->input['do'] = 'pdf';
+			$this->input['do'] = $this->input['extra'][1];
 		}
-		else if ( is_array( $this->input['extra'] ) && count( $this->input['extra'] ) == 1 )
+		else
 		{
-			$this->input['do'] = 'view';
+			$this->input['do'] = '';
 		}
 
 		// What are we doing?
 		switch( $this->input['do'] )
 		{
-			case 'view':
-				$this->view();
+			case 'hours':
+				$this->hours();
 				break;
 			case 'pdf':
 				$this->pdf();
+				break;
+			case 'refresh':
+				$this->refreshSingle();
 				break;
 			default:
 				$this->listProjects();
@@ -130,9 +133,9 @@ class Team extends Page
 		$this->html->td_header[] = array( $this->lang->getString('hours_head_name')          , "30%" );
 		$this->html->td_header[] = array( $this->lang->getString('hours_head_owner')         , "20%" );
 		$this->html->td_header[] = array( $this->lang->getString('hours_head_created')       , "20%" );
+		$this->html->td_header[] = array( $this->lang->getString('hours_head_refresh')       , "10%" );
+		$this->html->td_header[] = array( $this->lang->getString('hours_head_schedule')      , "10%" );
 		$this->html->td_header[] = array( $this->lang->getString('hours_head_hours')         , "10%" );
-		$this->html->td_header[] = array( $this->lang->getString('hours_head_asana')         , "10%" );
-		$this->html->td_header[] = array( $this->lang->getString('hours_head_view')          , "10%" );
 
 		//-----------------------------------------
 
@@ -212,12 +215,12 @@ class Team extends Page
 
 				$html .= $this->html->addTdRow(
 					array(
-						"<a href='".$this->display->buildURL( array( 'page_id' => $this->id, 'extra' => array($r['project_gid']) ) )."'>{$r['name']}</a>",
+						"<a  href='https://app.asana.com/0/{$r['project_gid']}' target='_blank'>{$r['name']}</a>",
 						$this->users[$r['owner_gid']]['name'],
 						"<center>".date('M j, Y', strtotime($r['created_at']))."</center>",
-						"<span style='float:right;'>{$totalHours}&nbsp;</span>",
-						"<center><a href='https://app.asana.com/0/{$r['project_gid']}' target='_blank'>Asana</a></center>",
-						"<center><a href='".$this->display->buildURL( array( 'page_id' => $this->id, 'extra' => array($r['project_gid']) ) )."'>Hours</a></center>",
+						"<center><a href='".$this->display->buildURL( array( 'page_id' => $this->id, 'extra' => array($r['project_gid'], 'refresh') ) )."'>Refresh</a></center>",
+						"<center><a href='".$this->display->buildURL( array( 'page_id' => $this->id, 'extra' => array($r['project_gid'], 'schedule') ) )."'>Schedule</a></center>",
+						"<center><a href='".$this->display->buildURL( array( 'page_id' => $this->id, 'extra' => array($r['project_gid'], 'hours') ) )."'>Hours</a></center>",
 					)
 				);
 			}
@@ -316,7 +319,7 @@ class Team extends Page
 		if ( count($tasks) > 0 )
 		{
 			$this->DB->query(
-				"SELECT task_gid,assignee_gid,name,custom_fields,due_on,start_on,html_description FROM task WHERE task_gid IN(".implode(',',$tasks).");"
+				"SELECT task_gid,assignee_gid,name,custom_fields,due_on,start_on,html_notes FROM task WHERE task_gid IN(".implode(',',$tasks).");"
 			);
 
 			$tasks = array();
@@ -369,13 +372,37 @@ class Team extends Page
 	}
 
 	/**
+	 * Processes the production schedule and output PDF
+	 *
+	 * @return void
+	 * @access protected
+	 * @since 1.0.0
+	 */
+	protected function refreshSingle()
+	{
+		$projectID = intval($this->input['extra'][0]);
+
+		if ( $projectID == 0 )
+		{
+			$this->error->logError( 'invalid_id', FALSE );
+		}
+		else
+		{
+			$num = $this->registry->getAPI('asana')->updateProject($projectID);
+			$this->error->logError( 'team_refresh_complete', FALSE );
+		}
+
+		$this->listProjects();
+	}
+
+	/**
 	 * View a specific project.
 	 *
 	 * @return void
 	 * @access protected
 	 * @since 1.0.0
 	 */
-	protected function view()
+	protected function hours()
 	{
 		//-----------------------------------------
 		// INIT

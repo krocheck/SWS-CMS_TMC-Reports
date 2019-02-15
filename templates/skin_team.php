@@ -54,7 +54,7 @@ if ( strlen($v['start']) > 0 && strlen($v['end']) > 0 )
 {
 $ELMHTML .= <<<EOF
 			<td class='date'>{$v['start']}</td>
-			<td>{$v['end']}</td>
+			<td class='date'>{$v['end']}</td>
 		</tr>
 
 EOF;

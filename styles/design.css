@@ -197,7 +197,7 @@ table.schedule th
 	color: #ffffff;
 	font-weight: bold;
 	vertical-align: middle;
-	height: 40px;
+	height: 44px;
 }
 
 table.schedule td,
@@ -208,7 +208,7 @@ table.schedule th
 
 table.schedule td
 {
-	height: 25px;
+	height: 35px;
 }
 
 table.schedule .name,

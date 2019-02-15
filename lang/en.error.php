@@ -56,6 +56,6 @@ $errorCodes['subpages_lang_not_updated']         = "The subpage changes were not
 $errorCodes['subpages_lang_updated']             = "The subpage changes were saved successfully.";
 $errorCodes['template_file_missing']             = "A required skin file could not be found.";
 
-$errorCodes['reward_redeem_success']            = "Reward has been marked as 'Redeemed'";
+$errorCodes['team_refresh_complete']             = "The project data was successfully refreshed.";
 
 ?>
