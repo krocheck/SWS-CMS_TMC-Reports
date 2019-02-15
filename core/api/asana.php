@@ -485,8 +485,8 @@ class AsanaAPI extends Command
 			);
 
 			$newRows[ $projectID ]['sections'] = mysqli_real_escape_string( $this->DB->getConnection(), serialize($this->updateSections($projectID)));
-			$count = $newRows[ $projectID ]['tasks']    = mysqli_real_escape_string( $this->DB->getConnection(), serialize($this->updateTasks($projectID)));
-
+			$newRows[ $projectID ]['tasks'] = mysqli_real_escape_string( $this->DB->getConnection(), serialize($this->updateTasks($projectID)));
+			$count = count($newRows[ $projectID ]['tasks']);
 
 			$this->DB->query("SELECT * FROM project WHERE project_gid = '{$projectID}';");
 
