@@ -45,6 +45,9 @@ class Production extends Subpage
 		$out = "";
 		$this->project = array();
 		$this->tasks   = array();
+
+		$this->registry->getAPI('asana')->updateProject($this->metadata['project']['value']);
+
 		$this->DB->query("SELECT project_gid,custom_fields,custom_field_settings,tasks FROM project WHERE project_gid = '{$this->metadata['project']['value']}';");
 
 		while( $r = $this->DB->fetchRow() )
