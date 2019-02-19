@@ -255,6 +255,9 @@ class ShowsType extends SubpageType
 
 		$this->project = array();
 		$this->tasks   = array();
+
+		$this->registry->getAPI('asana')->updateProject($meta[ $languageID ]['project']['value']);
+
 		$this->DB->query("SELECT project_gid,tasks FROM project WHERE project_gid = '{$meta[ $languageID ]['project']['value']}';");
 
 		while( $r = $this->DB->fetchRow() )
