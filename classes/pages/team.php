@@ -96,9 +96,6 @@ class Team extends Page
 			case 'schedule':
 				$this->schedule();
 				break;
-			case 'refresh':
-				$this->refreshSingle();
-				break;
 			default:
 				$this->listProjects();
 				break;
@@ -130,12 +127,11 @@ class Team extends Page
 		// Table Headers
 		//-----------------------------------------
 
-		$this->html->td_header[] = array( $this->lang->getString('hours_head_name')          , "30%" );
-		$this->html->td_header[] = array( $this->lang->getString('hours_head_owner')         , "20%" );
-		$this->html->td_header[] = array( $this->lang->getString('hours_head_created')       , "20%" );
-		$this->html->td_header[] = array( $this->lang->getString('hours_head_refresh')       , "10%" );
-		$this->html->td_header[] = array( $this->lang->getString('hours_head_schedule')      , "10%" );
-		$this->html->td_header[] = array( $this->lang->getString('hours_head_hours')         , "10%" );
+		$this->html->td_header[] = array( $this->lang->getString('hours_head_name')          , "32%" );
+		$this->html->td_header[] = array( $this->lang->getString('hours_head_owner')         , "22%" );
+		$this->html->td_header[] = array( $this->lang->getString('hours_head_created')       , "22%" );
+		$this->html->td_header[] = array( $this->lang->getString('hours_head_schedule')      , "12%" );
+		$this->html->td_header[] = array( $this->lang->getString('hours_head_hours')         , "12%" );
 
 		//-----------------------------------------
 
@@ -218,7 +214,6 @@ class Team extends Page
 						"<a  href='https://app.asana.com/0/{$r['project_gid']}' target='_blank'>{$r['name']}</a>",
 						$this->users[$r['owner_gid']]['name'],
 						"<center>".date('M j, Y', strtotime($r['created_at']))."</center>",
-						"<center><a href='".$this->display->buildURL( array( 'page_id' => $this->id, 'extra' => array($r['project_gid'], 'refresh') ) )."'>Refresh</a></center>",
 						"<center><a href='".$this->display->buildURL( array( 'page_id' => $this->id, 'extra' => array($r['project_gid'], 'schedule') ) )."'>Schedule</a></center>",
 						"<center><a href='".$this->display->buildURL( array( 'page_id' => $this->id, 'extra' => array($r['project_gid'], 'hours') ) )."'>Hours</a></center>",
 					)
@@ -256,6 +251,8 @@ class Team extends Page
 			$this->listProjects();
 			return;
 		}
+
+		$this->registry->getAPI('asana')->updateProject($projectID);
 
 		// Query projects for this page
 		$this->DB->query(
@@ -372,30 +369,6 @@ class Team extends Page
 	}
 
 	/**
-	 * Processes the production schedule and output PDF
-	 *
-	 * @return void
-	 * @access protected
-	 * @since 1.0.0
-	 */
-	protected function refreshSingle()
-	{
-		$projectID = intval($this->input['extra'][0]);
-
-		if ( $projectID == 0 )
-		{
-			$this->error->logError( 'invalid_id', FALSE );
-		}
-		else
-		{
-			$num = $this->registry->getAPI('asana')->updateProject($projectID);
-			$this->error->logError( 'team_refresh_complete', FALSE );
-		}
-
-		$this->listProjects();
-	}
-
-	/**
 	 * View a specific project.
 	 *
 	 * @return void
@@ -416,6 +389,8 @@ class Team extends Page
 			$this->listProjects();
 			return;
 		}
+
+		$this->registry->getAPI('asana')->updateProject($projectID);
 
 		// Query projects for this page
 		$this->DB->query(
