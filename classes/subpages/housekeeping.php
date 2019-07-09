@@ -118,13 +118,15 @@ class Housekeeping extends Subpage
 						
 						if ( $inTable == 1)
 						{
-							$width = intval(100 / $r['custom_fields'][1130376522209440]);
+							$width = intval(100 / $this->tasks[$r]['custom_fields'][1130376522209440]);
 							$out .= "<td style='text-align:left; vertical-align:top; width:{$width}'>{$this->tasks[$r]['name']}{$this->tasks[$r]['html_notes']}</td>";
 						}
 						else
 						{
 							$out .= "<li>{$this->tasks[$r]['name']}{$this->tasks[$r]['html_notes']}</li>";
 						}
+						
+						$sectionItems += 1;
 					}
 				}
 			}
