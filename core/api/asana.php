@@ -523,7 +523,7 @@ class AsanaAPI extends Command
 			{
 				foreach( $oldRows as $row )
 				{
-					$this->DB->query("UPDATE project SET project_gid = '{$row['project_gid']}', owner_gid = '{$row['owner_gid']}', workspace_gid = '{$row['workspace_gid']}', team_gid = '{$row['team_gid']}', name = \"{$row['name']}\", current_status = \"{$row['current_status']}\", due_date = '{$row['due_date']}', start_on = '{$row['start_on']}', created_at = '{$row['created_at']}', modified_at = '{$row['modified_at']}', archived = '{$row['archived']}', public = '{$row['public']}', members = \"{$row['members']}\", followers = \"{$row['followers']}\", custom_fields = \"{$row['custom_fields']}\", custom_field_settings = \"{$row['custom_field_settings']}\", color = '{$row['color']}', html_notes = \"{$row['html_notes']}\", last_update = NOW() WHERE project_gid = '{$row['project_gid']}';");						
+					$this->DB->query("UPDATE project SET project_gid = '{$row['project_gid']}', owner_gid = '{$row['owner_gid']}', workspace_gid = '{$row['workspace_gid']}', team_gid = '{$row['team_gid']}', name = \"{$row['name']}\", current_status = \"{$row['current_status']}\", due_date = '{$row['due_date']}', start_on = '{$row['start_on']}', created_at = '{$row['created_at']}', modified_at = '{$row['modified_at']}', archived = '{$row['archived']}', public = '{$row['public']}', members = \"{$row['members']}\", followers = \"{$row['followers']}\", custom_fields = \"{$row['custom_fields']}\", custom_field_settings = \"{$row['custom_field_settings']}\", color = '{$row['color']}', html_notes = \"{$row['html_notes']}\", sections = \"{$row['sections']}\", tasks = \"{$row['tasks']}\", last_update = NOW() WHERE project_gid = '{$row['project_gid']}';");						
 				}
 			}
 		}
