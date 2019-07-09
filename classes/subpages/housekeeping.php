@@ -96,13 +96,13 @@ class Housekeeping extends Subpage
 							$out .= "</li>";
 						}
 
-						$out .= "<li>{$r['name']}";
+						$out .= "<li>{$this->tasks[$r]['name']}";
 						$inSection = 1;
 						$startSection = 1;
 						$sectionItems = 0;
 						$inTable = 0;
 
-						if ( $fields[1130376522209435]['enum_options'][$r['custom_fields'][1130376522209435]]['name'] == 'Table' )
+						if ( $fields[1130376522209435]['enum_options'][$this->tasks[$r]['custom_fields'][1130376522209435]]['name'] == 'Table' )
 						{
 							$inTable = 1;
 							$out .= "<table border='1' cellpadding='1' cellspacing='1' style='width:90%'><tbody><tr>";
@@ -119,11 +119,11 @@ class Housekeeping extends Subpage
 						if ( $inTable == 1)
 						{
 							$width = intval(100 / $r['custom_fields'][1130376522209440]);
-							$out .= "<td style='text-align:left; vertical-align:top; width:{$width}'>{$r['name']}{$r['html_notes']}</td>";
+							$out .= "<td style='text-align:left; vertical-align:top; width:{$width}'>{$this->tasks[$r]['name']}{$this->tasks[$r]['html_notes']}</td>";
 						}
 						else
 						{
-							$out .= "<li>{$r['name']}{$r['html_notes']}</li>";
+							$out .= "<li>{$this->tasks[$r]['name']}{$this->tasks[$r]['html_notes']}</li>";
 						}
 					}
 				}
