@@ -76,6 +76,7 @@ class Housekeeping extends Subpage
 			$inSection = 0;
 			$sectionItems = 0;
 			$inTable = 0;
+			$width = 0;
 			foreach( $this->project['tasks'] as $r )
 			{
 				if ( isset($this->tasks[$r]) && is_array($this->tasks[$r]) )
@@ -106,6 +107,7 @@ class Housekeeping extends Subpage
 						{
 							$inTable = 1;
 							$out .= "<table border='1' cellpadding='1' cellspacing='1' style='width:90%'><tbody><tr>";
+							$width = intval(100 / $this->tasks[$r]['custom_fields'][1130376522209440]);
 						}
 					}
 					else
@@ -118,8 +120,7 @@ class Housekeeping extends Subpage
 						
 						if ( $inTable == 1)
 						{
-							//$width = intval(100 / $this->tasks[$r]['custom_fields'][1130376522209440]);
-							$out .= "<td style='text-align:left; vertical-align:top;'>{$this->tasks[$r]['name']}{$this->tasks[$r]['html_notes']}</td>";
+							$out .= "<td style='text-align:left; vertical-align:top; width:{$width}'>{$this->tasks[$r]['name']}{$this->tasks[$r]['html_notes']}</td>";
 						}
 						else
 						{
