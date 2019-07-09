@@ -162,7 +162,7 @@ class ProductionType extends SubpageType
 		// Project fields
 		//-----------------------------------------
 
-		$this->project = array();
+		/*$this->project = array();
 		$this->tasks   = array();
 		$this->DB->query("SELECT project_gid,tasks FROM project WHERE project_gid = '{$this->metadata['project']}';");
 
@@ -192,7 +192,7 @@ class ProductionType extends SubpageType
 					}
 				}
 			}
-		}
+		}*/
 
 		if ( strlen( $this->metadata['name'] ) < 3 )
 		{
@@ -248,7 +248,7 @@ class ProductionType extends SubpageType
 
 		$out .= $ad_skin->endFieldset();
 
-		$out .= $ad_skin->startFieldset( 'subpages_'.$type.'_fieldset_descriptions' );
+		/*$out .= $ad_skin->startFieldset( 'subpages_'.$type.'_fieldset_descriptions' );
 
 		//-----------------------------------------
 		// Project fields
@@ -298,7 +298,7 @@ class ProductionType extends SubpageType
 		// End table and form
 		//-----------------------------------------
 
-		$out .= $ad_skin->endFieldset();
+		$out .= $ad_skin->endFieldset();*/
 
 		return $out;
 	}
