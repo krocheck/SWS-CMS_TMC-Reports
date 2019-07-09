@@ -23,9 +23,11 @@ $lang['agenda']                        = "Agenda Template";
 $lang['block']                         = "Rich Text Block";
 $lang['team']                          = "Asana Team Link";
 $lang['redirect']                      = "Redirect";
+$lang['housekeeping']                  = "Asana Housekeeping Link";
 $lang['mastering']                     = "Asana Mastering Link";
 $lang['production']                    = "Asana Media Production Link";
 $lang['shows']                         = "Asana Shows Link";
+$lang['shows-archive']                 = "Asana Shows Archive Link";
 $lang['text']                          = "Text Area";
 
 $lang['missing_fields']                = "Please make sure all fields are filled out.";

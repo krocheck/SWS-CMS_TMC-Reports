@@ -16,7 +16,7 @@
  * @version		$Revision: 32 $
  */
 
-class Mastering extends Subpage
+class Housekeeping extends Subpage
 {
 	/**
 	 * The subpage id
@@ -25,7 +25,7 @@ class Mastering extends Subpage
 	 * @var int
 	 * @since 1.0.0
 	 */
-	protected static $type = 'mastering';
+	protected static $type = 'housekeeping';
 
 	/**
 	 * Constructor that loads the registry
@@ -42,11 +42,9 @@ class Mastering extends Subpage
 
 	public function getContent()
 	{
-		$evo = "";
-		$other = "";
+		$out = "<ol>";
 		$this->project = array();
 		$this->tasks   = array();
-		$this->users   = $this->cache->getCache('users');
 
 		$this->registry->getAPI('asana')->updateProject($this->metadata['project']['value']);
 
@@ -61,59 +59,14 @@ class Mastering extends Subpage
 		$this->project['custom_field_settings'] = unserialize($this->project['custom_field_settings']);
 		$this->project['tasks'] = unserialize($this->project['tasks']);
 
-		$this->DB->query("SELECT task_gid,assignee_gid,name,custom_fields,resource_subtype,modified_at FROM task WHERE task_gid IN(" . implode(",", $this->project['tasks']) . ") AND completed = 0;");
+		$this->DB->query("SELECT task_gid,name,completed,custom_fields,due_on,resource_subtype,start_on,tags,html_notes FROM task WHERE task_gid IN(" . implode(",", $this->project['tasks']) . ") AND completed = 0;");
 
 		while( $r = $this->DB->fetchRow() )
 		{
 			$this->tasks[$r['task_gid']] = $r;
 			$this->tasks[$r['task_gid']]['custom_fields'] = unserialize($r['custom_fields']);
 			$this->tasks[$r['task_gid']]['tags'] = unserialize($r['tags']);
-		}
-
-		if ( is_array($this->project['tasks']) && count($this->project['tasks']) > 0 )
-		{
-			foreach( $this->project['tasks'] as $r )
-			{
-				if ( isset($this->tasks[$r]) && is_array($this->tasks[$r]) )
-				{
-					if ( ($this->filter[0] == 0 && $this->filter[1] == 0 ) || intval($this->tasks[$r]['custom_fields'][ $this->filter[0] ]) == $this->filter[1] )
-					{
-						$assigned = "";
-
-						if ( isset( $this->users[$this->tasks[$r]['assignee_gid']]) )
-						{
-							$assigned = " (" . substr($this->users[$this->tasks[$r]['assignee_gid']]['name'],0,strpos($this->users[$this->tasks[$r]['assignee_gid']]['name']," ")) . ")";
-						}
-
-						$evo .= "<p>{$this->tasks[$r]['name']} - Last modified: ".date("M j, Y",strtotime($this->tasks[$r]['modified_at']))."{$assigned}</p>";
-					}
-				}
-			}
-		}
-
-		if ( strlen( $evo ) == 0 )
-		{
-			$evo .= "<p>(<em>none</em>)</p>";
-		}
-
-		$this->registry->getAPI('asana')->updateProject($this->metadata['other']['value']);
-
-		$this->DB->query("SELECT project_gid,custom_fields,custom_field_settings,tasks FROM project WHERE project_gid = '{$this->metadata['other']['value']}';");
-
-		while( $r = $this->DB->fetchRow() )
-		{
-			$this->project = $r;
-		}
-
-		$this->project['custom_fields'] = unserialize($this->project['custom_fields']);
-		$this->project['custom_field_settings'] = unserialize($this->project['custom_field_settings']);
-		$this->project['tasks'] = unserialize($this->project['tasks']);
-
-		$this->DB->query("SELECT task_gid,assignee_gid,name,custom_fields,resource_subtype,modified_at FROM task WHERE task_gid IN(" . implode(",", $this->project['tasks']) . ") AND completed = 0;");
-
-		while( $r = $this->DB->fetchRow() )
-		{
-			$this->tasks[$r['task_gid']] = $r;
+			$this->tasks[$r['task_gid']]['description'] = $r['html_notes'];
 		}
 
 		if ( is_array($this->project['tasks']) && count($this->project['tasks']) > 0 )
@@ -124,30 +77,24 @@ class Mastering extends Subpage
 				{
 					if ( $this->tasks[$r]['resource_subtype'] == 'section' )
 					{
-						$other .= "</div><h4>{$this->tasks[$r]['name']}</h4><div class='mastering'>";
+						$out .= $this->display->compiledTemplates('skin_agenda')->housekeepingSection( $this->tasks[$r] );
 					}
 					else
 					{
-						$assigned = "";
-
-						if ( isset( $this->users[$this->tasks[$r]['assignee_gid']]) )
-						{
-							$assigned = " (" . substr($this->users[$this->tasks[$r]['assignee_gid']]['name'],0,strpos($this->users[$this->tasks[$r]['assignee_gid']]['name']," ")) . ")";
-						}
-
-						$other .= "<p>{$this->tasks[$r]['name']} - Last modified: ".date("M j, Y",strtotime($this->tasks[$r]['modified_at']))."{$assigned}</p>";
-
+						$out .= $this->display->compiledTemplates('skin_agenda')->housekeepingItem( $this->tasks[$r] );
 					}
 				}
 			}
 		}
 
-		return "<h4>EVO Workspaces</h4><div class='mastering'>".$evo.$other."</div>";
+		$out .= '</li></ol>';
+
+		return $out;
 	}
 
 	public function getID()
 	{
-		return "";
+		return '';
 	}
 
 	public function getName()
@@ -158,25 +105,6 @@ class Mastering extends Subpage
 	public function setMeta( $metadata )
 	{
 		$this->metadata = $metadata;
-
-		if ( isset($this->metadata['filter']) && isset($this->metadata['filter']['value']) )
-		{
-			$this->filter = explode(":",$this->metadata['filter']['value']);
-
-			if ( ! isset($this->filter[0]) )
-			{
-				$this->filter[0] = 0;
-			}
-
-			if ( ! isset($this->filter[1]) )
-			{
-				$this->filter[1] = 0;
-			}
-		}
-		else
-		{
-			$this->filter = array(0,0);
-		}
 	}
 }
 
@@ -193,7 +121,7 @@ class Mastering extends Subpage
  * @since		1.0.0
  */
 
-class MasteringType extends SubpageType
+class HousekeepingType extends SubpageType
 {
 	/**
 	 * The metadata setup: name, type, input, etc.
@@ -202,7 +130,7 @@ class MasteringType extends SubpageType
 	 * @var array
 	 * @since 1.0.0
 	 */
-	protected $metadata = array( 'name' => '', 'project' => '', 'filter' => '', 'other' => '' );
+	protected $metadata = array( 'name' => '', 'project' => '', 'style' => '', 'columns' => '' );
 	/**
 	 * The name of the type
 	 *
@@ -210,7 +138,7 @@ class MasteringType extends SubpageType
 	 * @var string
 	 * @since 1.0.0
 	 */
-	protected $name = 'mastering';
+	protected $name = 'housekeeping';
 
 	/**
 	 * MUST BE OVERRIDEN: parses the input and returns true
@@ -226,8 +154,8 @@ class MasteringType extends SubpageType
 
 		$this->metadata['name']         = $this->registry->txtStripslashes( trim( $this->input['name'] ) );
 		$this->metadata['project']      = $this->registry->txtStripslashes( trim( $this->input['project'] ) );
-		$this->metadata['filter']       = $this->registry->txtStripslashes( trim( $this->input['filter'] ) );
-		$this->metadata['other']        = $this->registry->txtStripslashes( trim( $this->input['other'] ) );
+		$this->metadata['style']        = $this->registry->txtStripslashes( trim( $this->input['style'] ) );
+		$this->metadata['columns']      = $this->registry->txtStripslashes( trim( $this->input['columns'] ) );
 
 		if ( strlen( $this->metadata['name'] ) < 3 )
 		{
@@ -271,7 +199,7 @@ class MasteringType extends SubpageType
 
 		$out .= $ad_skin->addTdRow(
 			array(
-				$this->lang->getString('subpages_'.$type.'_form_evo'),
+				$this->lang->getString('subpages_'.$type.'_form_project'),
 				($compareID > 0 ? $meta[ $compareID ]['project']['value'] . "<br><br>" : "") .
 				$ad_skin->formDropdown( 'project', $this->registry->getAPI('asana')->getProjectsDropdown(), $_POST['project'] ? $_POST['project'] : $meta[ $languageID ]['project']['value'] )
 			)
@@ -279,17 +207,17 @@ class MasteringType extends SubpageType
 
 		$out .= $ad_skin->addTdRow(
 			array(
-				$this->lang->getString('subpages_'.$type.'_form_filter'),
-				($compareID > 0 ? $meta[ $compareID ]['filter']['value'] . "<br><br>" : "") .
-				$ad_skin->formTextarea( 'filter', $this->registry->txtStripslashes( $_POST['filter'] ? $_POST['filter'] : $meta[ $languageID ]['filter']['value'] ) )
+				$this->lang->getString('subpages_'.$type.'_form_style'),
+				($compareID > 0 ? $meta[ $compareID ]['style']['value'] . "<br><br>" : "") .
+				$ad_skin->formDropdown( 'style', $this->registry->getAPI('asana')->getFieldsDropdown(), $_POST['style'] ? $_POST['style'] : $meta[ $languageID ]['style']['value'] )
 			)
 		);
 
 		$out .= $ad_skin->addTdRow(
 			array(
-				$this->lang->getString('subpages_'.$type.'_form_other'),
-				($compareID > 0 ? $meta[ $compareID ]['other']['value'] . "<br><br>" : "") .
-				$ad_skin->formDropdown( 'other', $this->registry->getAPI('asana')->getProjectsDropdown(), $_POST['other'] ? $_POST['other'] : $meta[ $languageID ]['other']['value'] )
+				$this->lang->getString('subpages_'.$type.'_form_columns'),
+				($compareID > 0 ? $meta[ $compareID ]['columns']['value'] . "<br><br>" : "") .
+				$ad_skin->formDropdown( 'columns', $this->registry->getAPI('asana')->getFieldsDropdown(), $_POST['columns'] ? $_POST['columns'] : $meta[ $languageID ]['columns']['value'] )
 			)
 		);
 
