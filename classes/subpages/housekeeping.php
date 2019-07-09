@@ -45,6 +45,7 @@ class Housekeeping extends Subpage
 		$out = "<ol>";
 		$this->project = array();
 		$this->tasks   = array();
+		$fields = $this->cache->getCache('fields');
 
 		$this->registry->getAPI('asana')->updateProject($this->metadata['project']['value']);
 
@@ -71,17 +72,59 @@ class Housekeeping extends Subpage
 
 		if ( is_array($this->project['tasks']) && count($this->project['tasks']) > 0 )
 		{
+			$startSection = 0;
+			$inSection = 0;
+			$sectionItems = 0;
+			$inTable = 0;
 			foreach( $this->project['tasks'] as $r )
 			{
 				if ( isset($this->tasks[$r]) && is_array($this->tasks[$r]) )
 				{
 					if ( $this->tasks[$r]['resource_subtype'] == 'section' )
 					{
-						$out .= $this->display->compiledTemplates('skin_agenda')->housekeepingSection( $this->tasks[$r] );
+						if ( $inSection > 0 )
+						{
+							if ( $sectionItems > 0 && $inTable == 0)
+							{
+								$out .= "</ul>";
+							}
+							else if ( $inTable == 1)
+							{
+								$out .= "</tr></tbody></table>"
+							}
+
+							$out .= "</li>"
+						}
+
+						$out .= "<li>{$r['name']}";
+						$inSection = 1;
+						$startSection = 1;
+						$sectionItems = 0;
+						$inTable = 0;
+
+						if ( $fields[1130376522209435]['enum_options'][$r['custom_fields'][1130376522209435]]['name'] == 'Table' )
+						{
+							$inTable = 1;
+							$out .= "<table border="1" cellpadding="1" cellspacing="1" style="width:90%"><tbody><tr>";
+						}
 					}
 					else
 					{
-						$out .= $this->display->compiledTemplates('skin_agenda')->housekeepingItem( $this->tasks[$r] );
+						if ($startSection == 1 && $inTable == 0)
+						{
+							$out .= "<ul>";
+							$startSection = 0;
+						}
+						
+						if ( $inTable == 1)
+						{
+							$width = intval(100 / $r['custom_fields'][1130376522209440]);
+							$out .= "<td style='text-align:left; vertical-align:top; width:{$width}'>{$r['name']}{$r['html_notes']}</td>";
+						}
+						else
+						{
+							$out .= "<li>{$r['name']}{$r['html_notes']}</li>";
+						}
 					}
 				}
 			}
