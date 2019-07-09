@@ -90,10 +90,10 @@ class Housekeeping extends Subpage
 							}
 							else if ( $inTable == 1)
 							{
-								$out .= "</tr></tbody></table>"
+								$out .= "</tr></tbody></table>";
 							}
 
-							$out .= "</li>"
+							$out .= "</li>";
 						}
 
 						$out .= "<li>{$r['name']}";
@@ -105,7 +105,7 @@ class Housekeeping extends Subpage
 						if ( $fields[1130376522209435]['enum_options'][$r['custom_fields'][1130376522209435]]['name'] == 'Table' )
 						{
 							$inTable = 1;
-							$out .= "<table border="1" cellpadding="1" cellspacing="1" style="width:90%"><tbody><tr>";
+							$out .= "<table border='1' cellpadding='1' cellspacing='1' style='width:90%'><tbody><tr>";
 						}
 					}
 					else
