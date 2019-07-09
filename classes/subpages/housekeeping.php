@@ -132,6 +132,15 @@ class Housekeeping extends Subpage
 			}
 		}
 
+		if ( $sectionItems > 0 && $inTable == 0)
+		{
+			$out .= "</ul>";
+		}
+		else if ( $inTable == 1)
+		{
+			$out .= "</tr></tbody></table>";
+		}
+
 		$out .= '</li></ol>';
 
 		return $out;
