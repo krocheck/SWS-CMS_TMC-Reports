@@ -69,7 +69,8 @@ class Production extends Subpage
 
 			if ( isset($this->metadata[$r['task_gid']]) )
 			{
-				$this->tasks[$r['task_gid']]['description'] = $this->registry->parseHTML( $this->metadata[$r['task_gid']]['value'] );
+				//$this->tasks[$r['task_gid']]['description'] = $this->registry->parseHTML( $this->metadata[$r['task_gid']]['value'] );
+				$this->tasks[$r['task_gid']]['description'] = $this->tasks[$r['task_gid']]['html_notes'];
 			}
 		}
 
@@ -79,11 +80,6 @@ class Production extends Subpage
 			{
 				if ( isset($this->tasks[$r]) && is_array($this->tasks[$r]) )
 				{
-					if ( $this->tasks[$r]['name'] == 'Closeout:' )
-					{
-						break;
-					}
-
 					if ( $this->tasks[$r]['resource_subtype'] == 'section' )
 					{
 						$out .= $this->display->compiledTemplates('skin_agenda')->section( $this->tasks[$r] );

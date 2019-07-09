@@ -69,7 +69,8 @@ class Shows extends Subpage
 
 			if ( isset($this->metadata[$r['task_gid']]) )
 			{
-				$this->tasks[$r['task_gid']]['description'] = $this->registry->parseHTML( $this->metadata[$r['task_gid']]['value'] );
+				//$this->tasks[$r['task_gid']]['description'] = $this->registry->parseHTML( $this->metadata[$r['task_gid']]['value'] );
+				$this->tasks[$r['task_gid']]['description'] = $this->tasks[$r['task_gid']]['html_notes'];
 			}
 		}
 

@@ -67,14 +67,13 @@ return $ELMHTML;
 //===========================================================================
 public function section( $r ) {
 
-$name = substr($r['name'],0,strlen($r['name'])-1);
 $this->check = 1;
 
 $ELMHTML = "";
 //--starthtml--//
 $ELMHTML .= <<<EOF
 	<div class='no-break'>
-	<h4>{$name}</h4>
+	<h4>{$r['name']}</h4>
 
 EOF;
 //--endhtml--//
