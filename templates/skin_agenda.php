@@ -189,9 +189,18 @@ else
 	$date = date('M j', $endDate);
 }
 
+$date .= ' | ';
+
 if ( strlen($r['custom_fields'][512408346444750]) > 0 )
 {
 	$r['custom_fields'][512408346444750] .= ' | ';
+}
+
+$location = $r['custom_fields'][512544451401414];
+
+if ( strlen( $location ) > 0 )
+{
+	$location .= ' | ';
 }
 
 if ( strlen($fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name']) > 0 )
@@ -201,14 +210,14 @@ if ( strlen($fields[512462680735933]['enum_options'][$r['custom_fields'][5124626
 
 if ( strlen($fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name']) > 0 )
 {
-	$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name'] = 'AE: ' . $fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name'] . ' | ';
+	$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name'] = 'AE: ' . $fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name'];
 }
 
 $ELMHTML = "";
 //--starthtml--//
 $ELMHTML .= <<<EOF
-	<div class="show">
-		<strong>{$r['name']}</strong> | {$r['custom_fields'][512408346444750]}{$date}{$fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name']}{$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name']}
+	<div class="archive">
+		<strong>{$r['name']}</strong> | {$r['custom_fields'][512408346444750]}{$date}{$location}{$fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name']}{$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name']}
 	</div>
 
 EOF;
