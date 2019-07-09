@@ -106,7 +106,7 @@ class Housekeeping extends Subpage
 						if ( $fields[1130376522209435]['enum_options'][$this->tasks[$r]['custom_fields'][1130376522209435]]['name'] == 'Table' )
 						{
 							$inTable = 1;
-							$out .= "<table border='1' cellpadding='1' cellspacing='1' style='width:90%'><tbody><tr>";
+							$out .= "<table border='1' cellpadding='1' cellspacing='1' style='width:100%'><tbody><tr>";
 							$width = intval(100 / $this->tasks[$r]['custom_fields'][1130376522209440]);
 						}
 					}
@@ -120,7 +120,7 @@ class Housekeeping extends Subpage
 						
 						if ( $inTable == 1)
 						{
-							$out .= "<td style='text-align:left; vertical-align:top; width:{$width}%'>{$this->tasks[$r]['name']}{$this->tasks[$r]['html_notes']}</td>";
+							$out .= "<td style='text-align:left; vertical-align:top; width:{$width}%'><b>{$this->tasks[$r]['name']}</b>{$this->tasks[$r]['html_notes']}</td>";
 						}
 						else
 						{
