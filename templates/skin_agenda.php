@@ -109,50 +109,30 @@ else
 	$date = date('M j', $endDate);
 }
 
-/*if ( count($r['tags']) > 0 )
+if ( count($r['tags']) > 0 )
 {
 	$tagSep = '|';
 }
 else
 {
 	$tagSep = '';
-}*/
+}
 
 if ( strlen($r['custom_fields'][512544451401414]) > 0 && strlen($r['custom_fields'][512544451401416]) > 0 )
 {
-	$location = $r['custom_fields'][512544451401414] . ' @ ' . $r['custom_fields'][512544451401416] . ' | ';
+	$location = $r['custom_fields'][512544451401414] . ' @ ' . $r['custom_fields'][512544451401416];
 }
 else
 {
 	$location = $r['custom_fields'][512544451401414] . $r['custom_fields'][512544451401416];
-
-	if ( strlen($location) > 0 )
-	{
-		$location .= ' | ';
-	}
-}
-
-if ( strlen($r['custom_fields'][512408346444750]) > 0 )
-{
-	$r['custom_fields'][512408346444750] .= ' | ';
-}
-
-if ( strlen($fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name']) > 0 )
-{
-	$fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name'] = 'Producer: ' . $fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name'] . ' | ';
-}
-
-if ( strlen($fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name']) > 0 )
-{
-	$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name'] = 'AE: ' . $fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name'] . ' | ';
 }
 
 $ELMHTML = "";
 //--starthtml--//
 $ELMHTML .= <<<EOF
 	<div class="show">
-		<strong>{$r['name']}</strong> | {$location}{$date}<br />
-		{$r['custom_fields'][512408346444750]}{$fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name']}{$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name']}
+		<strong>{$r['name']}</strong> | {$location} | {$date}<br />
+		{$r['custom_fields'][512408346444750]} | Producer: <!--<span class="pill {$fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['color']}">&nbsp;-->{$fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name']}<!--&nbsp;</span>--> | AE: <!--<span class="pill {$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['color']}">&nbsp;-->{$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name']}<!--&nbsp;</span>--> {$tagSep} 
 EOF;
 if (count($r['tags']) > 0) {
 foreach( $r['tags'] as $v ) {
@@ -179,7 +159,72 @@ $this->check = 0;
 //--endhtml--//
 return $ELMHTML;
 }
+//===========================================================================
+// Show
+//===========================================================================
+public function showArchive( $r ) {
 
+$tags = $this->cache->getCache('tags');
+$fields = $this->cache->getCache('fields');
+$users = $this->cache->getCache('users');
+$date = "";
+
+if ( $r['start_on'] != '0000-00-00' )
+{
+	$startDate = strtotime($r['start_on']);
+	$endDate = strtotime($r['due_on']);
+
+	if ( date('M', $startDate) != date('M', $endDate) )
+	{
+		$date = date('M j', $startDate) . ' - ' . date('M j', $endDate);
+	}
+	else
+	{
+		$date = date('M j', $startDate) . ' - ' . date('j', $endDate);
+	}
+}
+else
+{
+	$endDate = strtotime($r['due_on']);
+	$date = date('M j', $endDate);
+}
+
+if ( strlen($r['custom_fields'][512408346444750]) > 0 )
+{
+	$r['custom_fields'][512408346444750] .= ' | ';
+}
+
+if ( strlen($fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name']) > 0 )
+{
+	$fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name'] = 'Producer: ' . $fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name'] . ' | ';
+}
+
+if ( strlen($fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name']) > 0 )
+{
+	$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name'] = 'AE: ' . $fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name'] . ' | ';
+}
+
+$ELMHTML = "";
+//--starthtml--//
+$ELMHTML .= <<<EOF
+	<div class="show">
+		<strong>{$r['name']}</strong> | {$r['custom_fields'][512408346444750]}{$date}{$fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name']}{$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name']}
+	</div>
+
+EOF;
+
+if ( $this->check == 1 ) {
+$ELMHTML .= <<<EOF
+	</div>
+
+EOF;
+
+$this->check = 0;
+}
+
+//--endhtml--//
+return $ELMHTML;
+}
 //===========================================================================
 // Production
 //===========================================================================
