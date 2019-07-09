@@ -109,30 +109,50 @@ else
 	$date = date('M j', $endDate);
 }
 
-if ( count($r['tags']) > 0 )
+/*if ( count($r['tags']) > 0 )
 {
 	$tagSep = '|';
 }
 else
 {
 	$tagSep = '';
-}
+}*/
 
 if ( strlen($r['custom_fields'][512544451401414]) > 0 && strlen($r['custom_fields'][512544451401416]) > 0 )
 {
-	$location = $r['custom_fields'][512544451401414] . ' @ ' . $r['custom_fields'][512544451401416];
+	$location = $r['custom_fields'][512544451401414] . ' @ ' . $r['custom_fields'][512544451401416] . ' | ';
 }
 else
 {
 	$location = $r['custom_fields'][512544451401414] . $r['custom_fields'][512544451401416];
+
+	if ( strlen($location) > 0 )
+	{
+		$location .= ' | ';
+	}
+}
+
+if ( strlen($r['custom_fields'][512408346444750]) > 0 )
+{
+	$r['custom_fields'][512408346444750] .= ' | ';
+}
+
+if ( strlen($fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name']) > 0 )
+{
+	$fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name'] = 'Producer: ' . $fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name'] . ' | ';
+}
+
+if ( strlen($fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name']) > 0 )
+{
+	$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name'] = 'AE: ' . $fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name'] . ' | ';
 }
 
 $ELMHTML = "";
 //--starthtml--//
 $ELMHTML .= <<<EOF
 	<div class="show">
-		<strong>{$r['name']}</strong> | {$location} | {$date}<br />
-		{$r['custom_fields'][512408346444750]} | Producer: <!--<span class="pill {$fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['color']}">&nbsp;-->{$fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name']}<!--&nbsp;</span>--> | AE: <!--<span class="pill {$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['color']}">&nbsp;-->{$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name']}<!--&nbsp;</span>--> {$tagSep} 
+		<strong>{$r['name']}</strong> | {$location}{$date}<br />
+		{$r['custom_fields'][512408346444750]}{$fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name']}{$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name']}
 EOF;
 if (count($r['tags']) > 0) {
 foreach( $r['tags'] as $v ) {
