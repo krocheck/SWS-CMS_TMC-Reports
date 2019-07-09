@@ -109,11 +109,13 @@ class Mastering extends Subpage
 		$this->project['custom_field_settings'] = unserialize($this->project['custom_field_settings']);
 		$this->project['tasks'] = unserialize($this->project['tasks']);
 
-		$this->DB->query("SELECT task_gid,assignee_gid,name,custom_fields,resource_subtype,modified_at FROM task WHERE task_gid IN(" . implode(",", $this->project['tasks']) . ") AND completed = 0;");
+		$this->DB->query("SELECT task_gid,assignee_gid,name,custom_fields,resource_subtype,modified_at,tags FROM task WHERE task_gid IN(" . implode(",", $this->project['tasks']) . ") AND completed = 0;");
 
 		while( $r = $this->DB->fetchRow() )
 		{
 			$this->tasks[$r['task_gid']] = $r;
+			$this->tasks[$r['task_gid']]['custom_fields'] = unserialize($r['custom_fields']);
+			$this->tasks[$r['task_gid']]['tags'] = unserialize($r['tags']);
 		}
 
 		if ( is_array($this->project['tasks']) && count($this->project['tasks']) > 0 )
