@@ -55,26 +55,6 @@ class AdminSettings extends Command
 			$this->input['com'] = '';
 		}
 
-		// Decide if a module needs to be loaded
-		// This will need to be fancied up if extra
-		// access levels are added
-		if ( isset( $this->input['com'] ) )
-		{
-			switch( $this->input['com'] )
-			{
-				case 'asana':
-					require_once( SWS_ROOT_PATH . 'admin/_settings/asana.php' );
-					$module = new AdminAsana();
-					$module->execute( $this->registry );
-					break;
-				case 'transfers':
-					require_once( SWS_ROOT_PATH . 'admin/_settings/transfers.php' );
-					$module = new AdminTransfers();
-					$module->execute( $this->registry );
-					break;
-			}
-		}
-
 		if ( ! isset( $this->input['do'] ) )
 		{
 			$this->input['do'] = '';
