@@ -59,7 +59,7 @@ class Production extends Subpage
 		$this->project['custom_field_settings'] = unserialize($this->project['custom_field_settings']);
 		$this->project['tasks'] = unserialize($this->project['tasks']);
 
-		$this->DB->query("SELECT task_gid,name,completed,custom_fields,due_on,resource_subtype,start_on,tags FROM task WHERE task_gid IN(" . implode(",", $this->project['tasks']) . ") AND completed = 0;");
+		$this->DB->query("SELECT task_gid,name,completed,custom_fields,due_on,resource_subtype,start_on,tags,html_notes FROM task WHERE task_gid IN(" . implode(",", $this->project['tasks']) . ") AND completed = 0;");
 
 		while( $r = $this->DB->fetchRow() )
 		{
