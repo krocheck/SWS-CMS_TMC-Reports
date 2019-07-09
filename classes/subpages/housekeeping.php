@@ -120,7 +120,7 @@ class Housekeeping extends Subpage
 						
 						if ( $inTable == 1)
 						{
-							$out .= "<td style='text-align:left; vertical-align:top; width:{$width}'>{$this->tasks[$r]['name']}{$this->tasks[$r]['html_notes']}</td>";
+							$out .= "<td style='text-align:left; vertical-align:top; width:{$width}%'>{$this->tasks[$r]['name']}{$this->tasks[$r]['html_notes']}</td>";
 						}
 						else
 						{
