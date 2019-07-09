@@ -135,7 +135,17 @@ class Mastering extends Subpage
 							$assigned = " (" . substr($this->users[$this->tasks[$r]['assignee_gid']]['name'],0,strpos($this->users[$this->tasks[$r]['assignee_gid']]['name']," ")) . ")";
 						}
 
-						$other .= "<p>{$this->tasks[$r]['name']} - Last modified: ".date("M j, Y",strtotime($this->tasks[$r]['modified_at']))."{$assigned}</p>";
+						if ( strlen($this->tasks[$r]['custom_fields'][512408346444750]) > 0 )
+						{
+							$this->tasks[$r]['custom_fields'][512408346444750] = ' | ' . $this->tasks[$r]['custom_fields'][512408346444750];
+						}
+
+						if ( strlen($this->tasks[$r]['custom_fields'][1109616918506843]) > 0 )
+						{
+							$this->tasks[$r]['custom_fields'][1109616918506843] = ' (' . $this->tasks[$r]['custom_fields'][1109616918506843] . ')';
+						}
+
+						$other .= "<p>{$this->tasks[$r]['name']}{$this->tasks[$r]['custom_fields'][1109616918506843]}{$this->tasks[$r]['custom_fields'][512408346444750]} | Last modified: ".date("M j, Y",strtotime($this->tasks[$r]['modified_at']))."{$assigned}</p>";
 
 					}
 				}
