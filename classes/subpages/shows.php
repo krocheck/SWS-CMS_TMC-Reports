@@ -81,15 +81,15 @@ class Shows extends Subpage
 
 		if ( is_array($this->project['sections']) && count($this->project['sections']) > 0 )
 		{
-			foreach( $this->project['tasks'] as $r )
+			foreach( $this->project['sections'] as $r )
 			{
-				if ( isset($this->sections[$r]) && is_array($this->sections[$r]) )
+				if ( isset($this->sections[$r]) && is_array($this->sections[$r]) && $this->sections[$r]['name'] != '(no section)' )
 				{
 					$out .= $this->display->compiledTemplates('skin_agenda')->section( $this->sections[$r] );
 
 					if ( isset($this->sections[$r]['tasks']) && is_array($this->sections[$r]['tasks']) )
 					{
-						foreach( $this->sections['tasks'] as $s )
+						foreach( $this->sections[$r]['tasks'] as $s )
 						{
 							if ( isset($this->tasks[$s]) && is_array($this->tasks[$s]) )
 							{
