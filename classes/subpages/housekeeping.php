@@ -43,13 +43,14 @@ class Housekeeping extends Subpage
 	public function getContent()
 	{
 		$out = "<ol>";
-		$this->project = array();
-		$this->tasks   = array();
+		$this->project  = array();
+		$this->sections = array();
+		$this->tasks    = array();
 		$fields = $this->cache->getCache('fields');
 
 		$this->registry->getAPI('asana')->updateProject($this->metadata['project']['value']);
 
-		$this->DB->query("SELECT project_gid,custom_fields,custom_field_settings,tasks FROM project WHERE project_gid = '{$this->metadata['project']['value']}';");
+		$this->DB->query("SELECT project_gid,custom_fields,custom_field_settings,sections,tasks FROM project WHERE project_gid = '{$this->metadata['project']['value']}';");
 
 		while( $r = $this->DB->fetchRow() )
 		{
@@ -58,7 +59,16 @@ class Housekeeping extends Subpage
 
 		$this->project['custom_fields'] = unserialize($this->project['custom_fields']);
 		$this->project['custom_field_settings'] = unserialize($this->project['custom_field_settings']);
+		$this->project['sections'] = unserialize($this->project['sections']);
 		$this->project['tasks'] = unserialize($this->project['tasks']);
+
+		$this->DB->query("SELECT section_gid,name,tasks FROM section WHERE project_gid = '{$this->metadata['project']['value']}';");
+
+		while( $r = $this->DB->fetchRow() )
+		{
+			$this->sections[$r['section_gid']] = $r;
+			$this->sections[$r['section_gid']]['tasks'] = unserialize($r['tasks']);
+		}
 
 		$this->DB->query("SELECT task_gid,name,completed,custom_fields,due_on,resource_subtype,start_on,tags,html_notes FROM task WHERE task_gid IN(" . implode(",", $this->project['tasks']) . ") AND completed = 0;");
 
@@ -70,64 +80,69 @@ class Housekeeping extends Subpage
 			$this->tasks[$r['task_gid']]['description'] = $r['html_notes'];
 		}
 
-		if ( is_array($this->project['tasks']) && count($this->project['tasks']) > 0 )
+		$startSection = 0;
+		$inSection = 0;
+		$sectionItems = 0;
+		$inTable = 0;
+		$width = 0;
+
+		if ( is_array($this->project['sections']) && count($this->project['sections']) > 0 )
 		{
-			$startSection = 0;
-			$inSection = 0;
-			$sectionItems = 0;
-			$inTable = 0;
-			$width = 0;
-			foreach( $this->project['tasks'] as $r )
+			foreach( $this->project['sections'] as $r )
 			{
-				if ( isset($this->tasks[$r]) && is_array($this->tasks[$r]) )
+				if ( isset($this->sections[$r]) && is_array($this->sections[$r]) )
 				{
-					if ( $this->tasks[$r]['resource_subtype'] == 'section' )
+					if ( $inSection > 0 )
 					{
-						if ( $inSection > 0 )
+						if ( $sectionItems > 0 && $inTable == 0)
 						{
-							if ( $sectionItems > 0 && $inTable == 0)
-							{
-								$out .= "</ul>";
-							}
-							else if ( $inTable == 1)
-							{
-								$out .= "</tr></tbody></table>";
-							}
-
-							$out .= "</li>";
+							$out .= "</ul>";
+						}
+						else if ( $inTable == 1)
+						{
+							$out .= "</tr></tbody></table>";
 						}
 
-						$out .= "<li>{$this->tasks[$r]['name']}";
-						$inSection = 1;
-						$startSection = 1;
-						$sectionItems = 0;
-						$inTable = 0;
-
-						if ( $fields[1130376522209435]['enum_options'][$this->tasks[$r]['custom_fields'][1130376522209435]]['name'] == 'Table' )
-						{
-							$inTable = 1;
-							$out .= "<table border='1' cellpadding='1' cellspacing='1' style='width:100%'><tbody><tr>";
-							$width = intval(100 / $this->tasks[$r]['custom_fields'][1130376522209440]);
-						}
+						$out .= "</li>";
 					}
-					else
+
+					$out .= "<li>{$this->tasks[$r]['name']}";
+					$inSection = 1;
+					$startSection = 1;
+					$sectionItems = 0;
+					$inTable = 0;
+
+					if ( $this->sections[$r]['name'] == 'Staff Vacation & Office Holidays' )
 					{
-						if ($startSection == 1 && $inTable == 0)
+						$inTable = 1;
+						$out .= "<table border='1' cellpadding='1' cellspacing='1' style='width:100%'><tbody><tr>";
+						$width = intval(100 / count($this->sections[$r]['tasks']));
+					}
+
+					if ( isset($this->sections[$r]['tasks']) && is_array($this->sections[$r]['tasks']) )
+					{
+						foreach( $this->sections[$r]['tasks'] as $s )
 						{
-							$out .= "<ul>";
-							$startSection = 0;
+							if ( isset($this->tasks[$s]) && is_array($this->tasks[$s]) )
+							{
+								if ($startSection == 1 && $inTable == 0)
+								{
+									$out .= "<ul>";
+									$startSection = 0;
+								}
+
+								if ( $inTable == 1)
+								{
+									$out .= "<td style='text-align:left; vertical-align:top; width:{$width}%'><b>{$this->tasks[$s]['name']}</b>{$this->tasks[$s]['html_notes']}</td>";
+								}
+								else
+								{
+									$out .= "<li>{$this->tasks[$s]['name']}{$this->tasks[$s]['html_notes']}</li>";
+								}
+
+								$sectionItems += 1;
+							}
 						}
-						
-						if ( $inTable == 1)
-						{
-							$out .= "<td style='text-align:left; vertical-align:top; width:{$width}%'><b>{$this->tasks[$r]['name']}</b>{$this->tasks[$r]['html_notes']}</td>";
-						}
-						else
-						{
-							$out .= "<li>{$this->tasks[$r]['name']}{$this->tasks[$r]['html_notes']}</li>";
-						}
-						
-						$sectionItems += 1;
 					}
 				}
 			}
