@@ -49,6 +49,11 @@ class AsanaAPI extends Command
 				'fields' => array('gid', 'project', 'name', 'created_at'),
 				'expand' => array()
 			),
+			'section-tasks' => array(
+				'uri'    => $this->registry->getSetting('asana_section_tasks'),
+				'fields' => array('gid'),
+				'expand' => array()
+			),
 			'projects' => array(
 				'uri'    => $this->registry->getSetting('asana_projects'),
 				'fields' => array(),
@@ -189,6 +194,48 @@ class AsanaAPI extends Command
 		}
 
 		return $out;
+	}
+
+	/**
+	 * Call the Asana API to retrieve the Tasks of a Section
+	 *
+	 * @param string $section the section id to scan
+	 * @return array the gids retrieved
+	 * @access public
+	 * @since 1.0.0
+	*/
+	public function getSectionTasks($section)
+	{
+		$taskIDs = array();
+		$count = 0;
+		$workspace = $this->registry->getSetting('asana_default');
+
+		$data = array();
+
+		do
+		{
+			if ( isset($data['next_page']) && is_array($data['next_page']) )
+			{
+				$data = $this->callGet('next_page', $data['next_page']['path']);
+			}
+			else
+			{
+				$data = $this->callGet('section-tasks',"/{$section}/tasks?limit=100");
+			}
+
+			if ( isset($data['data']) && is_array($data['data']) && count($data['data']) > 0 )
+			{
+				foreach( $data['data'] as $row )
+				{
+					$count++;
+					$taskID = $row['gid'];
+
+					$taskIDs[]  = $taskID;
+				}
+			}
+		} while( isset($data['next_page']) && is_array($data['next_page']) );
+
+		return $taskIDs;
 	}
 
 	/**
@@ -741,7 +788,8 @@ class AsanaAPI extends Command
 						'section_gid' => $sectionID,
 						'project_gid' => $project,
 						'name'        => $row['name'],
-						'created_at'  => $this->parseDate( $row['created_at'] )
+						'created_at'  => $this->parseDate( $row['created_at'] ),
+						'tasks'       => mysqli_real_escape_string( $this->DB->getConnection(), serialize($this->getSectionTasks($sectionID)))
 					);
 				}
 			}
@@ -767,11 +815,11 @@ class AsanaAPI extends Command
 
 			if ( count( $newRows ) > 0 )
 			{
-				$query = "INSERT INTO section (section_gid,project_gid,name,created_at) VALUES ";
+				$query = "INSERT INTO section (section_gid,project_gid,name,created_at,tasks) VALUES ";
 
 				foreach( $newRows as $row )
 				{
-					$query .= "('{$row['section_gid']}','{$row['project_gid']}',\"{$row['name']}\",'{$row['created_at']}'),";
+					$query .= "('{$row['section_gid']}','{$row['project_gid']}',\"{$row['name']}\",'{$row['created_at']}',\"{$row['tasks']}\"),";
 				}
 
 				$query = substr($query,0,-1) . ";";
@@ -783,7 +831,7 @@ class AsanaAPI extends Command
 			{
 				foreach( $oldRows as $row )
 				{
-					$this->DB->query("UPDATE section SET project_gid = '{$row['project_gid']}', name = \"{$row['name']}\", created_at = '{$row['created_at']}', last_update = NOW() WHERE section_gid = '{$row['section_gid']}';");
+					$this->DB->query("UPDATE section SET project_gid = '{$row['project_gid']}', name = \"{$row['name']}\", created_at = '{$row['created_at']}', tasks = \"{$row['tasks']}\", last_update = NOW() WHERE section_gid = '{$row['section_gid']}';");
 				}
 			}
 		}

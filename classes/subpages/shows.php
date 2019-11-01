@@ -43,12 +43,13 @@ class Shows extends Subpage
 	public function getContent()
 	{
 		$out = "";
-		$this->project = array();
-		$this->tasks   = array();
+		$this->project  = array();
+		$this->sections = array();
+		$this->tasks    = array();
 
 		$this->registry->getAPI('asana')->updateProject($this->metadata['project']['value']);
 
-		$this->DB->query("SELECT project_gid,custom_fields,custom_field_settings,tasks FROM project WHERE project_gid = '{$this->metadata['project']['value']}';");
+		$this->DB->query("SELECT project_gid,custom_fields,custom_field_settings,sections,tasks FROM project WHERE project_gid = '{$this->metadata['project']['value']}';");
 
 		while( $r = $this->DB->fetchRow() )
 		{
@@ -57,7 +58,16 @@ class Shows extends Subpage
 
 		$this->project['custom_fields'] = unserialize($this->project['custom_fields']);
 		$this->project['custom_field_settings'] = unserialize($this->project['custom_field_settings']);
+		$this->project['sections'] = unserialize($this->project['sections']);
 		$this->project['tasks'] = unserialize($this->project['tasks']);
+
+		$this->DB->query("SELECT section_gid,name,tasks FROM section WHERE project_gid = '{$this->metadata['project']['value']}';");
+
+		while( $r = $this->DB->fetchRow() )
+		{
+			$this->sections[$r['section_gid']] = $r;
+			$this->sections[$r['section_gid']]['tasks'] = unserialize($r['tasks']);
+		}
 
 		$this->DB->query("SELECT task_gid,name,completed,custom_fields,due_on,resource_subtype,start_on,tags,html_notes FROM task WHERE task_gid IN(" . implode(",", $this->project['tasks']) . ") AND completed = 0;");
 
@@ -66,27 +76,26 @@ class Shows extends Subpage
 			$this->tasks[$r['task_gid']] = $r;
 			$this->tasks[$r['task_gid']]['custom_fields'] = unserialize($r['custom_fields']);
 			$this->tasks[$r['task_gid']]['tags'] = unserialize($r['tags']);
-
-			/*if ( isset($this->metadata[$r['task_gid']]) )
-			{
-				//$this->tasks[$r['task_gid']]['description'] = $this->registry->parseHTML( $this->metadata[$r['task_gid']]['value'] );
-			}*/
 			$this->tasks[$r['task_gid']]['description'] = $r['html_notes'];
 		}
 
-		if ( is_array($this->project['tasks']) && count($this->project['tasks']) > 0 )
+		if ( is_array($this->project['sections']) && count($this->project['sections']) > 0 )
 		{
 			foreach( $this->project['tasks'] as $r )
 			{
-				if ( isset($this->tasks[$r]) && is_array($this->tasks[$r]) )
+				if ( isset($this->sections[$r]) && is_array($this->sections[$r]) )
 				{
-					if ( $this->tasks[$r]['resource_subtype'] == 'section' )
+					$out .= $this->display->compiledTemplates('skin_agenda')->section( $this->sections[$r] );
+
+					if ( isset($this->sections[$r]['tasks']) && is_array($this->sections[$r]['tasks']) )
 					{
-						$out .= $this->display->compiledTemplates('skin_agenda')->section( $this->tasks[$r] );
-					}
-					else
-					{
-						$out .= $this->display->compiledTemplates('skin_agenda')->show( $this->tasks[$r] );
+						foreach( $this->sections['tasks'] as $s )
+						{
+							if ( isset($this->tasks[$s]) && is_array($this->tasks[$s]) )
+							{
+								$out .= $this->display->compiledTemplates('skin_agenda')->show( $this->tasks[$s] );
+							}
+						}
 					}
 				}
 			}

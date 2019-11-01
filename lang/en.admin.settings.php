@@ -29,6 +29,7 @@ $lang['settings_asana_token']          = "<strong>Asana Auth Token</strong>";
 $lang['settings_asana_default']        = "<strong>Asana Default Workspace</strong>";
 $lang['settings_asana_tasks']          = "<strong>Asana Tasks Endpoint</strong>";
 $lang['settings_asana_sections']       = "<strong>Asana Sections Endpoint</strong>";
+$lang['settings_asana_section-tasks']  = "<strong>Asana Section-Tasks Endpoint</strong>";
 $lang['settings_asana_projects']       = "<strong>Asana Projects Endpoint</strong>";
 $lang['settings_asana_workspaces']     = "<strong>Asana Workspaces Endpoint</strong>";
 $lang['settings_asana_teams']          = "<strong>Asana Teams Endpoint</strong>";
