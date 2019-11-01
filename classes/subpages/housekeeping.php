@@ -106,7 +106,7 @@ class Housekeeping extends Subpage
 						$out .= "</li>";
 					}
 
-					$out .= "<li>{$this->tasks[$r]['name']}";
+					$out .= "<li>{$this->sections[$r]['name']}";
 					$inSection = 1;
 					$startSection = 1;
 					$sectionItems = 0;
