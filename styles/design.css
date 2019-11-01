@@ -20,7 +20,7 @@
 	div.show, div.production
 	{
 		page-break-inside: avoid !important;
-		padding-bottom: 20px;
+		padding-bottom: 18px;
 	}
 }
 
@@ -95,7 +95,7 @@ div.mastering
 
 div.show, div.production
 {
-	margin: 0 0 0 20px !important;
+	margin: 0 0 0 18px !important;
 	display: table;
 	padding-bottom: 24px;
 }
