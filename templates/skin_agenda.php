@@ -109,6 +109,33 @@ else
 	$date = date('M j', $endDate);
 }
 
+if ( $fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name'] != '' )
+{
+	$producer = $fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name'];
+}
+else
+{
+	$producer = '?';
+}
+
+if ( $fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name'] != '' )
+{
+	$ae = $fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name'];
+}
+else
+{
+	$ae = '?';
+}
+
+if ( $r['custom_fields'][512408346444750] == '' )
+{
+	$job = $r['custom_fields'][512408346444750];
+}
+else
+{
+	$job = date('Y') . '-?';
+}
+
 if ( count($r['tags']) > 0 )
 {
 	$tagSep = '|';
@@ -132,7 +159,7 @@ $ELMHTML = "";
 $ELMHTML .= <<<EOF
 	<div class="show">
 		<strong>{$r['name']}</strong> | {$location} | {$date}<br />
-		{$r['custom_fields'][512408346444750]} | Producer: <!--<span class="pill {$fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['color']}">&nbsp;-->{$fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name']}<!--&nbsp;</span>--> | AE: <!--<span class="pill {$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['color']}">&nbsp;-->{$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name']}<!--&nbsp;</span>--> {$tagSep} 
+		{$job} | Producer: {$producer} | AE: {$ae} {$tagSep} 
 EOF;
 if (count($r['tags']) > 0) {
 foreach( $r['tags'] as $v ) {
@@ -259,6 +286,33 @@ else
 	$date = 'Due: ?';
 }
 
+if ( $fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name'] != '' )
+{
+	$producer = $fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name'];
+}
+else
+{
+	$producer = '?';
+}
+
+if ( $fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name'] != '' )
+{
+	$ae = $fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name'];
+}
+else
+{
+	$ae = '?';
+}
+
+if ( $r['custom_fields'][512408346444750] == '' )
+{
+	$job = $r['custom_fields'][512408346444750];
+}
+else
+{
+	$job = date('Y') . '-?';
+}
+
 if ( count($r['tags']) > 0 )
 {
 	$tagSep = '|';
@@ -273,7 +327,7 @@ $ELMHTML = "";
 $ELMHTML .= <<<EOF
 	<div class="production">
 		<strong>{$r['name']}</strong> | {$date}<br />
-		{$r['custom_fields'][512408346444750]} | Producer: <!--<span class="pill {$fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['color']}">&nbsp;-->{$fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name']}<!--&nbsp;</span>--> | AE: <!--<span class="pill {$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['color']}">&nbsp;-->{$fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name']}<!--&nbsp;</span>--> {$tagSep} 
+		{$job} | Producer: {$producer} | AE: {$ae} {$tagSep} 
 EOF;
 if (count($r['tags']) > 0) {
 foreach( $r['tags'] as $v ) {
