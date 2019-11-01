@@ -44,9 +44,10 @@ class Mastering extends Subpage
 	{
 		$evo = "";
 		$other = "";
-		$this->project = array();
-		$this->tasks   = array();
-		$this->users   = $this->cache->getCache('users');
+		$this->project  = array();
+		$this->sections = array();
+		$this->tasks    = array();
+		$this->users    = $this->cache->getCache('users');
 
 		$this->registry->getAPI('asana')->updateProject($this->metadata['project']['value']);
 
@@ -98,7 +99,7 @@ class Mastering extends Subpage
 
 		$this->registry->getAPI('asana')->updateProject($this->metadata['other']['value']);
 
-		$this->DB->query("SELECT project_gid,custom_fields,custom_field_settings,tasks FROM project WHERE project_gid = '{$this->metadata['other']['value']}';");
+		$this->DB->query("SELECT project_gid,custom_fields,custom_field_settings,sections,tasks FROM project WHERE project_gid = '{$this->metadata['other']['value']}';");
 
 		while( $r = $this->DB->fetchRow() )
 		{
@@ -107,7 +108,16 @@ class Mastering extends Subpage
 
 		$this->project['custom_fields'] = unserialize($this->project['custom_fields']);
 		$this->project['custom_field_settings'] = unserialize($this->project['custom_field_settings']);
+		$this->project['sections'] = unserialize($this->project['sections']);
 		$this->project['tasks'] = unserialize($this->project['tasks']);
+
+		$this->DB->query("SELECT section_gid,name,tasks FROM section WHERE project_gid = '{$this->metadata['other']['value']}';");
+
+		while( $r = $this->DB->fetchRow() )
+		{
+			$this->sections[$r['section_gid']] = $r;
+			$this->sections[$r['section_gid']]['tasks'] = unserialize($r['tasks']);
+		}
 
 		$this->DB->query("SELECT task_gid,assignee_gid,name,custom_fields,resource_subtype,modified_at,tags FROM task WHERE task_gid IN(" . implode(",", $this->project['tasks']) . ") AND completed = 0;");
 
@@ -118,37 +128,38 @@ class Mastering extends Subpage
 			$this->tasks[$r['task_gid']]['tags'] = unserialize($r['tags']);
 		}
 
-		if ( is_array($this->project['tasks']) && count($this->project['tasks']) > 0 )
+		if ( is_array($this->project['sections']) && count($this->project['sections']) > 0 )
 		{
-			foreach( $this->project['tasks'] as $r )
+			foreach( $this->project['sections'] as $r )
 			{
-				if ( isset($this->tasks[$r]) && is_array($this->tasks[$r]) )
+				if ( isset($this->sections[$r]) && is_array($this->sections[$r]) && $this->sections[$r]['name'] != '(no section)' &&
+					 isset($this->sections[$r]['tasks']) && is_array($this->sections[$r]['tasks']) && count($this->sections[$r]['tasks']) >0 )
 				{
-					if ( $this->tasks[$r]['resource_subtype'] == 'section' )
+					$other .= "</div><h4>{$this->sections[$r]['name']}</h4><div class='mastering'>";
+
+					foreach( $this->sections[$r]['tasks'] as $s )
 					{
-						$other .= "</div><h4>{$this->tasks[$r]['name']}</h4><div class='mastering'>";
-					}
-					else
-					{
-						$assigned = "";
-
-						if ( isset( $this->users[$this->tasks[$r]['assignee_gid']]) )
+						if ( isset($this->tasks[$s]) && is_array($this->tasks[$s]) )
 						{
-							$assigned = " (" . substr($this->users[$this->tasks[$r]['assignee_gid']]['name'],0,strpos($this->users[$this->tasks[$r]['assignee_gid']]['name']," ")) . ")";
+							$assigned = "";
+
+							if ( isset( $this->users[$this->tasks[$s]['assignee_gid']]) )
+							{
+								$assigned = " (" . substr($this->users[$this->tasks[$s]['assignee_gid']]['name'],0,strpos($this->users[$this->tasks[$s]['assignee_gid']]['name']," ")) . ")";
+							}
+
+							if ( strlen($this->tasks[$s]['custom_fields'][512408346444750]) > 0 )
+							{
+								$this->tasks[$s]['custom_fields'][512408346444750] = ' | ' . $this->tasks[$s]['custom_fields'][512408346444750];
+							}
+
+							if ( strlen($this->tasks[$s]['custom_fields'][1109616918506843]) > 0 )
+							{
+								$this->tasks[$s]['custom_fields'][1109616918506843] = ' (' . $this->tasks[$s]['custom_fields'][1109616918506843] . ')';
+							}
+
+							$other .= "<p>{$this->tasks[$s]['name']}{$this->tasks[$s]['custom_fields'][1109616918506843]}{$this->tasks[$s]['custom_fields'][512408346444750]} | Last modified: ".date("M j, Y",strtotime($this->tasks[$s]['modified_at']))."{$assigned}</p>";
 						}
-
-						if ( strlen($this->tasks[$r]['custom_fields'][512408346444750]) > 0 )
-						{
-							$this->tasks[$r]['custom_fields'][512408346444750] = ' | ' . $this->tasks[$r]['custom_fields'][512408346444750];
-						}
-
-						if ( strlen($this->tasks[$r]['custom_fields'][1109616918506843]) > 0 )
-						{
-							$this->tasks[$r]['custom_fields'][1109616918506843] = ' (' . $this->tasks[$r]['custom_fields'][1109616918506843] . ')';
-						}
-
-						$other .= "<p>{$this->tasks[$r]['name']}{$this->tasks[$r]['custom_fields'][1109616918506843]}{$this->tasks[$r]['custom_fields'][512408346444750]} | Last modified: ".date("M j, Y",strtotime($this->tasks[$r]['modified_at']))."{$assigned}</p>";
-
 					}
 				}
 			}
