@@ -127,7 +127,7 @@ else
 	$ae = '?';
 }
 
-if ( $r['custom_fields'][512408346444750] == '' )
+if ( $r['custom_fields'][512408346444750] != '' )
 {
 	$job = $r['custom_fields'][512408346444750];
 }
@@ -304,7 +304,7 @@ else
 	$ae = '?';
 }
 
-if ( $r['custom_fields'][512408346444750] == '' )
+if ( $r['custom_fields'][512408346444750] != '' )
 {
 	$job = $r['custom_fields'][512408346444750];
 }
