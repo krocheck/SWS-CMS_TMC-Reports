@@ -122,7 +122,7 @@ class AdminSettings extends Command
 		$settings['asana_default']          = trim( $this->input['asana_default'] );
 		$settings['asana_tasks']            = trim( $this->input['asana_tasks'] );
 		$settings['asana_sections']         = trim( $this->input['asana_sections'] );
-		$settings['asana_section-tasks']    = trim( $this->input['asana_section-tasks'] );
+		$settings['asana_section_tasks']    = trim( $this->input['asana_section_tasks'] );
 		$settings['asana_projects']         = trim( $this->input['asana_projects'] );
 		$settings['asana_workspaces']       = trim( $this->input['asana_workspaces'] );
 		$settings['asana_teams']            = trim( $this->input['asana_teams'] );
