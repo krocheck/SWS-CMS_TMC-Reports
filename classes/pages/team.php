@@ -288,7 +288,7 @@ class Team extends Page
 			$r['tasks'] = unserialize($r['tasks']);
 			$r['custom_field_settings'] = unserialize($r['custom_field_settings']);
 
-			if ( substr($r['name'],0,3) == '201' )
+			if ( substr($r['name'],0,3) == '201' || substr($r['name'],0,3) == '202' || substr($r['name'],0,3) == '203' )
 			{
 				$r['name'] = substr( $r['name'], 8 );
 				$r['name'] = trim( $r['name'] );
@@ -346,11 +346,22 @@ class Team extends Page
 							$tasks[$tid]['name'] .= "<br /><span class='desc'>{$tasks[$tid]['html_notes']}</span>";
 						}
 
+						if ( strpos($tasks[$tid]['name'],':') > 0 )
+						{
+							$tasks[$tid]['name'] = substr($tasks[$tid]['name'], strpos($tasks[$tid]['name'],':')+1);
+						}
+
+						$find = array('(AV1)', '(AV2)', '(MSN)', '(MGFX)');
+						$replace = array('', '', '', '');
+
+						$tasks[$tid]['name'] = str_replace($find, $replace, $tasks[$tid]['name']);
+
 						$scheduleTasks[] = array(
 							'name' => $tasks[$tid]['name'],
 							'responsible_party' => $tasks[$tid]['custom_fields'][$this->respParty],
-							'start' => ($tasks[$tid]['start_on'] <> '0000-00-00' ? date('M. jS',strtotime($tasks[$tid]['start_on'])) : date('M. jS',strtotime($tasks[$tid]['due_on'])),
-							'end' => date('M. jS',strtotime($tasks[$tid]['due_on'])
+							'start' => ($tasks[$tid]['start_on'] <> '0000-00-00' ? date('M. jS',strtotime($tasks[$tid]['start_on'])) : date('M. jS',strtotime($tasks[$tid]['due_on']))),
+							'start_on' => ($tasks[$tid]['start_on'] <> '0000-00-00' ? strtotime($tasks[$tid]['start_on']) : strtotime($tasks[$tid]['due_on'])),
+							'end' => date('M. jS',strtotime($tasks[$tid]['due_on'])),
 						);
 					}
 				}
@@ -359,11 +370,11 @@ class Team extends Page
 
 		function dateCompare($a, $b)
 		{
-			$t1 = strtotime($a['start_on']);
-			$t2 = strtotime($b['start_on']);
+			$t1 = $a['start_on'];
+			$t2 = $b['start_on'];
 			return $t1 - $t2;
 		}
-		usort($scheduleTasks, 'date_compare');
+		usort($scheduleTasks, 'dateCompare');
 
 		//--------------------------------------
 
