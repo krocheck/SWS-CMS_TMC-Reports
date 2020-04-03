@@ -50,7 +50,7 @@ $ELMHTML .= <<<EOF
 
 EOF;
 
-if ( strlen($v['start']) > 0 && strlen($v['end']) > 0 )
+if ( $v['start'] == $v['end'] )
 {
 $ELMHTML .= <<<EOF
 			<td class='date'>{$v['start']}</td>
@@ -59,18 +59,10 @@ $ELMHTML .= <<<EOF
 
 EOF;
 }
-else if ( strlen($v['end']) > 0 )
-{
-$ELMHTML .= <<<EOF
-			<td class='span' colspan='2'>{$v['end']}</td>
-		</tr>
-
-EOF;
-}
 else
 {
 $ELMHTML .= <<<EOF
-			<td class='span' colspan='2'>TBD</td>
+			<td class='span' colspan='2'>{$v['end']}</td>
 		</tr>
 
 EOF;

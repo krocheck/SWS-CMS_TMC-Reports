@@ -339,7 +339,7 @@ class Team extends Page
 			{
 				if ( isset($tasks[$tid]) && isset($tasks[$tid]['custom_fields']) && isset($tasks[$tid]['custom_fields'][$this->scheduleEnable]) )
 				{
-					if ( $tasks[$tid]['custom_fields'][$this->scheduleEnable] <> null )
+					if ( $tasks[$tid]['custom_fields'][$this->scheduleEnable] <> null && $tasks[$tid]['due_on'] <> '0000-00-00' )
 					{
 						if ( strlen($tasks[$tid]['html_notes']) > 0 )
 						{
@@ -349,13 +349,21 @@ class Team extends Page
 						$scheduleTasks[] = array(
 							'name' => $tasks[$tid]['name'],
 							'responsible_party' => $tasks[$tid]['custom_fields'][$this->respParty],
-							'start' => ($tasks[$tid]['start_on'] <> '0000-00-00' ? date('M. jS',strtotime($tasks[$tid]['start_on'])) : ''),
-							'end' => ($tasks[$tid]['due_on'] <> '0000-00-00' ? date('M. jS',strtotime($tasks[$tid]['due_on'])) : '')
+							'start' => ($tasks[$tid]['start_on'] <> '0000-00-00' ? date('M. jS',strtotime($tasks[$tid]['start_on'])) : date('M. jS',strtotime($tasks[$tid]['due_on'])),
+							'end' => date('M. jS',strtotime($tasks[$tid]['due_on'])
 						);
 					}
 				}
 			}
 		}
+
+		function dateCompare($a, $b)
+		{
+			$t1 = strtotime($a['start_on']);
+			$t2 = strtotime($b['start_on']);
+			return $t1 - $t2;
+		}
+		usort($scheduleTasks, 'date_compare');
 
 		//--------------------------------------
 
