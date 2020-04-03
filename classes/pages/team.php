@@ -357,7 +357,7 @@ class Team extends Page
 						$tasks[$tid]['name'] = str_replace($find, $replace, $tasks[$tid]['name']);
 
 						$scheduleTasks[] = array(
-							'name' => $tasks[$tid]['name'],
+							'name' => trim($tasks[$tid]['name']),
 							'responsible_party' => $tasks[$tid]['custom_fields'][$this->respParty],
 							'start' => ($tasks[$tid]['start_on'] <> '0000-00-00' ? date('M. jS',strtotime($tasks[$tid]['start_on'])) : date('M. jS',strtotime($tasks[$tid]['due_on']))),
 							'start_on' => ($tasks[$tid]['start_on'] <> '0000-00-00' ? strtotime($tasks[$tid]['start_on']) : strtotime($tasks[$tid]['due_on'])),
