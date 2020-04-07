@@ -486,7 +486,7 @@ class Team extends Page
 		if ( count($tasks) > 0 )
 		{
 			$this->DB->query(
-				"SELECT task_gid,assignee_gid,name,completed,completed_at,custom_fields FROM task WHERE task_gid IN(".implode(',',$tasks).");"
+				"SELECT task_gid,assignee_gid,name,start_on,due_on,custom_fields FROM task WHERE task_gid IN(".implode(',',$tasks).");"
 			);
 
 			$tasks = array();
@@ -506,9 +506,21 @@ class Team extends Page
 
 				$r['name'] = str_replace($find, $replace, $r['name']);
 
+				$r['start']    = ($r['start_on'] <> '0000-00-00' ? date('M. jS',strtotime($r['start_on'])) : date('M. jS',strtotime($r['due_on'])));
+				$r['start_on'] = ($r['start_on'] <> '0000-00-00' ? strtotime($r['start_on']) : strtotime($r['due_on']));
+				$r['end']      = date('M. jS',strtotime($r['due_on']));
+
 				$tasks[$r['task_gid']] = $r;
 			}
 		}
+
+		function dateCompare($a, $b)
+		{
+			$t1 = $a['start_on'];
+			$t2 = $b['start_on'];
+			return $t1 - $t2;
+		}
+		usort($scheduleTasks, 'dateCompare');
 
 		// Page title
 		$this->display->setTitle( $this->lang->getString('hours_view_title') );
@@ -519,7 +531,7 @@ class Team extends Page
 
 		$this->html->td_header[] = array( $this->lang->getString('tasks_head_name')          , "25%" );
 		$this->html->td_header[] = array( $this->lang->getString('tasks_head_owner')         , "20%" );
-		$this->html->td_header[] = array( $this->lang->getString('tasks_head_completed')     , "20%" );
+		$this->html->td_header[] = array( $this->lang->getString('tasks_head_date')          , "20%" );
 		$this->html->td_header[] = array( $this->lang->getString('tasks_head_category')      , "25%" );
 		$this->html->td_header[] = array( $this->lang->getString('tasks_head_hours')         , "10%" );
 
@@ -560,7 +572,7 @@ class Team extends Page
 						array(
 							"<a href='https://app.asana.com/0/{$projectID}/{$tid}' target='_blank'>{$task['name']}</a>",
 							$this->users[$task['assignee_gid']]['name'],
-							"<center>".($task['completed'] == 1 ? date('M j, Y', strtotime($task['completed_at'])) : '')."</center>",
+							"<center>".($task['start'] <> $task['end'] ? $task['start'] . ' - ' . $task['end'] : $task['end'])."</center>",
 							$this->categories[$task['custom_fields'][$this->billingCat]],
 							$task['custom_fields'][$this->billingHrs],
 						)
