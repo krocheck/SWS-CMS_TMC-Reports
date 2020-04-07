@@ -506,21 +506,12 @@ class Team extends Page
 
 				$r['name'] = str_replace($find, $replace, $r['name']);
 
-				$r['start']    = ($r['start_on'] <> '0000-00-00' ? date('M. jS',strtotime($r['start_on'])) : date('M. jS',strtotime($r['due_on'])));
-				$r['start_on'] = ($r['start_on'] <> '0000-00-00' ? strtotime($r['start_on']) : strtotime($r['due_on']));
-				$r['end']      = date('M. jS',strtotime($r['due_on']));
+				$r['end']      = ($r['due_on'] <> '0000-00-00' ? date('M. jS',strtotime($r['due_on'])) : '');
+				$r['start']    = ($r['start_on'] <> '0000-00-00' ? date('M. jS',strtotime($r['start_on'])) : $r['end']);
 
 				$tasks[$r['task_gid']] = $r;
 			}
 		}
-
-		function dateCompare($a, $b)
-		{
-			$t1 = $a['start_on'];
-			$t2 = $b['start_on'];
-			return $t1 - $t2;
-		}
-		usort($scheduleTasks, 'dateCompare');
 
 		// Page title
 		$this->display->setTitle( $this->lang->getString('hours_view_title') );
