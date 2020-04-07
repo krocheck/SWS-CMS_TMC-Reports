@@ -470,16 +470,17 @@ class Team extends Page
 		if ( count($tasks) > 0 )
 		{
 			$this->DB->query(
-				"SELECT task_gid FROM task WHERE parent_gid IN(".implode(',',$tasks).") AND num_subtasks > 0;"
+				"SELECT task_gid FROM task WHERE parent_gid IN(".implode(',',$tasks).");"
 			);
 
 			while( $r = $this->DB->fetchRow() )
 			{
-				if ( strlen( $r['task_id'] ) > 0 )
+				if ( strlen( $r['task_gid'] ) > 0 )
 				{
-					$tasks[] = $r['task_id'];
+					$tasks[] = $r['task_gid'];
 				}
 			}
+		}
 
 		// Query tasks for this page
 		if ( count($tasks) > 0 )
@@ -497,7 +498,7 @@ class Team extends Page
 
 				if ( strpos($r['name'],':') > 0 )
 				{
-					$r['name'] = substr($r['name'], strpos($tasks[$tid]['name'],':')+1);
+					$r['name'] = substr($r['name'], strpos($r['name'],':')+1);
 				}
 
 				$find = array('(AV1)', '(AV2)', '(MSN)', '(MGFX)');
@@ -529,39 +530,39 @@ class Team extends Page
 
 		$totalHours = 0;
 
-		if ( count($project['tasks']) > 0 )
+		if ( count($tasks) > 0 )
 		{
-			foreach( $project['tasks'] as $tid )
+			foreach( $tasks as $task )
 			{
-				if ( isset($tasks[$tid]) && isset($tasks[$tid]['custom_fields']) && isset($tasks[$tid]['custom_fields'][$this->billingHrs]) )
+				if ( isset($task) && isset($task['custom_fields']) && isset($task['custom_fields'][$this->billingHrs]) )
 				{
-					$totalHours += $tasks[$tid]['custom_fields'][$this->billingHrs];
+					$totalHours += $task['custom_fields'][$this->billingHrs];
 
-					if ( isset($users[$tasks[$tid]['assignee_gid']]) )
+					if ( isset($users[$task['assignee_gid']]) )
 					{
-						$users[$tasks[$tid]['assignee_gid']] += $tasks[$tid]['custom_fields'][$this->billingHrs];
+						$users[$task['assignee_gid']] += $task['custom_fields'][$this->billingHrs];
 					}
 					else
 					{
-						$users[0] += $tasks[$tid]['custom_fields'][$this->billingHrs];
+						$users[0] += $task['custom_fields'][$this->billingHrs];
 					}
 
-					if ( isset($cats[$tasks[$tid]['custom_fields'][$this->billingCat]]) )
+					if ( isset($cats[$task['custom_fields'][$this->billingCat]]) )
 					{
-						$cats[$tasks[$tid]['custom_fields'][$this->billingCat]] += $tasks[$tid]['custom_fields'][$this->billingHrs];
+						$cats[$task['custom_fields'][$this->billingCat]] += $task['custom_fields'][$this->billingHrs];
 					}
 					else
 					{
-						$cats[0] += $tasks[$tid]['custom_fields'][$this->billingHrs];
+						$cats[0] += $task['custom_fields'][$this->billingHrs];
 					}
 
 					$taskTable .= $this->html->addTdRow(
 						array(
-							"<a href='https://app.asana.com/0/{$projectID}/{$tid}' target='_blank'>{$tasks[$tid]['name']}</a>",
-							$this->users[$tasks[$tid]['assignee_gid']]['name'],
-							"<center>".($tasks[$tid]['completed'] == 1 ? date('M j, Y', strtotime($tasks[$tid]['completed_at'])) : '')."</center>",
-							$this->categories[$tasks[$tid]['custom_fields'][$this->billingCat]],
-							$tasks[$tid]['custom_fields'][$this->billingHrs],
+							"<a href='https://app.asana.com/0/{$projectID}/{$tid}' target='_blank'>{$task['name']}</a>",
+							$this->users[$task['assignee_gid']]['name'],
+							"<center>".($task['completed'] == 1 ? date('M j, Y', strtotime($task['completed_at'])) : '')."</center>",
+							$this->categories[$task['custom_fields'][$this->billingCat]],
+							$task['custom_fields'][$this->billingHrs],
 						)
 					);
 				}
