@@ -582,7 +582,7 @@ class Team extends Page
 			{
 				if ( $r <> 0 )
 				{
-					$html .= "\n\t<li><div class='hours-inline'>{$this->categories[$id]}:</div>{$r} hours</li>";
+					$html .= "\n\t<li><div class='hours-inline'>{$this->categories[$id]}</div>{$r} hours</li>";
 				}
 			}
 		}
@@ -598,11 +598,11 @@ class Team extends Page
 				{
 					if ( isset( $this->users[$id] ) )
 					{
-						$html .= "\n\t<li><div class='hours-inline'>{$this->users[$id]['name']}:</div>{$r} hours</li>";
+						$html .= "\n\t<li><div class='hours-inline'>{$this->users[$id]['name']}</div>{$r} hours</li>";
 					}
 					else
 					{
-						$html .= "\n\t<li><div class='hours-inline'>Unassigned:</div>{$r} hours</li>";
+						$html .= "\n\t<li><div class='hours-inline'>Unassigned</div>{$r} hours</li>";
 					}
 				}
 			}
