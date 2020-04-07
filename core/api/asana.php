@@ -44,6 +44,11 @@ class AsanaAPI extends Command
 				'fields' => array('gid', 'parent', 'workspace', 'assignee', 'resource_subtype', 'assignee_status', 'created_at', 'completed', 'completed_at', 'custom_fields', 'dependencies', 'dependents', 'due_on', 'due_at', 'followers', 'liked', 'likes', 'modified_at', 'name', 'html_notes', 'num_likes', 'num_subtasks', 'projects', 'start_on', 'memberships', 'tags'),
 				'expand' => array()
 			),
+			'project_tasks' => array(
+				'uri'    => $this->registry->getSetting('asana_projects'),
+				'fields' => array('gid', 'parent', 'workspace', 'assignee', 'resource_subtype', 'assignee_status', 'created_at', 'completed', 'completed_at', 'custom_fields', 'dependencies', 'dependents', 'due_on', 'due_at', 'followers', 'liked', 'likes', 'modified_at', 'name', 'html_notes', 'num_likes', 'num_subtasks', 'projects', 'start_on', 'memberships', 'tags'),
+				'expand' => array()
+			),
 			'sections' => array(
 				'uri'    => $this->registry->getSetting('asana_sections'),
 				'fields' => array('gid', 'project', 'name', 'created_at'),
@@ -1285,7 +1290,7 @@ class AsanaAPI extends Command
 			}
 			else
 			{
-				$data = $this->callGet('tasks',"/{$project}/tasks?limit=100");
+				$data = $this->callGet('project_tasks',"/{$project}/tasks?limit=100");
 			}
 
 			if ( isset($data['data']) && is_array($data['data']) && count($data['data']) > 0 )
