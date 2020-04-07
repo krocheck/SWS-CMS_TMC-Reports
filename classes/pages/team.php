@@ -466,11 +466,26 @@ class Team extends Page
 		// Add a breadcrumb for this project
 		$this->display->addBreadcrumb( $this->display->buildURL( array( 'page_id' => $this->id, 'extra' => array($projectID) ) ), $project['name'] );
 
+		// Query for subtasks
+		if ( count($tasks) > 0 )
+		{
+			$this->DB->query(
+				"SELECT task_gid FROM task WHERE parent_gid IN(".implode(',',$tasks).") AND num_subtasks > 0;"
+			);
+
+			while( $r = $this->DB->fetchRow() )
+			{
+				if ( strlen( $r['task_id'] ) > 0 )
+				{
+					$tasks[] = $r['task_id'];
+				}
+			}
+
 		// Query tasks for this page
 		if ( count($tasks) > 0 )
 		{
 			$this->DB->query(
-				"SELECT task_gid,assignee_gid,name,custom_fields FROM task WHERE task_gid IN(".implode(',',$tasks).");"
+				"SELECT task_gid,assignee_gid,name,completed,completed_at,custom_fields FROM task WHERE task_gid IN(".implode(',',$tasks).");"
 			);
 
 			$tasks = array();
@@ -479,6 +494,17 @@ class Team extends Page
 			while( $r = $this->DB->fetchRow() )
 			{
 				$r['custom_fields'] = unserialize($r['custom_fields']);
+
+				if ( strpos($r['name'],':') > 0 )
+				{
+					$r['name'] = substr($r['name'], strpos($tasks[$tid]['name'],':')+1);
+				}
+
+				$find = array('(AV1)', '(AV2)', '(MSN)', '(MGFX)');
+				$replace = array('', '', '', '');
+
+				$r['name'] = str_replace($find, $replace, $r['name']);
+
 				$tasks[$r['task_gid']] = $r;
 			}
 		}
