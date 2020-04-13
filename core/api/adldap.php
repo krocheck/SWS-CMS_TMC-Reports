@@ -48,8 +48,8 @@ class AdldapAPI extends Command
 		$adServer = $this->registry->getSetting('ldap_server');
 
 		$ldap = ldap_connect($adServer);
-		$username = $username;
-		$password = $password;
+		$username = html_entity_decode( $username );
+		$password = html_entity_decode( $password );
 
 		$ldaprdn = $this->registry->getSetting('ldap_domain') . "\\" . $username;
 

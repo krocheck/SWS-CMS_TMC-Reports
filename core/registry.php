@@ -903,9 +903,12 @@ class Registry
 					$input[ $k ] = $this->parseIncomingRecursively( $data[ $k ], array(), $iteration+1 );
 				}
 				else
-				{	
-					$k = $this->parseCleanKey( $k );
-					$v = $this->parseCleanValue( $v );
+				{
+					if ( $k != password )
+					{
+						$k = $this->parseCleanKey( $k );
+						$v = $this->parseCleanValue( $v );
+					}
 
 					$input[ $k ] = $v;
 				}
