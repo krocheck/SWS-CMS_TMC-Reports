@@ -103,10 +103,14 @@ if ( $r['start_on'] != '0000-00-00' )
 		$date = date('M j', $startDate) . ' - ' . date('j', $endDate);
 	}
 }
-else
+else if( $r['due_on'] != '0000-00-00' )
 {
 	$endDate = strtotime($r['due_on']);
 	$date = date('M j', $endDate);
+}
+else
+{
+	$date = "Dates TBD";
 }
 
 if ( $fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name'] != '' )
@@ -125,6 +129,15 @@ if ( $fields[512408346444708]['enum_options'][$r['custom_fields'][51240834644470
 else
 {
 	$ae = '?';
+}
+
+if ( $fields[1179336083412405]['enum_options'][$r['custom_fields'][1179336083412405]]['name'] != '' )
+{
+	$td = $fields[1179336083412405]['enum_options'][$r['custom_fields'][1179336083412405]]['name'];
+}
+else
+{
+	$td = '?';
 }
 
 if ( $r['custom_fields'][512408346444750] != '' )
@@ -154,12 +167,17 @@ else
 	$location = $r['custom_fields'][512544451401414] . $r['custom_fields'][512544451401416];
 }
 
+if (strlen($location) > 0)
+{
+	$location .= ' |';
+}
+
 $ELMHTML = "";
 //--starthtml--//
 $ELMHTML .= <<<EOF
 	<div class="show">
-		<strong>{$r['name']}</strong> | {$location} | {$date}<br />
-		{$job} | Producer: {$producer} | AE: {$ae} {$tagSep} 
+		<strong>{$r['name']}</strong> | {$location} {$date}<br />
+		{$job} | Producer: {$producer} | TD: {$td} | AE: {$ae} {$tagSep} 
 EOF;
 if (count($r['tags']) > 0) {
 foreach( $r['tags'] as $v ) {
