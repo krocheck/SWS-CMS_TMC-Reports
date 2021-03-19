@@ -926,6 +926,23 @@ class AsanaAPI extends Command
 			$followers = array();
 			$members = array();
 			$fields = array();
+			$fieldSettings = array();
+
+			if ( is_array($row['custom_fields']) && count($row['custom_fields']) > 0 )
+			{
+				foreach( $row['custom_fields'] as $r )
+				{
+					switch($r['resource_subtype'])
+					{
+						case 'number': $fields[$r['gid']] = $r['number_value'];
+							break;
+						case 'text': $fields[$r['gid']] = $r['text_value'];
+							break;
+						case 'enum': $fields[$r['gid']] = $r['enum_value']['gid'];
+							break;
+					}
+				}
+			}
 
 			if ( is_array($row['current_status']) && count($row['current_status']) > 0 )
 			{
@@ -952,7 +969,7 @@ class AsanaAPI extends Command
 			{
 				foreach( $row['custom_field_settings'] as $field )
 				{
-					$fields[] = $field['custom_field']['gid'];
+					$fieldSettings[] = $field['custom_field']['gid'];
 				}
 			}
 
@@ -972,8 +989,8 @@ class AsanaAPI extends Command
 				'public'                => ( $row['public'] ? 1 : 0 ),
 				'members'               => mysqli_real_escape_string( $this->DB->getConnection(), serialize($members) ),
 				'followers'             => mysqli_real_escape_string( $this->DB->getConnection(), serialize($followers) ),
-				'custom_fields'         => mysqli_real_escape_string( $this->DB->getConnection(), serialize($row['custom_fields']) ),
-				'custom_field_settings' => mysqli_real_escape_string( $this->DB->getConnection(), serialize($fields) ),
+				'custom_fields'         => mysqli_real_escape_string( $this->DB->getConnection(), serialize($fields) ),
+				'custom_field_settings' => mysqli_real_escape_string( $this->DB->getConnection(), serialize($fieldSettings) ),
 				'color'                 => $row['color'],
 				'html_notes'            => mysqli_real_escape_string( $this->DB->getConnection(), substr($row['html_notes'],6,strlen($row['html_notes'])-13))
 			);
@@ -1066,6 +1083,23 @@ class AsanaAPI extends Command
 					$followers = array();
 					$members = array();
 					$fields = array();
+					$fieldSettings = array();
+
+					if ( is_array($row['custom_fields']) && count($row['custom_fields']) > 0 )
+					{
+						foreach( $row['custom_fields'] as $r )
+						{
+							switch($r['resource_subtype'])
+							{
+								case 'number': $fields[$r['gid']] = $r['number_value'];
+									break;
+								case 'text': $fields[$r['gid']] = $r['text_value'];
+									break;
+								case 'enum': $fields[$r['gid']] = $r['enum_value']['gid'];
+									break;
+							}
+						}
+					}
 
 					if ( is_array($row['current_status']) && count($row['current_status']) > 0 )
 					{
@@ -1092,7 +1126,7 @@ class AsanaAPI extends Command
 					{
 						foreach( $row['custom_field_settings'] as $field )
 						{
-							$fields[] = $field['custom_field']['gid'];
+							$fieldSettings[] = $field['custom_field']['gid'];
 						}
 					}
 
@@ -1112,8 +1146,8 @@ class AsanaAPI extends Command
 						'public'                => ( $row['public'] ? 1 : 0 ),
 						'members'               => mysqli_real_escape_string( $this->DB->getConnection(), serialize($members) ),
 						'followers'             => mysqli_real_escape_string( $this->DB->getConnection(), serialize($followers) ),
-						'custom_fields'         => mysqli_real_escape_string( $this->DB->getConnection(), serialize($row['custom_fields']) ),
-						'custom_field_settings' => mysqli_real_escape_string( $this->DB->getConnection(), serialize($fields) ),
+						'custom_fields'         => mysqli_real_escape_string( $this->DB->getConnection(), serialize($fields) ),
+						'custom_field_settings' => mysqli_real_escape_string( $this->DB->getConnection(), serialize($fieldSettings) ),
 						'color'                 => $row['color'],
 						'html_notes'            => mysqli_real_escape_string( $this->DB->getConnection(), substr($row['html_notes'],6,strlen($row['html_notes'])-13))
 					);
