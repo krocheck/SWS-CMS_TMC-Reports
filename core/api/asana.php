@@ -676,6 +676,109 @@ class AsanaAPI extends Command
 	}
 
 	/**
+	 * Call the Asana API to retrieve the Portfolio
+	 *
+	 * @param int $portfolioID the portfolio
+	 * @return int count of retrieved items
+	 * @access public
+	 * @since 1.0.0
+	*/
+	public function updatePortfolio( $portfolioID )
+	{
+		$newRows = array();
+		$oldRows = array();
+		$dbRows = array();
+		$count = 0;
+		$workspace = $this->registry->getSetting('asana_default');
+
+		$data = $this->callGet('portfolios',"/{$portfolioID}");
+
+		if ( isset($data['data']) && is_array($data['data']) && count($data['data']) > 0 )
+		{
+			$row = $data['data'];
+			$portfolioID = $row['gid'];
+			$members = array();
+			$fields = array();
+
+			if ( is_array($row['members']) && count($row['members']) > 0 )
+			{
+				foreach( $row['members'] as $member )
+				{
+					$members[] = $member['gid'];
+				}
+			}
+
+			if ( is_array($row['custom_field_settings']) && count($row['custom_field_settings']) > 0 )
+			{
+				foreach( $row['custom_field_settings'] as $field )
+				{
+					$fields[] = $field['custom_field']['gid'];
+				}
+			}
+
+			$portfolioIDs[]  = $portfolioID;
+			$newRows[ $portfolioID ] = array(
+				'portfolio_gid'         => $portfolioID,
+				'owner_gid'             => $row['owner']['gid'],
+				'workspace_gid'         => $workspace,
+				'name'                  => $row['name'],
+				'due_on'                => $row['due_on'],
+				'start_on'              => $row['start_on'],
+				'created_at'            => $this->parseDate( $row['created_at'] ),
+				'members'               => mysqli_real_escape_string( $this->DB->getConnection(), serialize($members) ),
+				'custom_field_settings' => mysqli_real_escape_string( $this->DB->getConnection(), serialize($fields) ),
+				'color'                 => $row['color'],
+				'permalink_url'         => mysqli_real_escape_string( $this->DB->getConnection(), $row['permalink_url']),
+				'projects'              => mysqli_real_escape_string( $this->DB->getConnection(), serialize($this->getPortfolioItems($portfolioID)))
+			);
+
+			$count = 1;
+
+			$this->DB->query("SELECT * FROM portfolio WHERE portfolio_gid = '{$portfolioID}';");
+
+			if ( $this->DB->getTotalRows() )
+			{
+				while( $row = $this->DB->fetchRow() )
+				{
+					$dbRows[ $row['portfolio_gid'] ] = $row;
+
+					if ( isset( $row['portfolio_gid'] ) && isset( $newRows[ $row['portfolio_gid'] ] ) )
+					{
+						$oldRows[ $row['portfolio_gid'] ] = $newRows[ $row['portfolio_gid'] ];
+						unset( $newRows[ $row['portfolio_gid'] ] );
+					}
+				}
+			}
+
+			if ( count( $newRows ) > 0 )
+			{
+				$query = "INSERT INTO portfolio (portfolio_gid,owner_gid,workspace_gid,name,due_on,start_on,created_at,members,custom_field_settings,color,permalink_url,projects) VALUES ";
+
+				foreach( $newRows as $row )
+				{
+					$query .= "('{$row['portfolio_gid']}','{$row['owner_gid']}','{$row['workspace_gid']}',\"{$row['name']}\",'{$row['due_on']}','{$row['start_on']}','{$row['created_at']}',\"{$row['members']}\",\"{$row['custom_field_settings']}\",'{$row['color']}',\"{$row['permalink_url']}\",\"{$row['projects']}\"),";
+				}
+
+				$query = substr($query,0,-1) . ";";
+
+				$this->DB->query( $query );
+			}
+
+			if ( count( $oldRows ) > 0 )
+			{
+				foreach( $oldRows as $row )
+				{
+					$this->DB->query("UPDATE portfolio SET portfolio_gid = '{$row['portfolio_gid']}', owner_gid = '{$row['owner_gid']}', workspace_gid = '{$row['workspace_gid']}', name = \"{$row['name']}\", due_on = '{$row['due_on']}', start_on = '{$row['start_on']}', created_at = '{$row['created_at']}', members = \"{$row['members']}\", custom_field_settings = \"{$row['custom_field_settings']}\", color = '{$row['color']}', permalink_url = \"{$row['permalink_url']}\", projects = \"{$row['projects']}\", last_update = NOW() WHERE portfolio_gid = '{$row['portfolio_gid']}';");						
+				}
+			}
+		}
+
+		$this->cache->update('portfolios');
+
+		return $count;
+	}
+
+	/**
 	 * Call the Asana API to retrieve the Projects
 	 *
 	 * @return int count of retrieved items
