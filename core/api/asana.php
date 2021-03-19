@@ -59,6 +59,16 @@ class AsanaAPI extends Command
 				'fields' => array('gid'),
 				'expand' => array()
 			),
+			'portfolios' => array(
+				'uri'    => $this->registry->getSetting('asana_portfolios'),
+				'fields' => array(),
+				'expand' => array('gid', 'owner', 'workspace', 'name', 'created_at', 'members', 'custom_field_settings', 'color', 'due_on', 'start_on', 'permalink_url')
+			),
+			'portfolio-items' => array(
+				'uri'    => $this->registry->getSetting('asana_portfolios'),
+				'fields' => array('gid'),
+				'expand' => array()
+			),
 			'projects' => array(
 				'uri'    => $this->registry->getSetting('asana_projects'),
 				'fields' => array(),
@@ -176,6 +186,48 @@ class AsanaAPI extends Command
 		}
 
 		return $out;
+	}
+
+	/**
+	 * Call the Asana API to retrieve the Projects of a Portfolio
+	 *
+	 * @param string $portfolio the portfolio id to scan
+	 * @return array the gids retrieved
+	 * @access public
+	 * @since 1.0.0
+	*/
+	public function getPortfolioItems($portfolio)
+	{
+		$taskIDs = array();
+		$count = 0;
+		$workspace = $this->registry->getSetting('asana_default');
+
+		$data = array();
+
+		do
+		{
+			if ( isset($data['next_page']) && is_array($data['next_page']) )
+			{
+				$data = $this->callGet('next_page', $data['next_page']['path']);
+			}
+			else
+			{
+				$data = $this->callGet('portfolio-items',"/{$portfolio}/items?limit=100");
+			}
+
+			if ( isset($data['data']) && is_array($data['data']) && count($data['data']) > 0 )
+			{
+				foreach( $data['data'] as $row )
+				{
+					$count++;
+					$itemID = $row['gid'];
+
+					$itemIDs[]  = $taskID;
+				}
+			}
+		} while( isset($data['next_page']) && is_array($data['next_page']) );
+
+		return $itemIDs;
 	}
 
 	/**
@@ -596,6 +648,128 @@ class AsanaAPI extends Command
 		}
 
 		$this->cache->update('fields');
+
+		return $count;
+	}
+
+	/**
+	 * Call the Asana API to retrieve the Projects
+	 *
+	 * @return int count of retrieved items
+	 * @access public
+	 * @since 1.0.0
+	*/
+	public function updatePortfolios()
+	{
+		$portfolioIDs = array();
+		$newRows = array();
+		$oldRows = array();
+		$dbRows = array();
+		$count = 0;
+		$workspace = $this->registry->getSetting('asana_default');
+
+		$data = array();
+
+		do
+		{
+			if ( isset($data['next_page']) && is_array($data['next_page']) )
+			{
+				$data = $this->callGet('next_page', $data['next_page']['path']);
+			}
+			else
+			{
+				$data = $this->callGet('portfolios',"?owner=349349005102989&workspace={$workspace}");
+			}
+
+			if ( isset($data['data']) && is_array($data['data']) && count($data['data']) > 0 )
+			{
+				foreach( $data['data'] as $row )
+				{
+					$count++;
+					$portfolioID = $row['gid'];
+					$members = array();
+					$fields = array();
+
+					if ( is_array($row['members']) && count($row['members']) > 0 )
+					{
+						foreach( $row['members'] as $member )
+						{
+							$members[] = $member['gid'];
+						}
+					}
+
+					if ( is_array($row['custom_field_settings']) && count($row['custom_field_settings']) > 0 )
+					{
+						foreach( $row['custom_field_settings'] as $field )
+						{
+							$fields[] = $field['custom_field']['gid'];
+						}
+					}
+
+					$portfolioIDs[]  = $portfolioID;
+					$newRows[ $portfolioID ] = array(
+						'portfolio_gid'         => $portfolioID,
+						'owner_gid'             => $row['owner']['gid'],
+						'workspace_gid'         => $workspace,
+						'name'                  => $row['name'],
+						'due_on'                => $row['due_on'],
+						'start_on'              => $row['start_on'],
+						'created_at'            => $this->parseDate( $row['created_at'] ),
+						'members'               => mysqli_real_escape_string( $this->DB->getConnection(), serialize($members) ),
+						'custom_field_settings' => mysqli_real_escape_string( $this->DB->getConnection(), serialize($fields) ),
+						'color'                 => $row['color'],
+						'parmalink_url'         => mysqli_real_escape_string( $this->DB->getConnection(), $row['parmalink_url']),
+						'projects'              => mysqli_real_escape_string( $this->DB->getConnection(), serialize($this->getPortfolioItems($portfolioID)))
+					);
+				}
+			}
+		} while( isset($data['next_page']) && is_array($data['next_page']) );
+
+		if ( $count > 0 )
+		{
+			$this->DB->query("SELECT * FROM portfolio;");
+
+			if ( $this->DB->getTotalRows() )
+			{
+				while( $row = $this->DB->fetchRow() )
+				{
+					$dbRows[ $row['portfolio_gid'] ] = $row;
+
+					if ( isset( $row['portfolio_gid'] ) && isset( $newRows[ $row['portfolio_gid'] ] ) )
+					{
+						$oldRows[ $row['portfolio_gid'] ] = $newRows[ $row['portfolio_gid'] ];
+						unset( $newRows[ $row['portfolio_gid'] ] );
+					}
+				}
+			}
+
+			if ( count( $newRows ) > 0 )
+			{
+				$query = "INSERT INTO portfolio (portfolio_gid,owner_gid,workspace_gid,name,due_on,start_on,created_at,members,custom_field_settings,color,parmalink_url,projects) VALUES ";
+
+				foreach( $newRows as $row )
+				{
+					$query .= "('{$row['portfolio_gid']}','{$row['owner_gid']}','{$row['workspace_gid']}',\"{$row['name']}\",'{$row['due_on']}','{$row['start_on']}','{$row['created_at']}',\"{$row['members']}\",\"{$row['custom_field_settings']}\",'{$row['color']}',\"{$row['parmalink_url']}\",\"{$row['projects']}\"),";
+				}
+
+				$query = substr($query,0,-1) . ";";
+
+				$this->DB->query( $query );
+			}
+
+			if ( count( $oldRows ) > 0 )
+			{
+				foreach( $oldRows as $row )
+				{
+					$this->DB->query("UPDATE portfolio SET portfolio_gid = '{$row['portfolio_gid']}', owner_gid = '{$row['owner_gid']}', workspace_gid = '{$row['workspace_gid']}', name = \"{$row['name']}\", due_on = '{$row['due_on']}', start_on = '{$row['start_on']}', created_at = '{$row['created_at']}', members = \"{$row['members']}\", custom_field_settings = \"{$row['custom_field_settings']}\", color = '{$row['color']}', parmalink_url = \"{$row['parmalink_url']}\", projects = \"{$row['projects']}\", last_update = NOW() WHERE portfolio_gid = '{$row['portfolio_gid']}';");						
+				}
+			}
+
+			// Cleanup orphans
+			$this->DB->query("DELETE FROM portfolio WHERE portfolio_gid NOT IN(".implode(',',$portfolioIDs).");");
+		}
+
+		$this->cache->update('portfolios');
 
 		return $count;
 	}

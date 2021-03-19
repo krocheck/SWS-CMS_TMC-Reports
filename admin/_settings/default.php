@@ -124,6 +124,7 @@ class AdminSettings extends Command
 		$settings['asana_sections']         = trim( $this->input['asana_sections'] );
 		$settings['asana_section_tasks']    = trim( $this->input['asana_section_tasks'] );
 		$settings['asana_projects']         = trim( $this->input['asana_projects'] );
+		$settings['asana_portfolios']       = trim( $this->input['asana_portfolios'] );
 		$settings['asana_workspaces']       = trim( $this->input['asana_workspaces'] );
 		$settings['asana_teams']            = trim( $this->input['asana_teams'] );
 		$settings['asana_users']            = trim( $this->input['asana_users'] );
@@ -419,6 +420,13 @@ class AdminSettings extends Command
 			array(
 				$this->lang->getString('settings_asana_projects'),
 				$this->html->formInput( 'asana_projects', $this->registry->txtStripslashes( $_POST['asana_projects'] ? $_POST['asana_projects'] : $settings['asana_projects'] ) )
+			)
+		);
+
+		$html .= $this->html->addTdRow(
+			array(
+				$this->lang->getString('settings_asana_portfolios'),
+				$this->html->formInput( 'asana_portfolios', $this->registry->txtStripslashes( $_POST['asana_portfolios'] ? $_POST['asana_portfolios'] : $settings['asana_portfolios'] ) )
 			)
 		);
 

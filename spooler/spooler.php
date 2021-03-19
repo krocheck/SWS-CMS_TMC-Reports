@@ -118,6 +118,10 @@ class SpoolerApp extends Application
 				require_once( SWS_ROOT_PATH . 'spooler/_items/default.php' );
 				$module = new SpoolerItems();
 				break;
+			case 'portfolios':
+				require_once( SWS_ROOT_PATH . 'spooler/_portfolios/default.php' );
+				$module = new SpoolerPortfolios();
+				break;
 			case 'projects':
 				require_once( SWS_ROOT_PATH . 'spooler/_projects/default.php' );
 				$module = new SpoolerProjects();

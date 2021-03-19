@@ -31,6 +31,7 @@ $lang['settings_asana_tasks']          = "<strong>Asana Tasks Endpoint</strong>"
 $lang['settings_asana_sections']       = "<strong>Asana Sections Endpoint</strong>";
 $lang['settings_asana_section_tasks']  = "<strong>Asana Section-Tasks Endpoint</strong>";
 $lang['settings_asana_projects']       = "<strong>Asana Projects Endpoint</strong>";
+$lang['settings_asana_portfolios']     = "<strong>Asana Portfolios Endpoint</strong>";
 $lang['settings_asana_workspaces']     = "<strong>Asana Workspaces Endpoint</strong>";
 $lang['settings_asana_teams']          = "<strong>Asana Teams Endpoint</strong>";
 $lang['settings_asana_users']          = "<strong>Asana Users Endpoint</strong>";
