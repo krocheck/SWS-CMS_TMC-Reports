@@ -338,6 +338,7 @@ $ELMHTML .= <<<EOF
 		<strong>{$r['custom_fields'][1200086993568098]} | {$r['custom_fields'][1200086994091202]}</strong> | {$date}<br />
 		{$job} | Producer: {$producer} | AE: {$ae}
 <br />
+<br />
 	</div>
 
 EOF;
