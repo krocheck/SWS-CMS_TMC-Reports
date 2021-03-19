@@ -304,27 +304,27 @@ else
 	$date = 'Due: ?';
 }
 
-if ( $fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name'] != '' )
+if ( $r['custom_fields'][512462680735933]['enum_value'] && $r['custom_fields'][512462680735933]['enum_value']['name'] != '' )
 {
-	$producer = $fields[512462680735933]['enum_options'][$r['custom_fields'][512462680735933]]['name'];
+	$producer = $r['custom_fields'][512462680735933]['enum_value']['name'];
 }
 else
 {
 	$producer = '?';
 }
 
-if ( $fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name'] != '' )
+if ( $r['custom_fields'][512408346444708]['enum_value'] && $r['custom_fields'][512408346444708]['enum_value']['name'] != '' )
 {
-	$ae = $fields[512408346444708]['enum_options'][$r['custom_fields'][512408346444708]]['name'];
+	$ae = $r['custom_fields'][512408346444708]['enum_value']['name'];
 }
 else
 {
 	$ae = '?';
 }
 
-if ( $r['custom_fields'][512408346444750] != '' )
+if ( $r['custom_fields'][512408346444750]['text_value'] != '' )
 {
-	$job = $r['custom_fields'][512408346444750];
+	$job = $r['custom_fields'][512408346444750]['text_value'];
 }
 else
 {
@@ -335,7 +335,7 @@ $ELMHTML = "";
 //--starthtml--//
 $ELMHTML .= <<<EOF
 	<div class="production">
-		<strong>{$r['custom_fields'][1200086993568098]} | {$r['custom_fields'][1200086994091202]}</strong> | {$date}<br />
+		<strong>{$r['custom_fields'][1200086993568098]['text_value']} | {$r['custom_fields'][1200086994091202]['text_value']}</strong> | {$date}<br />
 		{$job} | Producer: {$producer} | AE: {$ae}
 <br />
 	</div>

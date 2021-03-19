@@ -58,7 +58,7 @@ class Production extends Subpage
 		$this->portfolio['custom_field_settings'] = unserialize($this->portfolio['custom_field_settings']);
 		$this->portfolio['projects'] = unserialize($this->portfolio['projects']);
 
-		$this->DB->query("SELECT * FROM project WHERE project_gid IN(" . implode(",", $this->project['projects']) . ")");
+		$this->DB->query("SELECT * FROM project WHERE project_gid IN(" . implode(",", $this->portfolio['projects']) . ")");
 
 		while( $r = $this->DB->fetchRow() )
 		{
