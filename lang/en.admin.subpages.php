@@ -16,6 +16,7 @@ $lang['subpages_agenda_form_field_info']       = "Information";
 $lang['subpages_agenda_form_filter']           = "<strong>Content Filter:</strong><br>custom_field:selection";
 $lang['subpages_agenda_form_lang_comp']        = "<strong>Comparison Language</strong><br>Select a language to display to assist with translating.";
 $lang['subpages_agenda_form_lang_sel']         = "<strong>Select Language</strong>";
+$lang['subpages_agenda_form_portfolio']        = "<strong>Asana Portfolio:</strong>";
 $lang['subpages_agenda_form_project']          = "<strong>Asana Project:</strong>";
 $lang['subpages_agenda_form_name']             = "<strong>Title:</strong><br>Title is always displayed and is the link to open the content.";
 $lang['subpages_agenda_form_type']             = "<strong>Content Type</strong>";

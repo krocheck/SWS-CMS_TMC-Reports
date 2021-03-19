@@ -289,9 +289,9 @@ $fields = $this->cache->getCache('fields');
 $users = $this->cache->getCache('users');
 $date = "";
 
-if ( $r['due_on'] != '0000-00-00' )
+if ( $r['due_date'] != '0000-00-00' )
 {
-	$endDate = strtotime($r['due_on']);
+	$endDate = strtotime($r['due_date']);
 	$date = 'Due: ' . date('F j', $endDate);
 
 	if ( $endDate < time() )
@@ -331,31 +331,13 @@ else
 	$job = date('Y') . '-?';
 }
 
-if ( count($r['tags']) > 0 )
-{
-	$tagSep = '|';
-}
-else
-{
-	$tagSep = '';
-}
-
 $ELMHTML = "";
 //--starthtml--//
 $ELMHTML .= <<<EOF
 	<div class="production">
-		<strong>{$r['name']}</strong> | {$date}<br />
-		{$job} | Producer: {$producer} | AE: {$ae} {$tagSep} 
-EOF;
-if (count($r['tags']) > 0) {
-foreach( $r['tags'] as $v ) {
-$ELMHTML .= <<<EOF
-<span class="pill {$tags[$v]['color']}">&nbsp;{$tags[$v]['name']}&nbsp;</span>&nbsp;
-EOF;
-} }
-$ELMHTML .= <<<EOF
+		<strong>{$r['custom_fields'][1200086993568098]} | {$r['custom_fields'][1200086994091202]}</strong> | {$date}<br />
+		{$job} | Producer: {$producer} | AE: {$ae}
 <br />
-{$r['description']}
 	</div>
 
 EOF;

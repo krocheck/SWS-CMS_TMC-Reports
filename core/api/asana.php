@@ -222,12 +222,35 @@ class AsanaAPI extends Command
 					$count++;
 					$itemID = $row['gid'];
 
-					$itemIDs[]  = $taskID;
+					$itemIDs[]  = $itemID;
 				}
 			}
 		} while( isset($data['next_page']) && is_array($data['next_page']) );
 
 		return $itemIDs;
+	}
+
+	/**
+	 * Get an array of the portfolios to create a dropdown or multi-select
+	 *
+	 * @return array the portfolios
+	 * @access public
+	 * @since 1.0.0
+	 */
+	public function getPortfoliosDropdown()
+	{
+		$out = array();
+		$cache = $this->cache->getCache('portfolios');
+
+		if ( count( $cache ) > 0 )
+		{
+			foreach( $cache as $item )
+			{
+				$out[ $item['portfolio_gid'] ] = array( $item['portfolio_gid'], $item['name'] );
+			}
+		}
+
+		return $out;
 	}
 
 	/**
@@ -895,7 +918,7 @@ class AsanaAPI extends Command
 			}
 		}
 
-		$this->cache->update('projects');
+		$this->cache->update('portfolios');
 
 		return $count;
 	}

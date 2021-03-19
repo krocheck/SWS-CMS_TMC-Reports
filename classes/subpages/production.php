@@ -43,51 +43,36 @@ class Production extends Subpage
 	public function getContent()
 	{
 		$out = "";
-		$this->project = array();
-		$this->tasks   = array();
+		$this->portfolio = array();
+		$this->projects  = array();
 
-		$this->registry->getAPI('asana')->updateProject($this->metadata['project']['value']);
+		$this->registry->getAPI('asana')->updatePortfolio($this->metadata['portfolio']['value']);
 
-		$this->DB->query("SELECT project_gid,custom_fields,custom_field_settings,tasks FROM project WHERE project_gid = '{$this->metadata['project']['value']}';");
-
-		while( $r = $this->DB->fetchRow() )
-		{
-			$this->project = $r;
-		}
-
-		$this->project['custom_fields'] = unserialize($this->project['custom_fields']);
-		$this->project['custom_field_settings'] = unserialize($this->project['custom_field_settings']);
-		$this->project['tasks'] = unserialize($this->project['tasks']);
-
-		$this->DB->query("SELECT task_gid,name,completed,custom_fields,due_on,resource_subtype,start_on,tags,html_notes FROM task WHERE task_gid IN(" . implode(",", $this->project['tasks']) . ") AND completed = 0;");
+		$this->DB->query("SELECT * FROM portfolio WHERE portfolio_gid = '{$this->metadata['portfolio']['value']}';");
 
 		while( $r = $this->DB->fetchRow() )
 		{
-			$this->tasks[$r['task_gid']] = $r;
-			$this->tasks[$r['task_gid']]['custom_fields'] = unserialize($r['custom_fields']);
-			$this->tasks[$r['task_gid']]['tags'] = unserialize($r['tags']);
-
-			/*if ( isset($this->metadata[$r['task_gid']]) )
-			{
-				$this->tasks[$r['task_gid']]['description'] = $this->registry->parseHTML( $this->metadata[$r['task_gid']]['value'] );
-			}*/
-			$this->tasks[$r['task_gid']]['description'] = $r['html_notes'];
+			$this->portfolio = $r;
 		}
 
-		if ( is_array($this->project['tasks']) && count($this->project['tasks']) > 0 )
+		$this->portfolio['custom_field_settings'] = unserialize($this->portfolio['custom_field_settings']);
+		$this->portfolio['projects'] = unserialize($this->portfolio['projects']);
+
+		$this->DB->query("SELECT * FROM project WHERE project_gid IN(" . implode(",", $this->project['projects']) . ")");
+
+		while( $r = $this->DB->fetchRow() )
 		{
-			foreach( $this->project['tasks'] as $r )
+			$this->projects[$r['project_gid']] = $r;
+			$this->projects[$r['project_gid']]['custom_fields'] = unserialize($r['custom_fields']);
+		}
+
+		if ( is_array($this->portfolio['projects']) && count($this->portfolio['projects']) > 0 )
+		{
+			foreach( $this->portfolio['projects'] as $r )
 			{
-				if ( isset($this->tasks[$r]) && is_array($this->tasks[$r]) )
+				if ( isset($this->projects[$r]) && is_array($this->projects[$r]) )
 				{
-					if ( $this->tasks[$r]['resource_subtype'] == 'section' )
-					{
-						$out .= $this->display->compiledTemplates('skin_agenda')->section( $this->tasks[$r] );
-					}
-					else
-					{
-						$out .= $this->display->compiledTemplates('skin_agenda')->production( $this->tasks[$r] );
-					}
+					$out .= $this->display->compiledTemplates('skin_agenda')->production( $this->projects[$r] );
 				}
 			}
 		}
@@ -133,7 +118,7 @@ class ProductionType extends SubpageType
 	 * @var array
 	 * @since 1.0.0
 	 */
-	protected $metadata = array( 'name' => '', 'project' => '' );
+	protected $metadata = array( 'name' => '', 'portfolio' => '' );
 	/**
 	 * The name of the type
 	 *
@@ -156,43 +141,7 @@ class ProductionType extends SubpageType
 		$out = FALSE;
 
 		$this->metadata['name']         = $this->registry->txtStripslashes( trim( $this->input['name'] ) );
-		$this->metadata['project']      = $this->registry->txtStripslashes( trim( $this->input['project'] ) );
-
-		//-----------------------------------------
-		// Project fields
-		//-----------------------------------------
-
-		/*$this->project = array();
-		$this->tasks   = array();
-		$this->DB->query("SELECT project_gid,tasks FROM project WHERE project_gid = '{$this->metadata['project']}';");
-
-		while( $r = $this->DB->fetchRow() )
-		{
-			$this->project = $r;
-		}
-
-		$this->project['tasks'] = unserialize($this->project['tasks']);
-
-		$this->DB->query("SELECT task_gid,name,resource_subtype FROM task WHERE task_gid IN(" . implode(",", $this->project['tasks']) . ") AND completed = 0;");
-
-		while( $r = $this->DB->fetchRow() )
-		{
-			$this->tasks[$r['task_gid']] = $r;
-		}
-
-		if ( is_array($this->project['tasks']) && count($this->project['tasks']) > 0 )
-		{
-			foreach( $this->project['tasks'] as $r )
-			{
-				if ( isset($this->tasks[$r]) && is_array($this->tasks[$r]) )
-				{
-					if ( $this->tasks[$r]['resource_subtype'] != 'section' )
-					{
-						$this->metadata[$r] = $this->registry->txtStripslashes( trim( $this->input[$r] ) );
-					}
-				}
-			}
-		}*/
+		$this->metadata['portfolio']    = $this->registry->txtStripslashes( trim( $this->input['portfolio'] ) );
 
 		if ( strlen( $this->metadata['name'] ) < 3 )
 		{
@@ -236,9 +185,9 @@ class ProductionType extends SubpageType
 
 		$out .= $ad_skin->addTdRow(
 			array(
-				$this->lang->getString('subpages_'.$type.'_form_project'),
-				($compareID > 0 ? $meta[ $compareID ]['project']['value'] . "<br><br>" : "") .
-				$ad_skin->formDropdown( 'project', $this->registry->getAPI('asana')->getProjectsDropdown(), $_POST['project'] ? $_POST['project'] : $meta[ $languageID ]['project']['value'] )
+				$this->lang->getString('subpages_'.$type.'_form_portfolio'),
+				($compareID > 0 ? $meta[ $compareID ]['portfolio']['value'] . "<br><br>" : "") .
+				$ad_skin->formDropdown( 'portfolio', $this->registry->getAPI('asana')->getPortfoliosDropdown(), $_POST['portfolio'] ? $_POST['portfolio'] : $meta[ $languageID ]['portfolio']['value'] )
 			)
 		);
 
@@ -247,58 +196,6 @@ class ProductionType extends SubpageType
 		//-----------------------------------------
 
 		$out .= $ad_skin->endFieldset();
-
-		/*$out .= $ad_skin->startFieldset( 'subpages_'.$type.'_fieldset_descriptions' );
-
-		//-----------------------------------------
-		// Project fields
-		//-----------------------------------------
-
-		$this->project = array();
-		$this->tasks   = array();
-
-		$this->registry->getAPI('asana')->updateProject($meta[ $languageID ]['project']['value']);
-
-		$this->DB->query("SELECT project_gid,tasks FROM project WHERE project_gid = '{$meta[ $languageID ]['project']['value']}';");
-
-		while( $r = $this->DB->fetchRow() )
-		{
-			$this->project = $r;
-		}
-
-		$this->project['tasks'] = unserialize($this->project['tasks']);
-
-		$this->DB->query("SELECT task_gid,name,resource_subtype FROM task WHERE task_gid IN(" . implode(",", $this->project['tasks']) . ") AND completed = 0;");
-
-		while( $r = $this->DB->fetchRow() )
-		{
-			$this->tasks[$r['task_gid']] = $r;
-		}
-
-		if ( is_array($this->project['tasks']) && count($this->project['tasks']) > 0 )
-		{
-			foreach( $this->project['tasks'] as $r )
-			{
-				if ( isset($this->tasks[$r]) && is_array($this->tasks[$r]) )
-				{
-					if ( $this->tasks[$r]['resource_subtype'] != 'section' )
-					{
-						$out .= $ad_skin->addTdRow(
-							array(
-								$this->tasks[$r]['name'],
-								$ad_skin->formRTE( $r, $_POST[$r] ? $_POST[$r] : $meta[ $languageID ][$r]['value'] )
-							)
-						);
-					}
-				}
-			}
-		}
-
-		//-----------------------------------------
-		// End table and form
-		//-----------------------------------------
-
-		$out .= $ad_skin->endFieldset();*/
 
 		return $out;
 	}
