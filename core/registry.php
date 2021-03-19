@@ -904,7 +904,7 @@ class Registry
 				}
 				else
 				{
-					if ( $k != password )
+					if ( $k != 'password' )
 					{
 						$k = $this->parseCleanKey( $k );
 						$v = $this->parseCleanValue( $v );

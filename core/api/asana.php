@@ -718,7 +718,7 @@ class AsanaAPI extends Command
 						'members'               => mysqli_real_escape_string( $this->DB->getConnection(), serialize($members) ),
 						'custom_field_settings' => mysqli_real_escape_string( $this->DB->getConnection(), serialize($fields) ),
 						'color'                 => $row['color'],
-						'parmalink_url'         => mysqli_real_escape_string( $this->DB->getConnection(), $row['parmalink_url']),
+						'permalink_url'         => mysqli_real_escape_string( $this->DB->getConnection(), $row['permalink_url']),
 						'projects'              => mysqli_real_escape_string( $this->DB->getConnection(), serialize($this->getPortfolioItems($portfolioID)))
 					);
 				}
@@ -745,11 +745,11 @@ class AsanaAPI extends Command
 
 			if ( count( $newRows ) > 0 )
 			{
-				$query = "INSERT INTO portfolio (portfolio_gid,owner_gid,workspace_gid,name,due_on,start_on,created_at,members,custom_field_settings,color,parmalink_url,projects) VALUES ";
+				$query = "INSERT INTO portfolio (portfolio_gid,owner_gid,workspace_gid,name,due_on,start_on,created_at,members,custom_field_settings,color,permalink_url,projects) VALUES ";
 
 				foreach( $newRows as $row )
 				{
-					$query .= "('{$row['portfolio_gid']}','{$row['owner_gid']}','{$row['workspace_gid']}',\"{$row['name']}\",'{$row['due_on']}','{$row['start_on']}','{$row['created_at']}',\"{$row['members']}\",\"{$row['custom_field_settings']}\",'{$row['color']}',\"{$row['parmalink_url']}\",\"{$row['projects']}\"),";
+					$query .= "('{$row['portfolio_gid']}','{$row['owner_gid']}','{$row['workspace_gid']}',\"{$row['name']}\",'{$row['due_on']}','{$row['start_on']}','{$row['created_at']}',\"{$row['members']}\",\"{$row['custom_field_settings']}\",'{$row['color']}',\"{$row['permalink_url']}\",\"{$row['projects']}\"),";
 				}
 
 				$query = substr($query,0,-1) . ";";
@@ -761,7 +761,7 @@ class AsanaAPI extends Command
 			{
 				foreach( $oldRows as $row )
 				{
-					$this->DB->query("UPDATE portfolio SET portfolio_gid = '{$row['portfolio_gid']}', owner_gid = '{$row['owner_gid']}', workspace_gid = '{$row['workspace_gid']}', name = \"{$row['name']}\", due_on = '{$row['due_on']}', start_on = '{$row['start_on']}', created_at = '{$row['created_at']}', members = \"{$row['members']}\", custom_field_settings = \"{$row['custom_field_settings']}\", color = '{$row['color']}', parmalink_url = \"{$row['parmalink_url']}\", projects = \"{$row['projects']}\", last_update = NOW() WHERE portfolio_gid = '{$row['portfolio_gid']}';");						
+					$this->DB->query("UPDATE portfolio SET portfolio_gid = '{$row['portfolio_gid']}', owner_gid = '{$row['owner_gid']}', workspace_gid = '{$row['workspace_gid']}', name = \"{$row['name']}\", due_on = '{$row['due_on']}', start_on = '{$row['start_on']}', created_at = '{$row['created_at']}', members = \"{$row['members']}\", custom_field_settings = \"{$row['custom_field_settings']}\", color = '{$row['color']}', permalink_url = \"{$row['permalink_url']}\", projects = \"{$row['projects']}\", last_update = NOW() WHERE portfolio_gid = '{$row['portfolio_gid']}';");						
 				}
 			}
 
