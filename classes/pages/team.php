@@ -312,6 +312,22 @@ class Team extends Page
 			return;
 		}
 
+		// Query for subtasks
+		if ( count($tasks) > 0 )
+		{
+			$this->DB->query(
+				"SELECT task_gid FROM task WHERE parent_gid IN(".implode(',',$tasks).");"
+			);
+
+			while( $r = $this->DB->fetchRow() )
+			{
+				if ( strlen( $r['task_gid'] ) > 0 )
+				{
+					$tasks[] = $r['task_gid'];
+				}
+			}
+		}
+
 		// Query tasks for this page
 		if ( count($tasks) > 0 )
 		{
