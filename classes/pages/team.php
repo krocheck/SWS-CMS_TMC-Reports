@@ -351,7 +351,7 @@ class Team extends Page
 
 		if ( count($tasks) > 0 )
 		{
-			foreach( $tasks as $task )
+			foreach( $tasks as $tid )
 			{
 				if ( isset($tasks[$tid]) && isset($tasks[$tid]['custom_fields']) && isset($tasks[$tid]['custom_fields'][$this->scheduleEnable]) )
 				{
