@@ -349,9 +349,9 @@ class Team extends Page
 
 		$scheduleTasks = array();
 
-		if ( count($project['tasks']) > 0 )
+		if ( count($tasks) > 0 )
 		{
-			foreach( $project['tasks'] as $tid )
+			foreach( $tasks as $task )
 			{
 				if ( isset($tasks[$tid]) && isset($tasks[$tid]['custom_fields']) && isset($tasks[$tid]['custom_fields'][$this->scheduleEnable]) )
 				{
