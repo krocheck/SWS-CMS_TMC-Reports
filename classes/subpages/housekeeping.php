@@ -112,7 +112,7 @@ class Housekeeping extends Subpage
 					$sectionItems = 0;
 					$inTable = 0;
 
-					if ( $this->sections[$r]['name'] == 'Staff Vacation & Office Holidays' )
+					if ( $this->sections[$r]['name'] == 'Staff Vacation & Office Holidays' ||   $this->sections[$r]['name'] == 'Staff Vacation & Office Holidays (approval needed by Chris)')
 					{
 						$inTable = 1;
 						$out .= "<table border='1' cellpadding='1' cellspacing='1' style='width:100%'><tbody><tr>";
