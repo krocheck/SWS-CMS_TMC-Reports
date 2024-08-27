@@ -8,6 +8,7 @@ $lang['hours_head_owner']           = "Project Owner";
 $lang['hours_head_created']         = "Date Created";
 $lang['hours_head_refresh']         = "Asana Link";
 $lang['hours_head_schedule']        = "Production Schedule";
+$lang['hours_head_shoot']           = "Shoot Call Sheet";
 $lang['hours_head_hours']           = "Billed Hours";
 $lang['hours_form_status']          = "Status:";
 $lang['hours_list_bread']           = "Project List";

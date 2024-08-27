@@ -1,0 +1,7 @@
+{
+    "require": {
+        "ckeditor/ckeditor": "^4.11",
+        "asana/asana": "^0.8.0",
+        "mpdf/mpdf": "^7.1"
+    }
+}

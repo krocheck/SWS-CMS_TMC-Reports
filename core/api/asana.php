@@ -1448,6 +1448,9 @@ class AsanaAPI extends Command
 
 		if ( $count > 0 )
 		{
+			$subtasks = mysqli_real_escape_string( $this->DB->getConnection(), serialize($taskIDs) )
+			$this->DB->query("UPDATE task SET subtasks = \"{$subtasks}\", last_update = NOW() WHERE task_gid = '{$task}';");
+
 			$this->DB->query("SELECT * FROM task WHERE task_gid IN('".implode("','",$taskIDs)."');");
 
 			if ( $this->DB->getTotalRows() )

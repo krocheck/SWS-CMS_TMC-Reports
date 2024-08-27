@@ -96,6 +96,9 @@ class Team extends Page
 			case 'schedule':
 				$this->schedule();
 				break;
+			case 'shoot':
+				$this->shoot();
+				break;
 			default:
 				$this->listProjects();
 				break;
@@ -127,11 +130,12 @@ class Team extends Page
 		// Table Headers
 		//-----------------------------------------
 
-		$this->html->td_header[] = array( $this->lang->getString('hours_head_name')          , "32%" );
-		$this->html->td_header[] = array( $this->lang->getString('hours_head_owner')         , "22%" );
-		$this->html->td_header[] = array( $this->lang->getString('hours_head_created')       , "22%" );
-		$this->html->td_header[] = array( $this->lang->getString('hours_head_schedule')      , "12%" );
-		$this->html->td_header[] = array( $this->lang->getString('hours_head_hours')         , "12%" );
+		$this->html->td_header[] = array( $this->lang->getString('hours_head_name')          , "30%" );
+		$this->html->td_header[] = array( $this->lang->getString('hours_head_owner')         , "20%" );
+		$this->html->td_header[] = array( $this->lang->getString('hours_head_created')       , "20%" );
+		$this->html->td_header[] = array( $this->lang->getString('hours_head_schedule')      , "10%" );
+		$this->html->td_header[] = array( $this->lang->getString('hours_head_shoot')         , "10%" );
+		$this->html->td_header[] = array( $this->lang->getString('hours_head_hours')         , "10%" );
 
 		//-----------------------------------------
 
@@ -215,6 +219,7 @@ class Team extends Page
 						$this->users[$r['owner_gid']]['name'],
 						"<center>".date('M j, Y', strtotime($r['created_at']))."</center>",
 						"<center><a href='".$this->display->buildURL( array( 'page_id' => $this->id, 'extra' => array($r['project_gid'], 'schedule') ) )."'>Schedule</a></center>",
+						"<center><a href='".$this->display->buildURL( array( 'page_id' => $this->id, 'extra' => array($r['project_gid'], 'shoot') ) )."'>Shoot Call Sheet</a></center>",
 						"<center><a href='".$this->display->buildURL( array( 'page_id' => $this->id, 'extra' => array($r['project_gid'], 'hours') ) )."'>Hours</a></center>",
 					)
 				);
@@ -391,6 +396,106 @@ class Team extends Page
 			return $t1 - $t2;
 		}
 		usort($scheduleTasks, 'dateCompare');
+
+		//--------------------------------------
+
+		$out = $this->display->compiledTemplates('skin_team')->schedulePDF( $project['name'], $project['html_notes'], $scheduleTasks );
+
+		$this->display->addContent( $out );
+
+		$date = date('Y-m-d');
+
+		$this->display->doOutput('pdf', "{$project['name']}_Production Schedule_{$date}.pdf");
+	}
+
+	/**
+	 * Processes the shoot call sheet and output PDF
+	 *
+	 * @return void
+	 * @access protected
+	 * @since 1.0.0
+	 */
+	protected function shoot()
+	{
+		//-----------------------------------------
+		// INIT
+		//-----------------------------------------
+
+		$projectID = intval($this->input['extra'][0]);
+
+		if ( $projectID == 0 )
+		{
+			$this->error->logError( 'invalid_id', FALSE );
+			$this->listProjects();
+			return;
+		}
+
+		$this->registry->getAPI('asana')->updateProject($projectID);
+
+		$shoots = array();
+
+		$this->DB->query(
+			"SELECT task_gid,subtasks FROM task WHERE project_gid = {$projectID} AND num_subtasks > 0 AND (`name` LIKE '%: shoot%' OR `name` LIKE '%: Shoot%' OR `name` LIKE '%: SHOOT%'));"
+		);
+
+		while( $r = $this->DB->fetchRow() )
+		{
+			if ( strlen( $r['task_gid'] ) > 0 )
+			{
+				$shoots[] = $r['task_gid'];
+				$shoots['subtasks'] = unserialize($r['subtasks'])
+			}
+		}
+
+		// Query tasks for this page
+		if ( count($shoots) > 0 )
+		{
+			$this->DB->query(
+				"SELECT task_gid,name,parent_gid,html_notes FROM task WHERE task_gid IN(".implode(',',$shoots).");"
+			);
+
+			$tasks = array();
+
+			// Loop through the results and add a row for each
+			while( $r = $this->DB->fetchRow() )
+			{
+				$tasks[$r['task_gid']] = $r;
+			}
+		}
+
+		//-----------------------------------------
+
+		$scheduleTasks = array();
+
+		if ( count($tasks) > 0 )
+		{
+			foreach( $tasks as $tid => $task )
+			{
+				if ( isset($tasks[$tid]) && $tasks[$tid]['name'] == ": Shoot")
+				{
+					if ( $tasks[$tid]['custom_fields'][$this->scheduleEnable] <> null && $tasks[$tid]['due_on'] <> '0000-00-00' )
+					{
+						if ( strlen($tasks[$tid]['html_notes']) > 0 )
+						{
+							$tasks[$tid]['name'] .= "<br /><span class='desc'>{$tasks[$tid]['html_notes']}</span>";
+						}
+
+						if ( strpos($tasks[$tid]['name'],':') > 0 )
+						{
+							$tasks[$tid]['name'] = substr($tasks[$tid]['name'], strpos($tasks[$tid]['name'],':')+1);
+						}
+
+						$scheduleTasks[] = array(
+							'name' => trim($tasks[$tid]['name']),
+							'responsible_party' => $tasks[$tid]['custom_fields'][$this->respParty],
+							'start' => ($tasks[$tid]['start_on'] <> '0000-00-00' ? date('M. jS',strtotime($tasks[$tid]['start_on'])) : date('M. jS',strtotime($tasks[$tid]['due_on']))),
+							'start_on' => ($tasks[$tid]['start_on'] <> '0000-00-00' ? strtotime($tasks[$tid]['start_on']) : strtotime($tasks[$tid]['due_on'])),
+							'end' => date('M. jS',strtotime($tasks[$tid]['due_on'])),
+						);
+					}
+				}
+			}
+		}
 
 		//--------------------------------------
 
