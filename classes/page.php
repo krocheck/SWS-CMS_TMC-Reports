@@ -189,7 +189,7 @@ abstract class Page extends Command
 			$url    = $this->display->buildURL( array( 'page_id' => $this->id ) );
 			$string = $this->navigationText;
 
-			$out = array( 'url' => $url, 'string' => $string, 'extra' => $extra, 'current' => $current, 'css' => $css );
+			$out = array( 'url' => $url, 'string' => $string, 'extra' => (is_array($extra) ? $extra : array()), 'current' => $current, 'css' => $css );
 		}
 		
 		return $out;

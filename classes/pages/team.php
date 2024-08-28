@@ -78,7 +78,7 @@ class Team extends Page
 		// Get and load the table/form factory
 		$this->html = $this->registry->getClass('AdminSkin');
 
-		if ( is_array( $this->input['extra'] ) && count( $this->input['extra'] ) == 2 )
+		if ( isset( $this->input['extra'] ) && is_array( $this->input['extra'] ) && count( $this->input['extra'] ) == 2 )
 		{
 			$this->input['do'] = $this->input['extra'][1];
 		}
@@ -216,7 +216,7 @@ class Team extends Page
 				$html .= $this->html->addTdRow(
 					array(
 						"<a  href='https://app.asana.com/0/{$r['project_gid']}' target='_blank'>{$r['name']}</a>",
-						$this->users[$r['owner_gid']]['name'],
+						($this->users[$r['owner_gid']] ? $this->users[$r['owner_gid']]['name'] : ''),
 						"<center>".date('M j, Y', strtotime($r['created_at']))."</center>",
 						"<center><a href='".$this->display->buildURL( array( 'page_id' => $this->id, 'extra' => array($r['project_gid'], 'schedule') ) )."'>Schedule</a></center>",
 						"<center><a href='".$this->display->buildURL( array( 'page_id' => $this->id, 'extra' => array($r['project_gid'], 'shoot') ) )."'>Shoot Call Sheet</a></center>",
