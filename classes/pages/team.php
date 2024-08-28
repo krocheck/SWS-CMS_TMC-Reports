@@ -466,9 +466,9 @@ class Team extends Page
 			if ( strlen( $r['task_gid'] ) > 0 )
 			{
 				$shoots[] = $r['task_gid'];
-				$data['task_gid'] = $r;
-				$data['task_gid']['subtasks'] = unserialize($r['subtasks']);
-				$data['task_gid']['tasks'] = array();
+				$data[$r['task_gid']] = $r;
+				$data[$r['task_gid']]['subtasks'] = unserialize($r['subtasks']);
+				$data[$r['task_gid']]['tasks'] = array();
 			}
 		}
 
@@ -476,7 +476,7 @@ class Team extends Page
 		if ( count($shoots) > 0 )
 		{
 			$this->DB->query(
-				"SELECT task_gid,`name`,parent_gid,html_notes FROM task WHERE task_gid IN(".implode(',',$shoots).");"
+				"SELECT task_gid,`name`,parent_gid,html_notes FROM task WHERE parent_gid IN(".implode(',',$shoots).");"
 			);
 
 			// Loop through the results and add a row for each
