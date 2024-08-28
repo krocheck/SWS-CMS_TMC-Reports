@@ -82,7 +82,6 @@ EOF;
 //--endhtml--//
 return $ELMHTML;
 }
-}
 
 public function shootPDF( $shoots ) {
 
@@ -131,6 +130,7 @@ EOF;
 //--endhtml--//
 return $ELMHTML;
 }
-	
+
+}
 
 ?>
