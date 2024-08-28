@@ -488,8 +488,6 @@ class Team extends Page
 
 		//-----------------------------------------
 
-		$scheduleTasks = array();
-
 		if ( count($data) > 0 )
 		{
 			foreach( $data as $tid => $task )

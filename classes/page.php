@@ -142,6 +142,7 @@ abstract class Page extends Command
 	{
 		$out = NULL;
 		$current = false;
+		$extra = array();
 		
 		if ( $this->active == 1 && $this->navigation == 1 )
 		{

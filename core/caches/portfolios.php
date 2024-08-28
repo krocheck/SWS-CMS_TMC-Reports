@@ -43,7 +43,7 @@ class PortfoliosCache extends CacheType
 		
 		while( $r = $this->DB->fetchRow() )
 		{
-			$r['followers'] = unserialize( $r['followers'] );
+			$r['members'] = unserialize( $r['members'] );
 			$r['custom_field_settings'] = unserialize( $r['custom_field_settings'] );
 
 			$save[ $r['portfolio_gid'] ] = $r;

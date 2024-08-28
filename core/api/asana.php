@@ -458,6 +458,7 @@ class AsanaAPI extends Command
 		$likes = array();
 		$projects = array();
 		$tags = array();
+		$workspace = $this->registry->getSetting('asana_default');
 
 		if ( is_array($row['custom_fields']) && count($row['custom_fields']) > 0 )
 		{
@@ -1820,9 +1821,9 @@ class AsanaAPI extends Command
 
 					if ( is_array($row['workspaces']) && count($row['workspaces']) > 0 )
 					{
-						foreach( $row['workspaces'] as $workspace )
+						foreach( $row['workspaces'] as $ws )
 						{
-							$workspaces[] = $workspace['gid'];
+							$workspaces[] = $ws['gid'];
 						}
 					}
 
