@@ -438,7 +438,6 @@ class Team extends Page
 		);
 
 		$project = array();
-		$tasks = array();
 
 		// Loop through the results and add a row for each
 		while( $r = $this->DB->fetchRow() )
@@ -451,23 +450,15 @@ class Team extends Page
 				$r['name'] = trim( $r['name'] );
 			}
 
-			if ( is_array( $r['tasks'] ) && count( $r['tasks'] ) > 0 )
-			{
-				foreach( $r['tasks'] as $tid )
-				{
-					$tasks[] = $tid;
-				}
-			}
-
 			$project = $r;
 		}
 
 		$shoots = array();
-		$data = array();
 		$tasks = array();
+		$data = array();
 
 		$this->DB->query(
-			"SELECT task_gid,subtasks,html_notes FROM task WHERE task_gid IN (" . implode(',',$tasks) . ") AND (`name` LIKE '%: shoot%' OR `name` LIKE '%: Shoot%' OR `name` LIKE '%: SHOOT%');"
+			"SELECT task_gid,subtasks,html_notes FROM task WHERE task_gid IN (" . implode(',',$project['tasks']) . ") AND (`name` LIKE '%: shoot%' OR `name` LIKE '%: Shoot%' OR `name` LIKE '%: SHOOT%');"
 		);
 
 		while( $r = $this->DB->fetchRow() )
