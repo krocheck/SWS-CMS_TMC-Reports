@@ -185,7 +185,7 @@ class Database
 		{
 			$recordRow = mysqli_fetch_array($queryID, MYSQLI_ASSOC);
 		}
-		catch (e)
+		catch (Exception e)
 		{
 			debug_print_backtrace();
 		}
