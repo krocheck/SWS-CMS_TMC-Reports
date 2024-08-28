@@ -181,7 +181,14 @@ class Database
 			$queryID = $this->queryID;
 		}
 		
-		$recordRow = mysqli_fetch_array($queryID, MYSQLI_ASSOC);
+		try
+		{
+			$recordRow = mysqli_fetch_array($queryID, MYSQLI_ASSOC);
+		}
+		catch (e)
+		{
+			debug_print_backtrace();
+		}
 		
 		return $recordRow;
 	}
