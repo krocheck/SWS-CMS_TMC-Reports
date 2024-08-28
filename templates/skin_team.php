@@ -84,7 +84,7 @@ return $ELMHTML;
 }
 }
 
-public function shootPDF( $name, $description, $tasks ) {
+public function shootPDF( $shoots ) {
 
 $ELMHTML = "";
 //--starthtml--//
@@ -98,15 +98,29 @@ $ELMHTML .= <<<EOF
 			</tr>
 		</table>
 	</htmlpageheader>
-	{$description}
+EOF;
+$count = 0;
+foreach( $shoots as $shoot ) {
+if ($count > 0) {
+$ELMHTML .= <<<EOF
+	<pagebreak>
+
+EOF;	
+}
+
+$ELMHTML .= <<<EOF
+	{$shoot['html_notes']}
+
 EOF;
 
-foreach( $tasks as $v ) {
+foreach( $shoot['tasks'] as $v ) {
 $ELMHTML .= <<<EOF
 	<h3>{$v['name']}</h3>
 	{$v['html_notes']}
 
 EOF;
+}
+$count++;
 }
 
 $ELMHTML .= <<<EOF

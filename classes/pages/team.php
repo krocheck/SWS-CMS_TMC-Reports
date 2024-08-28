@@ -432,10 +432,41 @@ class Team extends Page
 
 		$this->registry->getAPI('asana')->updateProject($projectID);
 
+		// Query projects for this page
+		$this->DB->query(
+			"SELECT * FROM project WHERE project_gid = '{$projectID}';"
+		);
+
+		$project = array();
+
+		// Loop through the results and add a row for each
+		while( $r = $this->DB->fetchRow() )
+		{
+			$r['tasks'] = unserialize($r['tasks']);
+
+			if ( substr($r['name'],0,3) == '201' || substr($r['name'],0,3) == '202' || substr($r['name'],0,3) == '203' )
+			{
+				$r['name'] = substr( $r['name'], 8 );
+				$r['name'] = trim( $r['name'] );
+			}
+
+			if ( is_array( $r['tasks'] ) && count( $r['tasks'] ) > 0 )
+			{
+				foreach( $r['tasks'] as $tid )
+				{
+					$tasks[] = $tid;
+				}
+			}
+
+			$project = $r;
+		}
+
 		$shoots = array();
+		$data = array();
+		$tasks = array();
 
 		$this->DB->query(
-			"SELECT task_gid,subtasks FROM task WHERE project_gid = {$projectID} AND num_subtasks > 0 AND (`name` LIKE '%: shoot%' OR `name` LIKE '%: Shoot%' OR `name` LIKE '%: SHOOT%'));"
+			"SELECT task_gid,subtasks,html_notes FROM task WHERE project_gid = {$projectID} AND num_subtasks > 0 AND (`name` LIKE '%: shoot%' OR `name` LIKE '%: Shoot%' OR `name` LIKE '%: SHOOT%'));"
 		);
 
 		while( $r = $this->DB->fetchRow() )
@@ -443,7 +474,9 @@ class Team extends Page
 			if ( strlen( $r['task_gid'] ) > 0 )
 			{
 				$shoots[] = $r['task_gid'];
-				$shoots['subtasks'] = unserialize($r['subtasks'])
+				$data['task_gid'] = $r;
+				$data['task_gid']['subtasks'] = unserialize($r['subtasks']);
+				$data['task_gid']['tasks'] = array();
 			}
 		}
 
@@ -451,10 +484,8 @@ class Team extends Page
 		if ( count($shoots) > 0 )
 		{
 			$this->DB->query(
-				"SELECT task_gid,name,parent_gid,html_notes FROM task WHERE task_gid IN(".implode(',',$shoots).");"
+				"SELECT task_gid,`name`,parent_gid,html_notes FROM task WHERE task_gid IN(".implode(',',$shoots).");"
 			);
-
-			$tasks = array();
 
 			// Loop through the results and add a row for each
 			while( $r = $this->DB->fetchRow() )
@@ -467,31 +498,15 @@ class Team extends Page
 
 		$scheduleTasks = array();
 
-		if ( count($tasks) > 0 )
+		if ( count($data) > 0 )
 		{
-			foreach( $tasks as $tid => $task )
+			foreach( $data as $tid => $task )
 			{
-				if ( isset($tasks[$tid]) && $tasks[$tid]['name'] == ": Shoot")
+				if ( count($task['subtasks']) > 0 )
 				{
-					if ( $tasks[$tid]['custom_fields'][$this->scheduleEnable] <> null && $tasks[$tid]['due_on'] <> '0000-00-00' )
+					foreach( $task['subtasks'] as $i)
 					{
-						if ( strlen($tasks[$tid]['html_notes']) > 0 )
-						{
-							$tasks[$tid]['name'] .= "<br /><span class='desc'>{$tasks[$tid]['html_notes']}</span>";
-						}
-
-						if ( strpos($tasks[$tid]['name'],':') > 0 )
-						{
-							$tasks[$tid]['name'] = substr($tasks[$tid]['name'], strpos($tasks[$tid]['name'],':')+1);
-						}
-
-						$scheduleTasks[] = array(
-							'name' => trim($tasks[$tid]['name']),
-							'responsible_party' => $tasks[$tid]['custom_fields'][$this->respParty],
-							'start' => ($tasks[$tid]['start_on'] <> '0000-00-00' ? date('M. jS',strtotime($tasks[$tid]['start_on'])) : date('M. jS',strtotime($tasks[$tid]['due_on']))),
-							'start_on' => ($tasks[$tid]['start_on'] <> '0000-00-00' ? strtotime($tasks[$tid]['start_on']) : strtotime($tasks[$tid]['due_on'])),
-							'end' => date('M. jS',strtotime($tasks[$tid]['due_on'])),
-						);
+						$task['tasks'][] = $tasks[$i];
 					}
 				}
 			}
@@ -499,13 +514,13 @@ class Team extends Page
 
 		//--------------------------------------
 
-		$out = $this->display->compiledTemplates('skin_team')->schedulePDF( $project['name'], $project['html_notes'], $scheduleTasks );
+		$out = $this->display->compiledTemplates('skin_team')->shootPDF( $data );
 
 		$this->display->addContent( $out );
 
 		$date = date('Y-m-d');
 
-		$this->display->doOutput('pdf', "{$project['name']}_Production Schedule_{$date}.pdf");
+		$this->display->doOutput('pdf', "{$project['name']}_Call Sheets_{$date}.pdf");
 	}
 
 	/**
