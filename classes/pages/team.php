@@ -496,7 +496,7 @@ class Team extends Page
 				{
 					foreach( $task['subtasks'] as $i)
 					{
-						$task['tasks'][] = $tasks[$i];
+						$data[$tid]['tasks'][] = $tasks[$i];
 					}
 				}
 			}
