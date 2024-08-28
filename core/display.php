@@ -475,7 +475,7 @@ class Display
 			$this->title = substr( $this->title, 0, -3 );
 		}
 
-		if ( $css == 'pdf' )
+		/*if ( $css == 'pdf' )
 		{
 			require_once(SWS_VENDOR_PATH . 'autoload.php');
 			$mpdf = new \Mpdf\Mpdf(['tempDir' => '/tmp', 'format' => 'Letter']);
@@ -485,10 +485,10 @@ class Display
 			$mpdf->Output($file, \Mpdf\Output\Destination::INLINE);
 		}
 		else
-		{
+		{*/
 			$this->html = $this->compiledTemplates('skin_'.SWS_THIS_APPLICATION)->wrapper( $this->title, $navigation, $breadcrumb, $userlinks, $loggedIn, $this->content, $css, $errors, $debug, $this->js );
 			print( $this->html );
-		}
+		//}
 
 		exit;
 	}
