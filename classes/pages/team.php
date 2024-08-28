@@ -467,7 +467,7 @@ class Team extends Page
 		$tasks = array();
 
 		$this->DB->query(
-			"SELECT task_gid,subtasks,html_notes FROM task WHERE task_gid IN (" . implode($tasks) .") AND (`name` LIKE '%: shoot%' OR `name` LIKE '%: Shoot%' OR `name` LIKE '%: SHOOT%');"
+			"SELECT task_gid,subtasks,html_notes FROM task WHERE task_gid IN (" . implode(',',$tasks) . ") AND (`name` LIKE '%: shoot%' OR `name` LIKE '%: Shoot%' OR `name` LIKE '%: SHOOT%');"
 		);
 
 		while( $r = $this->DB->fetchRow() )
